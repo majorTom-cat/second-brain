@@ -1,0 +1,35 @@
+# DEPLOY.manifest.yaml — 파이프라인 최종 산출물 (경계 C). 배포 결과 + REQ별 smoke.
+
+project: <slug>
+profile: <local|intranet>
+
+target:
+  # local:    { kind: docker-compose, where: "로컬/단일 호스트" }
+  # intranet: { kind: k8s, where: "intranet.bns.co.kr / bnspace ns", registry: "harbor.bns.co.kr" }
+  kind: <docker-compose|k8s>
+  where: <...>
+
+secrets: [DATABASE_URL, SESSION_SECRET]   # 외부화된 env 이름만 (값 아님)
+
+endpoints:
+  - name: web
+    url: <http://localhost:3000 | https://<app>.intranet.bns.co.kr>
+
+health:
+  path: /api/health
+  expect: '200 {status:"ok"}'
+
+shutdown:
+  sigterm: true            # graceful shutdown 구현됨 (DB 풀 close)
+
+rollback: "<이전 태그로 재기동 / kubectl set image ...>"
+
+smoke:                     # REQ별 — acceptance 를 그대로 검사
+  - req: REQ-CORE-001
+    check: "<curl ... 또는 시나리오>"
+    result: <pass|fail|dry-run>
+  - req: REQ-OPS-001
+    check: "curl .../api/health -> 200"
+    result: pass
+
+ops_gaps: []               # 백업·모니터링 등 미비점(critic이 채움). 비면 OK.

@@ -1,0 +1,21 @@
+# 시크릿 — 절대 커밋 금지
+.env
+.env.local
+*.key
+
+# 의존성/빌드 산출물 (생성된 프로젝트들)
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+
+# Claude Code 작업용
+.claude/worktrees/
+.claude/settings.local.json
+
+# OS/에디터
+.DS_Store
+Thumbs.db
+*.log

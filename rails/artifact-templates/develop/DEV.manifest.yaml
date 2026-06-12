@@ -1,0 +1,26 @@
+# DEV.manifest.yaml — 개발→배포 기계가독 계약 (경계 B 산출물).
+# /deploy 가 이 파일만으로 동작한다. 규칙: REQ는 acceptance에 매핑된 테스트가 통과해야만 status: done.
+
+project: <slug>
+
+reqs:
+  - id: REQ-CORE-001
+    status: done            # done | partial | blocked
+    pr: develop/prs/REQ-CORE-001.md     # 또는 브랜치명
+    files: [src/...]
+    tests: [test/...]       # acceptance 를 검증하는 테스트
+    verification: pass      # adversarial-review 결과: pass | fail
+  - id: REQ-OPS-001
+    status: done
+    files: [src/api/health.ts]
+    tests: [test/health.test.ts]
+    verification: pass
+
+build:
+  command: "npm run build"
+  artifact: "dist/"         # 또는 .next/
+
+run:
+  command: "npm start"
+  port: 3000
+  env: [DATABASE_URL]       # 필요한 환경변수 이름만 (값 아님)

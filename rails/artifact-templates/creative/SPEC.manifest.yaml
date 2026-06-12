@@ -1,0 +1,33 @@
+# SPEC.manifest.yaml — 창작→개발 기계가독 계약 (경계 A 산출물).
+# /develop 가 이 파일만으로 추가 맥락 없이 동작한다. 번호 문서와 내용이 일치해야 한다.
+
+project: <slug>
+one_liner: <00-brief 의 한 줄 정의>
+
+stack:                      # 03-architecture 와 일치
+  language: <ts|py|...>
+  framework: <next|fastapi|none>
+  db: <postgres|sqlite|none>
+  auth: <none|self|intranet>
+
+deploy_profile: <local|intranet>   # local=docker-compose, intranet=k8s(agora 패턴)
+
+requirements:               # 02-requirements 표의 기계가독 사본
+  - id: REQ-CORE-001
+    summary: <한 줄>
+    acceptance: "given <상태> when <행위> then <관찰 가능한 결과>"   # 개발 테스트 = 배포 smoke
+    priority: P0            # P0|P1|P2
+    depends_on: []          # [REQ-...]
+  - id: REQ-OPS-001
+    summary: health 엔드포인트
+    acceptance: "given 앱 실행 when GET /api/health then 200 + {status:ok}"
+    priority: P0
+    depends_on: []
+
+roadmap_phases:             # 08-roadmap 와 일치
+  - phase: 1
+    reqs: [REQ-CORE-001, REQ-OPS-001]
+
+invariants:                 # 09 / 08 의 불변 원칙
+  - "시크릿은 코드에 없다(.env/CI 변수)"
+  - "모든 P0 REQ는 acceptance에 매핑된 통과 테스트가 있다"
