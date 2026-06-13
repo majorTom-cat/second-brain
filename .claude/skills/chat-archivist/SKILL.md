@@ -57,6 +57,14 @@ rm -rf raw                                                            # 평문 �
 - 회사 데이터(`auto_push: false`)는 자동에서 제외 — 수동 `/archive <p>` + 검토 후에만.
 - PS 스크립트는 **ASCII 전용**(PowerShell 5.1 이 BOM 없는 UTF-8 한글을 오독하므로). 한글은 node 출력/.md 에만.
 
+### 6) 전역 명령 (어느 프로젝트에서든 `/archive`)
+원본은 repo 안에 백업됨: `archive.global.md`. 전역 위치에 설치하면 cwd 무관하게 쓸 수 있다(엔진이 절대경로로 second-brain 을 찾음).
+```
+cp E:/second-brain/.claude/skills/chat-archivist/archive.global.md ~/.claude/commands/archive.md   # 재설치/복구
+```
+- second-brain 안에서는 프로젝트판 명령(상대경로), 그 외에서는 전역판(절대경로)이 쓰인다. 데이터는 늘 `E:/second-brain/archive/` 로 모인다.
+- 전역 파일(`~/.claude/commands/`)은 repo 밖이라 클라우드 백업 안 됨 → 포맷 시 위 `cp` 한 줄로 복구.
+
 ## 출력
 `archive/<project>/` = README + knowledge + ideas + chats(INDEX·SECRETS·raw 또는 raw.tar.gpg) + 갱신된 `archive/INDEX.md`.
 

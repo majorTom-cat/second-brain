@@ -5,6 +5,11 @@
 
 ## 0. 최신 상태 (델타 로그 — 최신이 위)
 
+- [2026-06-13] **`/archive` 전역화** — 어느 프로젝트에서든 호출 가능. 원본 백업 `archive.global.md`(repo 내),
+  설치본 `~/.claude/commands/archive.md`(repo 밖·로컬). 엔진이 cwd 무관하게 `E:/second-brain` 으로 씀(검증함).
+  재설치: `cp E:/second-brain/.claude/skills/chat-archivist/archive.global.md ~/.claude/commands/archive.md`.
+  pull 모델 재확인: 데이터는 항상 second-brain 으로 모이고, 전역판은 트리거 편의일 뿐.
+
 - [2026-06-13] **archive 새로고침 자동화** — `/archive all`(전체)·`auto`(개인만) 모드 + 미등록 폴더 탐지 +
   `newSinceDistill`(distill 후 새 세션) 표시. `refresh.ps1`(개인 프로젝트만 ingest→커밋→푸시, 잔여 비밀 시 중단,
   `-DryRun`) + `schedule-setup.ps1`(Windows 예약작업 등록/제거). `archive-sources.yaml` 에 `auto_push` 필드 추가
