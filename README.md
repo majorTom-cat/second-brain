@@ -51,6 +51,7 @@
 | `rails/handoff/` | HANDOFF·GATE 템플릿 |
 | `memory/` | 프로젝트 간 누적 교훈(= second brain) |
 | `projects/<slug>/` | 생성된 프로젝트(명령이 만든다, 사람이 직접 X) |
+| `archive/<project>/` | 과거 프로젝트의 채팅 이력·노하우·아이디어 보관(`/archive` 가 만든다) |
 
 ## 비용 모델 (무료~소과금 중간)
 

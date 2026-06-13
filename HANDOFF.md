@@ -5,6 +5,11 @@
 
 ## 0. 최신 상태 (델타 로그 — 최신이 위)
 
+- [2026-06-13] **archive/ 영역 + `/archive` 명령 추가 — 과거 프로젝트 집대성**. `chat-archivist` 스킬 +
+  `ingest.mjs` 엔진(채팅 복사·세션 색인·**비밀 자동 마스킹**·README/INDEX 생성). `rails/archive-sources.yaml` 소스맵.
+  **agora(15세션)·llm-wiki(3세션) 인제스트 완료.** 정책: 개인 데이터는 마스킹 후 평문 커밋, 회사 데이터(agora)는
+  평문 raw `.gitignore` + `--encrypt`(gpg AES256)로 `raw.tar.gpg` 만 커밋. **agora 암호화 + 푸시는 아직 안 함**(사용자 대기).
+  CLAUDE.md 에 `## archive` 정책 추가(레일 자기모순 해소). knowledge/ideas 1차 distill 완료(agora는 일반화).
 - [2026-06-13] **레일 스캐폴드 R0~R3 완료** — 명령 5(/creative /develop /deploy /retro /status) + 스킬 5
   + 아티팩트 템플릿(창작 00~09·SPEC / 개발 TASK·PR·DEV / 배포 RUNBOOK·DEPLOY) + REQ-ID 척추 + 비용계층 tier seam
   + memory 골격. 로컬 커밋 `32a1b30`, **private GitHub `majorTom-cat/second-brain` 의 main 에 푸시 완료**.

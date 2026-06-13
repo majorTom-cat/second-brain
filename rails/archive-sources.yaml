@@ -1,0 +1,25 @@
+# archive-sources.yaml — /archive 명령의 입력 계약
+#
+# 프로젝트 슬러그 → (원본 repo, Claude Code 세션 트랜스크립트 폴더들, 민감도).
+# 세션 폴더 베이스는 ~/.claude/projects/ (= %USERPROFILE%\.claude\projects\).
+# 폴더명은 작업 디렉터리 경로를 '-'로 인코딩한 것이다(예: E:\agora → E--agora).
+# 한 프로젝트가 여러 작업맥락(다른 하위폴더/툴)에서 진행됐으면 sessions 에 여러 개를 둔다.
+#
+# sensitivity:
+#   personal         = 본인 데이터. 평문 커밋 OK.
+#   company-internal = 사내 실명·내부주소 포함. 비밀스캔 강하게, 푸시 전 암호화 권장.
+
+agora:
+  repo: E:\agora
+  sessions:            # 15 jsonl 총계
+    - E--agora         # 6
+    - E--agora-claude  # 4
+    - E--agora-gemini  # 5
+  # E--agora-agora / E--agora-claude-agora 는 jsonl 0개(memory만) → 제외
+  sensitivity: company-internal
+
+llm-wiki:
+  repo: E:\llm-wiki
+  sessions:
+    - E--llm-wiki      # 3
+  sensitivity: personal

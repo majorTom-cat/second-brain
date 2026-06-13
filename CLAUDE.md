@@ -35,7 +35,23 @@ Claude의 **행동 규칙**이다.
 - `E:\agora` : 사내 배포 스택(`docs/12-deployment.md`,`.gitlab-ci.yml`,`agora/deploy/k8s/*`),
   graceful shutdown(`agora/src/instrumentation.ts`), 운영 런북(`docs/14·16`), 사내 인증(`docs/07 §8`).
 - **규율**: 이 두 repo 안에는 어떤 second-brain 파일도 만들지 않는다. 패턴만 일반화하고 출처 경로를 인용한다.
-  agora 문서를 복사하지 않는다(도메인이 다름). agora 인증은 사내 실명 기반이며, **익명·민감 데이터는 인제스트 금지**.
+  agora 문서를 복사하지 않는다(도메인이 다름). agora 인증은 사내 실명 기반이며, 레일이 **생성하는** 산출물에는
+  **익명·민감 데이터를 인제스트하지 않는다**. (단, 개인 백업용 `archive/` 영역은 별도 정책 — 아래 참조.)
+
+## archive — 과거 프로젝트 보관 (개인 백업)
+
+`archive/<project>/` 는 과거 프로젝트(agora·llm-wiki 등)의 **채팅 이력·노하우·아이디어**를 모아 클라우드에 영속
+백업하는 **개인 second brain** 영역이다. `/archive <project> [--encrypt]` 명령(+ `chat-archivist` 스킬)이 생성한다.
+`projects/`(레일 생성물)·`memory/`(retro 교훈)와 별개다.
+
+- **비밀 자동 마스킹**: 인제스트 시 채팅 사본에서 API 키·비밀번호를 자동으로 `[REDACTED-SECRET]` 처리한다
+  (원본 `~/.claude/projects` 는 불변). `chats/SECRETS.md` 에 결과를 남긴다.
+- **회사 데이터(`sensitivity: company-internal`)**: 평문 raw 는 `chats/.gitignore` 로 커밋 차단되고, `--encrypt`
+  로 만든 `chats/raw.tar.gpg`(gpg AES256) 만 커밋한다. 평소 읽기는 일반화된 `knowledge.md` 로.
+- **개인 데이터**는 마스킹 후 평문 raw 를 커밋해도 된다(브라우징 편의).
+- **푸시는 사용자가 명시 지시할 때만.** 비밀 게이트 통과(또는 암호화) 전에는 푸시하지 않는다.
+- **public 전환 / 공동작업자 추가 전**에는 `company-internal` 아카이브를 반드시 암호화 또는 제거한다.
+- 소스 매핑은 `rails/archive-sources.yaml`. 원본 repo(`E:\...`)에는 아무 파일도 만들지 않는다.
 
 ## 배포 프로파일
 
