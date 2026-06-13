@@ -28,3 +28,11 @@ llm-wiki:
     - E--llm-wiki      # 3
   sensitivity: personal
   auto_push: true      # 개인 데이터 — 주기적 자동 새로고침/푸시 허용
+
+second-brain:
+  repo: E:\second-brain
+  sessions:
+    - E--second-brain
+  # 이 repo 대화엔 agora 내부 주소(bns.co.kr 등) 언급이 섞여 있어 company-internal 로 분류 → 평문 raw 는 gitignore
+  sensitivity: company-internal
+  auto_push: false
