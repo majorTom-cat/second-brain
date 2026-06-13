@@ -8,7 +8,9 @@
 - [2026-06-13] **archive/ 영역 + `/archive` 명령 추가 — 과거 프로젝트 집대성**. `chat-archivist` 스킬 +
   `ingest.mjs` 엔진(채팅 복사·세션 색인·**비밀 자동 마스킹**·README/INDEX 생성). `rails/archive-sources.yaml` 소스맵.
   **agora(15세션)·llm-wiki(3세션) 인제스트 완료.** 정책: 개인 데이터는 마스킹 후 평문 커밋, 회사 데이터(agora)는
-  평문 raw `.gitignore` + `--encrypt`(gpg AES256)로 `raw.tar.gpg` 만 커밋. **agora 암호화 + 푸시는 아직 안 함**(사용자 대기).
+  평문 raw `.gitignore` + `--encrypt`(gpg AES256)로 `raw.tar.gpg` 만 커밋. **main 에 푸시 완료(`ca0a84a`)**.
+  단 **agora 원본 raw 암호화(`bash .claude/skills/chat-archivist/encrypt.sh agora`)는 사용자 선택으로 보류** — 실행하면
+  `raw.tar.gpg` 가 생겨 추가 커밋하면 agora 채팅 원본도 클라우드 백업됨(현재는 일반화된 knowledge + 세션 색인만 올라감).
   CLAUDE.md 에 `## archive` 정책 추가(레일 자기모순 해소). knowledge/ideas 1차 distill 완료(agora는 일반화).
 - [2026-06-13] **레일 스캐폴드 R0~R3 완료** — 명령 5(/creative /develop /deploy /retro /status) + 스킬 5
   + 아티팩트 템플릿(창작 00~09·SPEC / 개발 TASK·PR·DEV / 배포 RUNBOOK·DEPLOY) + REQ-ID 척추 + 비용계층 tier seam
