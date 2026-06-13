@@ -7,6 +7,7 @@
 #   → 실제 차단은 프로젝트별 archive/<project>/chats/.gitignore 가 raw/·raw.tar 를 막고,
 #     암호화본 raw.tar.gpg 만 커밋한다. 개인 데이터는 비밀 마스킹 후 평문 raw 커밋 가능.
 *.tar          # 암호화 전 중간 산출물(평문) 은 어디서도 커밋하지 않는다
+archive/.refresh.log   # 주기적 새로고침 로그(로컬 전용)
 
 # 의존성/빌드 산출물 (생성된 프로젝트들)
 node_modules/

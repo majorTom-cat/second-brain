@@ -10,19 +10,24 @@ argument-hint: "<project> [--encrypt]"
 `memory/`(retro 교훈)와 별개 영역이다.
 
 입력:
-> $ARGUMENTS   (예: `llm-wiki`, `agora --encrypt`)
+> $ARGUMENTS   (예: `llm-wiki`, `all`, `agora --encrypt`)
 
 ## 0. 준비
-1. 첫 토큰 = `<project>` 슬러그. `rails/archive-sources.yaml` 에 있는지 확인. 없으면 알려진 슬러그를 안내하고 멈춘다.
-2. `--encrypt` 플래그 여부를 기억(있으면 4단계 수행).
+1. 첫 토큰 해석:
+   - `all` = `rails/archive-sources.yaml` 의 **모든 프로젝트** 새로고침.
+   - `auto` = `auto_push: true` 인 **개인 프로젝트만**(주로 스케줄러가 씀).
+   - 그 외 = 해당 `<project>` 하나. yaml 에 없으면 알려진 슬러그를 안내하고 멈춘다.
+2. `--encrypt` 플래그 여부를 기억(있으면 4단계 수행, 단일 프로젝트에만).
 
 ## 1. 인제스트 + 비밀 게이트 + distill  (chat-archivist 스킬)
 `chat-archivist` 스킬을 따른다:
-1. `[tier: bulk]` `node .claude/skills/chat-archivist/ingest.mjs <project>` 실행
-   → `chats/raw/` 복사 + `chats/INDEX.md` + `chats/SECRETS.md` + `README.md` + `archive/INDEX.md`.
-2. `[tier: judgment]` `chats/SECRETS.md` 판정 확인. `REVIEW NEEDED` 면 진짜 비밀인지 보고 사용자에게 알린다.
-3. `[tier: judgment]` `E:\<project>` 문서(읽기 전용) + 세션 주제로 `knowledge.md`/`ideas.md` 를 실제 내용으로 채운다.
-   민감 프로젝트는 실명·내부주소·키를 일반화한다.
+1. `[tier: bulk]` `node .claude/skills/chat-archivist/ingest.mjs <project|all|auto>` 실행
+   → 채팅 복사 + 비밀 **자동 마스킹** + `chats/INDEX.md`·`SECRETS.md` + `README.md` + `archive/INDEX.md`.
+   마지막 stdout JSON 에 프로젝트별 `secrets`(잔여)·`newSinceDistill`·`autoPush` 와 `unregistered` 목록이 담긴다.
+2. `[tier: judgment]` 각 `chats/SECRETS.md` 판정 확인. 잔여 비밀이 있으면 진짜인지 보고 사용자에게 알린다.
+   엔진 출력의 **미등록 폴더**가 있으면 "이 프로젝트도 추가할까요?"라고 안내(yaml 에 3줄 등록).
+3. `[tier: judgment]` `newSinceDistill > 0` 인 프로젝트만 — `E:\<project>` 문서(읽기 전용) + 세션 주제로
+   `knowledge.md`/`ideas.md` 를 갱신한다(이 단계는 유료라 새 세션이 있을 때만). 민감 프로젝트는 실명·내부주소·키를 일반화.
 
 ## 2. (선택) 암호화  — `--encrypt` 일 때만  `[tier: bulk]`
 스킬 4)대로 `chats/raw/` 를 `tar + gpg(AES256)` → `chats/raw.tar.gpg` 로 잠그고 평문 raw 를 제거한다.
@@ -32,3 +37,10 @@ argument-hint: "<project> [--encrypt]"
 
 > **푸시하지 않는다.** 원격 푸시는 사용자가 명시 지시할 때만(CLAUDE.md). 비밀 게이트 통과 전엔 푸시를 권하지 않는다.
 > 원본 repo(`E:\...`)에는 아무 파일도 만들지 않는다.
+
+## 주기적 자동 새로고침 (선택)
+무료(로컬 node+git)로 개인 프로젝트만 자동 최신화하려면 Windows 예약작업을 쓴다:
+- 등록: `schedule-setup.ps1` (기본 매주 일 21:00) → `refresh.ps1` 이 `ingest auto` + 커밋 + 푸시.
+- `refresh.ps1` 은 **개인 프로젝트(`auto_push: true`)만** 다루고, 잔여 비밀이 있으면 **푸시를 중단**한다.
+  회사 데이터(`auto_push: false`)는 자동 푸시에서 제외 — 항상 수동 `/archive <p>` + 검토 후에만.
+- 지식 distill 은 자동화하지 않는다(유료). `refresh.ps1` 은 "재distill 권장" 만 로그에 남긴다.

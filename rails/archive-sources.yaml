@@ -8,6 +8,9 @@
 # sensitivity:
 #   personal         = 본인 데이터. 평문 커밋 OK.
 #   company-internal = 사내 실명·내부주소 포함. 비밀스캔 강하게, 푸시 전 암호화 권장.
+# auto_push:
+#   true  = 주기적 자동 새로고침(refresh.ps1)이 커밋·푸시까지 자동. 개인 데이터에만.
+#   false = 자동 새로고침에서 제외. 수동 /archive + 검토 후에만 푸시. (회사 데이터 기본값)
 
 agora:
   repo: E:\agora
@@ -17,9 +20,11 @@ agora:
     - E--agora-gemini  # 5
   # E--agora-agora / E--agora-claude-agora 는 jsonl 0개(memory만) → 제외
   sensitivity: company-internal
+  auto_push: false     # 회사 데이터 — 자동 푸시 금지, 수동 검토 후에만
 
 llm-wiki:
   repo: E:\llm-wiki
   sessions:
     - E--llm-wiki      # 3
   sensitivity: personal
+  auto_push: true      # 개인 데이터 — 주기적 자동 새로고침/푸시 허용

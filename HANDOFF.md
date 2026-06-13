@@ -5,6 +5,11 @@
 
 ## 0. 최신 상태 (델타 로그 — 최신이 위)
 
+- [2026-06-13] **archive 새로고침 자동화** — `/archive all`(전체)·`auto`(개인만) 모드 + 미등록 폴더 탐지 +
+  `newSinceDistill`(distill 후 새 세션) 표시. `refresh.ps1`(개인 프로젝트만 ingest→커밋→푸시, 잔여 비밀 시 중단,
+  `-DryRun`) + `schedule-setup.ps1`(Windows 예약작업 등록/제거). `archive-sources.yaml` 에 `auto_push` 필드 추가
+  (llm-wiki=true, agora=false). PS 스크립트는 ASCII 전용(PS5.1 UTF-8 오독 회피). pull 모델 — second-brain 에서 끌어옴.
+
 - [2026-06-13] **archive/ 영역 + `/archive` 명령 추가 — 과거 프로젝트 집대성**. `chat-archivist` 스킬 +
   `ingest.mjs` 엔진(채팅 복사·세션 색인·**비밀 자동 마스킹**·README/INDEX 생성). `rails/archive-sources.yaml` 소스맵.
   **agora(15세션)·llm-wiki(3세션) 인제스트 완료.** 정책: 개인 데이터는 마스킹 후 평문 커밋, 회사 데이터(agora)는

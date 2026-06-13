@@ -17,11 +17,15 @@ description: 아카이브 모듈 내부 절차. 한 프로젝트의 Claude Code 
 
 ### 1) 기계 인제스트  `[tier: bulk]`
 ```
-node .claude/skills/chat-archivist/ingest.mjs <project>
+node .claude/skills/chat-archivist/ingest.mjs <project>   # 한 프로젝트
+node .claude/skills/chat-archivist/ingest.mjs all          # 모든 프로젝트
+node .claude/skills/chat-archivist/ingest.mjs auto         # auto_push:true(개인)만 — 스케줄러용
 ```
-엔진이 하는 일: 트랜스크립트 복사(`chats/raw/`) → `chats/INDEX.md`(날짜·작업맥락·주제) →
-`chats/SECRETS.md`(비밀 스캔, 마스킹) → `README.md`(통계) → `knowledge.md`/`ideas.md` 스캐폴드(없을 때만) →
-`archive/INDEX.md` 갱신. 마지막 줄에 JSON 요약 출력.
+엔진이 하는 일: 트랜스크립트 복사(`chats/raw/`) → 비밀 **자동 마스킹**(사본만, 원본 불변) →
+`chats/INDEX.md`(날짜·작업맥락·주제) → `chats/SECRETS.md` → `README.md`(통계+`newSinceDistill`) →
+`knowledge.md`/`ideas.md` 스캐폴드(없을 때만) → `archive/INDEX.md` 갱신.
+마지막 stdout 줄 JSON: `{mode, projects:[{project,secrets,newSinceDistill,autoPush,...}], unregistered, anyResidualSecret}`.
+`unregistered` = `~/.claude/projects` 에 있지만 `archive-sources.yaml` 에 없는 폴더(등록 후보).
 
 ### 2) 비밀 게이트  `[tier: judgment]`
 `chats/SECRETS.md` 판정을 확인한다.
@@ -44,6 +48,14 @@ rm -rf raw                                                            # 평문 �
 ```
 복호: `gpg -d raw.tar.gpg | tar -xf -`. 암호는 비밀번호 관리자에 보관(잃으면 복구 불가).
 `.gitignore` 에 `archive/**/chats/raw/` 가 있어 평문 raw 는 커밋되지 않는다.
+
+### 5) (선택) 주기적 자동 새로고침  `[tier: bulk]`
+무료로 개인 프로젝트만 자동 최신화:
+- `schedule-setup.ps1` — `refresh.ps1` 을 Windows 예약작업으로 등록(기본 매주 일 21:00). `-Schedule DAILY` / `-Remove` 지원.
+- `refresh.ps1 [-DryRun]` — `ingest auto` 실행 → **잔여 비밀 있으면 푸시 중단** → `auto_push` 프로젝트 경로 + `archive/INDEX.md`
+  만 스테이징 → 변경 있으면 커밋·푸시. 로그: `archive/.refresh.log`(gitignore). distill 은 안 함(유료 → "재distill 권장"만 로그).
+- 회사 데이터(`auto_push: false`)는 자동에서 제외 — 수동 `/archive <p>` + 검토 후에만.
+- PS 스크립트는 **ASCII 전용**(PowerShell 5.1 이 BOM 없는 UTF-8 한글을 오독하므로). 한글은 node 출력/.md 에만.
 
 ## 출력
 `archive/<project>/` = README + knowledge + ideas + chats(INDEX·SECRETS·raw 또는 raw.tar.gpg) + 갱신된 `archive/INDEX.md`.

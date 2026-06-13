@@ -49,7 +49,12 @@ Claude의 **행동 규칙**이다.
 - **회사 데이터(`sensitivity: company-internal`)**: 평문 raw 는 `chats/.gitignore` 로 커밋 차단되고, `--encrypt`
   로 만든 `chats/raw.tar.gpg`(gpg AES256) 만 커밋한다. 평소 읽기는 일반화된 `knowledge.md` 로.
 - **개인 데이터**는 마스킹 후 평문 raw 를 커밋해도 된다(브라우징 편의).
-- **푸시는 사용자가 명시 지시할 때만.** 비밀 게이트 통과(또는 암호화) 전에는 푸시하지 않는다.
+- **갱신은 pull 모델**: `/archive all`(전체) 또는 `/archive <p>` 를 다시 돌리면 새 세션이 반영된다(멱등).
+  **주기적 자동 새로고침**은 `schedule-setup.ps1`(Windows 예약작업)→`refresh.ps1` 가 무료로 수행한다.
+  `auto_push: true`(개인) 만 자동 커밋·푸시하고, **회사 데이터(`auto_push: false`)는 자동 제외**, 잔여 비밀 시 푸시 중단.
+- **지식 distill 은 자동화하지 않는다**(판단=유료). 엔진은 `newSinceDistill` 로 재정리 필요만 표시.
+- **푸시는 사용자가 명시 지시할 때만**(수동 경로). 비밀 게이트 통과(또는 암호화) 전에는 푸시하지 않는다.
+  단, 위 자동 새로고침을 **사용자가 등록한 경우** 그 범위(개인·잔여비밀0)에 한해 자동 푸시가 사전 승인된 것으로 본다.
 - **public 전환 / 공동작업자 추가 전**에는 `company-internal` 아카이브를 반드시 암호화 또는 제거한다.
 - 소스 매핑은 `rails/archive-sources.yaml`. 원본 repo(`E:\...`)에는 아무 파일도 만들지 않는다.
 
