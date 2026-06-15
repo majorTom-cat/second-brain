@@ -6,6 +6,9 @@
 ## 하려다 만 것 (backlog)
 - **R4 — 비용 라우팅 엔진**: `[tier: bulk]`→무료(로컬 qwen/Gemini), `[tier: judgment]`→Claude 소액. `rails/model-tiers.yaml`+`.env`+일 예산. llm-wiki `lib/anthropic.ts`/`cost.ts` 포팅 대상.
 - **레일 1바퀴 검증**: 작은 아이디어로 `/creative`→게이트→`/develop`→`/deploy`→`/retro` 한 사이클(첫 교훈으로 루프 닫기).
+- **외부 프로젝트 레지스트리 + 경로 해석**: `rails/projects.yaml`(slug→root·layout·deploy_profile) + `rails/project-paths.md`. layout=external 이면 docs/+루트 코드+.rail/ 로 매핑 → 레일이 agora/llm-wiki 같은 외부 repo를 산출(미등록 slug는 기존 `projects/` 유지=하위호환). _(intra에서 도출)_
+- **`/creative` 인제스트(수렴) 모드**: 기획 문서(요구사항·화면기획·프로토타입)가 먼저 있는 프로젝트는 발산 대신 문서→번호docs+REQ표 수렴. 화면 1개=`REQ-SCR`. _(intra)_
+- **rough/full rigor 2단계**: 디자이너 반복형은 러프(스캐폴드+화면, 테스트·critic 생략) → 상세 디자인 회수 → 풀 rigor. 스택은 최종 목표 기준으로 선택해 러프가 실제 앱이 되게. _(intra)_
 - **미등록 프로젝트 자동 등록 보조**: `/archive all` 이 미등록 폴더를 발견하면 repo 경로 추정 + 민감도 기본값(안전쪽=company-internal)으로 yaml 초안 제안.
 - **distill 자동 트리거**: `newSinceDistill` 가 임계 넘으면 재정리를 자동 제안(현재는 표시만).
 

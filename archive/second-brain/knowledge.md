@@ -31,9 +31,18 @@
 - **회사 기밀의 개인 클라우드 이동**은 "private라 나만 봄"이어도 정책 위반 소지 — company-internal 은 raw 미푸시 기본.
 - README "마지막 인제스트"·SECRETS "스캔 일시" 타임스탬프가 매 실행 갱신돼 무변경에도 diff 발생(소소한 churn, 미해결).
 
+## 레일 첫 실사용 — intra (2026-06-15)
+레일의 *방법*(REQ-ID 척추·spec-author 수렴·req-implementer 화면단위)을 **외부 독립 프로젝트** `E:\intra`(agora 동일계열 사내 인트라넷 — 차량·회의실·익명게시판 통합)에 처음 적용. `projects/` 안에 만들지 않음 — 레일은 *방법·지식* 제공자, 산출물은 그 프로젝트 repo에 둔다. 발견된 갭(→ 진화 후보, `ideas.md`):
+- **명령이 `projects/<slug>/` 를 하드코딩** → 외부 타깃 미지원. 레지스트리(`rails/projects.yaml`)+경로해석 규약(`rails/project-paths.md`) 필요(layout=external 이면 docs/+루트 코드+.rail/ 로 매핑, 미등록 slug는 기존 동작=하위호환).
+- **`/creative` 는 아이디어 발산 전제**인데 실제 프로젝트는 기획 문서가 먼저 옴 → **수렴(인제스트) 모드** 필요(문서→번호docs+REQ표, 화면 1개=`REQ-SCR`).
+- **rough vs full 분리**: 디자이너 반복형 UI는 *오래 갈 것*(실 스택·공유 셸·REQ-SCR 인벤토리) vs *버려질 것*(러프 화면 마크업)을 가른다. 러프엔 풀 rigor(화면별 테스트·6차원 critic·worktree) 생략이 맞음(throwaway 과투자 회피).
+- **스택은 단기(러프)가 아니라 최종 목표 기준**으로 정해야 러프가 실제 앱이 됨(intra=사내 배포 → agora 스택 정렬: Next.js+React+TS+Tailwind+Radix, DB/인증은 보류·mock).
+- **일하는 방식**: 단계마다 묻지 말고 모듈/단계 단위 자율 진행 + 게이트에서만 검수(레일 게이트 모델과 일치).
+산출물: `E:\intra` 33화면 러프(빌드 통과)·`docs/screens.md`(REQ-SCR 인벤토리)·`HANDBACK.md`(기획자 핸드백). 로컬 커밋만(미푸시).
+
 ## 미해결 / 다음에 이어가면
 - **R4 비용 라우팅 엔진** 미구현(`rails/model-tiers.yaml`+`.env` 읽어 bulk→무료/judgment→Claude).
-- **레일 1바퀴 검증**: 작은 아이디어로 `/creative`→`/deploy`→`/retro` 미실행.
+- **레일 1바퀴 검증(부분)**: intra로 레일 *방법*은 적용했으나 `/creative`→`/develop`→`/deploy` *명령* 자체는 미실행(외부 타깃 지원이 선결). 상세 디자인 회수 후 Phase 2에서 명령 개조 + 풀 실행 예정.
 - **agora 원본 raw 암호화** 보류(사용자 선택). 미등록 프로젝트 자동탐지의 민감도 안전 기본값.
 - 타임스탬프 churn 억제, company-internal 색인 주제(topic) 추가 정제 검토.
 
