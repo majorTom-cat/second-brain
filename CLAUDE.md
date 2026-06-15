@@ -46,6 +46,9 @@ Claude의 **행동 규칙**이다.
 
 - **비밀 자동 마스킹**: 인제스트 시 채팅 사본에서 API 키·비밀번호를 자동으로 `[REDACTED-SECRET]` 처리한다
   (원본 `~/.claude/projects` 는 불변). `chats/SECRETS.md` 에 결과를 남긴다.
+- **사내정보 자동 격리**: 엔진이 채팅에서 사내 마커(도메인·네임스페이스·사설 IP)를 감지하면, `personal` 이라도
+  평문 raw 를 자동으로 커밋에서 격리(.gitignore)한다 — 회사정보의 개인 클라우드 유출 방지(안전 기본값). `allow_internal: true`
+  로만 해제. **실제 식별 마커는 gitignore 된 `rails/internal-markers.local` 에 두고 코드/리포트엔 안 박는다.** 결과 `chats/SENSITIVE.md`.
 - **회사 데이터(`sensitivity: company-internal`)**: 평문 raw 는 `chats/.gitignore` 로 커밋 차단되고, `--encrypt`
   로 만든 `chats/raw.tar.gpg`(gpg AES256) 만 커밋한다. 평소 읽기는 일반화된 `knowledge.md` 로.
 - **개인 데이터**는 마스킹 후 평문 raw 를 커밋해도 된다(브라우징 편의).

@@ -5,6 +5,13 @@
 
 ## 0. 최신 상태 (델타 로그 — 최신이 위)
 
+- [2026-06-15] **사내정보 자동 감지·격리 추가**(사용자 요청: 위험정보 분리). 엔진이 채팅에서 사내 마커(도메인·네임스페이스·
+  사설 IP)를 세어, personal 이라도 STRONG 감지 시 평문 raw 를 자동 `.gitignore` 격리. `allow_internal: true` 로만 해제.
+  실제 식별 마커는 gitignore 된 `rails/internal-markers.local` 로 분리(코드/리포트엔 일반 라벨만). 프로젝트별 `chats/SENSITIVE.md`.
+  **llm-wiki: 원본에 사내주소(intranet/harbor 등)가 이미 GitHub 히스토리에 평문 존재** — 사용자가 '그대로 둠'(option 3) 선택 →
+  `allow_internal: true`. llm-wiki 지식 재distill(k8s 배포·트릴레마·사용량 가시화·413 등). 미해결: HANDOFF §5의 public 전환 시
+  기존 참조(`docs/DEPLOY 템플릿`·이 §5) 일반화 필요.
+
 - [2026-06-13] **`/archive` 전역화** — 어느 프로젝트에서든 호출 가능. 원본 백업 `archive.global.md`(repo 내),
   설치본 `~/.claude/commands/archive.md`(repo 밖·로컬). 엔진이 cwd 무관하게 `E:/second-brain` 으로 씀(검증함).
   재설치: `cp E:/second-brain/.claude/skills/chat-archivist/archive.global.md ~/.claude/commands/archive.md`.

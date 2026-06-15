@@ -11,6 +11,10 @@
 # auto_push:
 #   true  = 주기적 자동 새로고침(refresh.ps1)이 커밋·푸시까지 자동. 개인 데이터에만.
 #   false = 자동 새로고침에서 제외. 수동 /archive + 검토 후에만 푸시. (회사 데이터 기본값)
+# allow_internal:
+#   엔진이 채팅에서 사내 마커(사내 도메인·네임스페이스·사설 IP)를 감지하면, personal 이라도
+#   평문 raw 를 자동으로 커밋에서 격리(.gitignore)한다 — 회사정보의 개인 클라우드 유출 방지(안전 기본값).
+#   true = 사용자가 검토하고 평문 유지를 명시 허용(격리 해제). 미설정/false = 격리.
 
 agora:
   repo: E:\agora
@@ -28,11 +32,14 @@ llm-wiki:
     - E--llm-wiki      # 3
   sensitivity: personal
   auto_push: true      # 개인 데이터 — 주기적 자동 새로고침/푸시 허용
+  # ⚠️ 이 채팅엔 사내 마커(사내 도메인/호스트·내부IP)가 많고 이미 GitHub 히스토리에 평문으로 올라가 있음.
+  # 사용자가 검토하고 '그대로 둠'(평문 유지)을 선택 → allow_internal 로 자동격리 해제. (신규 프로젝트는 기본 격리됨)
+  allow_internal: true
 
 second-brain:
   repo: E:\second-brain
   sessions:
     - E--second-brain
-  # 이 repo 대화엔 agora 내부 주소(bns.co.kr 등) 언급이 섞여 있어 company-internal 로 분류 → 평문 raw 는 gitignore
+  # 이 repo 대화엔 agora 내부 주소(사내 도메인 등) 언급이 섞여 있어 company-internal 로 분류 → 평문 raw 는 gitignore
   sensitivity: company-internal
   auto_push: false

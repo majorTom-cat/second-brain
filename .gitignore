@@ -3,6 +3,9 @@
 .env.local
 *.key
 
+# 회사 식별 마커(도메인·네임스페이스 등) — 코드/리포트에 안 박히게 로컬 분리
+rails/internal-markers.local
+
 # archive 정책: 회사 데이터(company-internal) 원본 채팅은 평문 커밋 금지.
 #   → 실제 차단은 프로젝트별 archive/<project>/chats/.gitignore 가 raw/·raw.tar 를 막고,
 #     암호화본 raw.tar.gpg 만 커밋한다. 개인 데이터는 비밀 마스킹 후 평문 raw 커밋 가능.

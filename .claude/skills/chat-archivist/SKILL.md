@@ -27,8 +27,13 @@ node .claude/skills/chat-archivist/ingest.mjs auto         # auto_push:true(개�
 마지막 stdout 줄 JSON: `{mode, projects:[{project,secrets,newSinceDistill,autoPush,...}], unregistered, anyResidualSecret}`.
 `unregistered` = `~/.claude/projects` 에 있지만 `archive-sources.yaml` 에 없는 폴더(등록 후보).
 
-### 2) 비밀 게이트  `[tier: judgment]`
-`chats/SECRETS.md` 판정을 확인한다.
+### 2) 비밀 게이트 + 사내정보 게이트  `[tier: judgment]`
+**사내정보**: `chats/SENSITIVE.md` 와 엔진 JSON 의 `segregated`/`internalDetected` 를 본다. 엔진이 사내 마커
+(도메인·네임스페이스·사설 IP)를 감지하면 `personal` 이라도 평문 raw 를 자동 격리(.gitignore)한다 — 회사정보 유출 방지.
+검토 후 안전하면 `archive-sources.yaml` 에 `allow_internal: true`. 실제 마커는 gitignore 된 `rails/internal-markers.local`
+에 두고(한 줄 1개, 리터럴) 코드/리포트엔 일반 라벨만 쓴다.
+
+**비밀키**: `chats/SECRETS.md` 판정을 확인한다.
 - `CLEAN` → 다음 단계.
 - `REVIEW NEEDED` → 발견 항목이 진짜 비밀인지 본다. 진짜면 **푸시 전** (a) 해당 라인 마스킹 또는
   (b) 4)의 `--encrypt` 로 raw 암호화. 사용자에게 알린다.

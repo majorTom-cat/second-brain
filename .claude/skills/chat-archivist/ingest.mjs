@@ -32,8 +32,9 @@ function parseSources(text) {
     else if (cur && mode === 'sessions' && (m = line.match(/^\s+-\s*(\S+)/))) out[cur].sessions.push(m[1]);
     else if (cur && (m = line.match(/^\s+([A-Za-z0-9_]+):\s*(.+)$/))) { out[cur][m[1]] = m[2].trim(); mode = null; }
   }
-  for (const k of Object.keys(out)) {                          // auto_push 문자열 → 불리언 (기본 false=수동)
+  for (const k of Object.keys(out)) {                          // 문자열 → 불리언 (기본 false)
     out[k].auto_push = /^true$/i.test(String(out[k].auto_push ?? ''));
+    out[k].allow_internal = /^true$/i.test(String(out[k].allow_internal ?? ''));
   }
   return out;
 }
@@ -82,14 +83,36 @@ function redactFile(p) {
   return count;
 }
 
+// ---- 사내정보 감지기 (마스킹 대상 아님 — '평문 raw 를 클라우드에 올려도 되나'를 판정) ----
+// STRONG 마커가 잡히면 회사 데이터로 보고, personal 이라도 안전 기본값으로 평문 raw 를 커밋에서 격리한다.
+// 명시적으로 `allow_internal: true` 를 준 프로젝트만 평문 유지(사용자가 검토했다는 뜻).
+//
+// ★ 회사 식별 문자열(도메인·네임스페이스 등)은 커밋되는 코드/리포트에 박지 않는다.
+//   실제 마커는 gitignore 된 rails/internal-markers.local 에 두고(한 줄 1개, 리터럴), 라벨은 일반화한다.
+//   파일이 없으면 사설 IP(RFC1918) 만으로 약하게 감지한다.
+const LABEL_LOCAL = '사내 마커(로컬규칙)';
+const LABEL_IP = '사설IP(RFC1918)';
+function loadInternalPatterns() {
+  const pats = [{ label: LABEL_IP, re: /\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})\b/g }];
+  const localFile = path.join(REPO, 'rails', 'internal-markers.local');
+  if (fs.existsSync(localFile)) {
+    for (const ln of fs.readFileSync(localFile, 'utf8').split(/\r?\n/).map(s => s.trim()).filter(s => s && !s.startsWith('#'))) {
+      pats.push({ label: LABEL_LOCAL, re: new RegExp(ln.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi') });
+    }
+  }
+  return pats;
+}
+const INTERNAL_PATTERNS = loadInternalPatterns();
+
 async function parseTranscript(file) {
   const rl = readline.createInterface({ input: fs.createReadStream(file), crlfDelay: Infinity });
   let first = null, last = null, summary = null, topic = null, lineNo = 0;
-  const hits = [];
+  const hits = []; const internal = {};
   for await (const line of rl) {
     lineNo++;
     if (!line.trim()) continue;
     for (const [name, re] of SECRET_PATTERNS) { const mm = line.match(re); if (mm) hits.push({ name, line: lineNo, preview: mask(mm[0]) }); }
+    for (const { label, re } of INTERNAL_PATTERNS) { const c = (line.match(re) || []).length; if (c) internal[label] = (internal[label] || 0) + c; }
     let ev; try { ev = JSON.parse(line); } catch { continue; }
     if (ev.timestamp) { if (!first) first = ev.timestamp; last = ev.timestamp; }
     if (!summary && ev.type === 'summary' && typeof ev.summary === 'string') summary = ev.summary;
@@ -100,7 +123,7 @@ async function parseTranscript(file) {
       if (txt && !txt.startsWith('<') && !txt.startsWith('Caveat:')) topic = txt;
     }
   }
-  return { first, last, summary, topic, hits };
+  return { first, last, summary, topic, hits, internal };
 }
 
 const fmt = (iso) => {
@@ -124,7 +147,7 @@ async function ingestProject(project, cfg) {
   const kPath = path.join(outDir, 'knowledge.md');
   const kMtime = fs.existsSync(kPath) ? fs.statSync(kPath).mtimeMs : 0;
 
-  const rows = []; const allHits = []; let totalBytes = 0; let redactedTotal = 0;
+  const rows = []; const allHits = []; let totalBytes = 0; let redactedTotal = 0; const internalTotals = {};
   for (const folder of cfg.sessions) {
     const srcDir = path.join(PROJECTS_BASE, folder);
     if (!fs.existsSync(srcDir)) { console.error(`  (없음, 건너뜀) ${srcDir}`); continue; }
@@ -140,10 +163,20 @@ async function ingestProject(project, cfg) {
       const info = await parseTranscript(dest);
       rows.push({ sid, folder, ctx, date: info.first, mtime: srcMtime, topic: trunc(info.summary || info.topic || '(주제 추출 실패)', 90) });
       for (const h of info.hits) allHits.push({ ...h, file: f });
+      for (const [k, v] of Object.entries(info.internal || {})) internalTotals[k] = (internalTotals[k] || 0) + v;
     }
   }
   rows.sort((a, b) => String(a.date).localeCompare(String(b.date)));
   const newSinceDistill = rows.filter(r => r.mtime > kMtime).length;
+
+  // 사내정보 판정: 로컬규칙 마커 1건 이상 또는 사설 IP 다수면 회사 데이터로 본다.
+  // personal 이라도 격리(.gitignore)가 안전 기본값(allow_internal 로만 해제).
+  const localHits = internalTotals[LABEL_LOCAL] || 0;
+  const ipHits = internalTotals[LABEL_IP] || 0;
+  const internalStrong = localHits > 0 || ipHits >= 10;
+  const internalCount = Object.values(internalTotals).reduce((a, b) => a + b, 0);
+  const allowInternal = !!cfg.allow_internal;                 // 사용자가 검토하고 평문 유지 허용
+  const segregate = internalStrong && !company && !allowInternal;   // 평문 raw 를 커밋에서 격리할지
 
   // chats/INDEX.md
   const idxRows = rows.map((r, i) =>
@@ -203,15 +236,37 @@ ${secretRows}
 ${rec}
 `);
 
-  // 회사 데이터: 평문 raw 커밋 차단
-  if (company) fs.writeFileSync(path.join(outDir, 'chats', '.gitignore'),
-`# ${cfg.sensitivity}: 평문 원본은 커밋 금지(회사 실명·내부주소 포함). 암호화본(raw.tar.gpg)만 커밋.
+  // ---- chats/SENSITIVE.md (사내정보 감지 리포트) ----
+  const intRows = Object.keys(internalTotals).length
+    ? Object.entries(internalTotals).map(([k, v]) => `| ${k} | ${v} |`).join('\n')
+    : '| — | 0 |';
+  const intStatus = company ? '회사 데이터(company-internal) — 평문 raw 는 이미 `.gitignore`.'
+    : segregate ? '⛔ 사내 마커 감지 + personal → 평문 raw **자동 격리(.gitignore)**. 안전하다고 판단하면 yaml 에 `allow_internal: true` 추가.'
+    : (internalStrong && allowInternal) ? '⚠️ 사내 마커 있으나 `allow_internal: true` 로 평문 유지(사용자가 검토함).'
+    : '사내 STRONG 마커 없음 — 평문 안전.';
+  fs.writeFileSync(path.join(outDir, 'chats', 'SENSITIVE.md'),
+`# ${project} — 사내정보 감지 리포트
+
+> \`/archive ${project}\` 가 채팅에서 회사 식별 마커(사내 도메인·네임스페이스·사설 IP)를 센 결과.
+> 비밀키와 달리 마스킹 대상이 아니라, **평문 raw 를 클라우드에 올려도 되는지**를 판정한다.
+
+| 마커 | 발견 수 |
+| --- | --- |
+${intRows}
+
+- 총 ${internalCount} 건, STRONG(확실 사내) ${internalStrong ? '**있음**' : '없음'}.
+- 판정: ${intStatus}
+`);
+
+  // 평문 raw 커밋 차단: 회사 데이터이거나, 사내정보가 감지된 personal(allow_internal 아님)
+  if (company || segregate) fs.writeFileSync(path.join(outDir, 'chats', '.gitignore'),
+`# ${company ? cfg.sensitivity : '사내정보 자동격리(personal+STRONG마커)'}: 평문 원본 커밋 금지(회사 식별정보 포함). 암호화본(raw.tar.gpg)만 커밋.
 raw/
 raw.tar
 `);
 
   // README.md (재생성)
-  const chatsState = fs.existsSync(path.join(outDir, 'chats', 'raw.tar.gpg')) ? '🔒 암호화(chats/raw.tar.gpg)' : (company ? '평문 raw(로컬 전용 — .gitignore)' : '평문(chats/raw/)');
+  const chatsState = fs.existsSync(path.join(outDir, 'chats', 'raw.tar.gpg')) ? '🔒 암호화(chats/raw.tar.gpg)' : ((company || segregate) ? '평문 raw(로컬 전용 — .gitignore)' : '평문(chats/raw/)');
   fs.writeFileSync(path.join(outDir, 'README.md'),
 `# ${project} — 아카이브
 
@@ -225,6 +280,7 @@ raw.tar
 | 세션 수 | ${rows.length} 개 |
 | 채팅 원본 | ${chatsState} |
 | 원본 용량 | ${human(totalBytes)} |
+| 사내정보 | ${internalCount}건${internalStrong ? ' (STRONG)' : ''}${segregate ? ' → 평문 raw 자동격리' : (internalStrong && allowInternal ? ' → allow_internal 평문유지' : '')} ([SENSITIVE.md](chats/SENSITIVE.md)) |
 | 마지막 인제스트 | ${fmt(new Date().toISOString())} |
 | distill 후 새 세션 | ${newSinceDistill} 개${newSinceDistill ? ' — knowledge.md 재정리 권장' : ''} |
 
@@ -255,8 +311,9 @@ raw.tar
   if (li >= 0) lines[li] = pointer; else lines.push(pointer);
   fs.writeFileSync(idxPath, lines.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n');
 
-  console.error(`  [✓] ${project}: ${rows.length}세션 ${human(totalBytes)}, 마스킹 ${redactedTotal}, 잔여 ${uniqHits.length}, 새세션 ${newSinceDistill}${cfg.auto_push ? '' : ' (수동)'}`);
-  return { project, sessions: rows.length, bytes: totalBytes, redacted: redactedTotal, secrets: uniqHits.length, verdict, newSinceDistill, autoPush: !!cfg.auto_push, sensitivity: cfg.sensitivity };
+  if (segregate) console.error(`  [⛔] ${project}: 사내 마커 ${internalCount}건 감지(personal) → 평문 raw 자동 격리됨. 안전하면 archive-sources.yaml 에 allow_internal: true.`);
+  console.error(`  [✓] ${project}: ${rows.length}세션 ${human(totalBytes)}, 마스킹 ${redactedTotal}, 잔여 ${uniqHits.length}, 새세션 ${newSinceDistill}, 사내 ${internalCount}${cfg.auto_push ? '' : ' (수동)'}`);
+  return { project, sessions: rows.length, bytes: totalBytes, redacted: redactedTotal, secrets: uniqHits.length, verdict, newSinceDistill, autoPush: !!cfg.auto_push, sensitivity: cfg.sensitivity, internalCount, internalDetected: internalStrong, segregated: segregate, allowInternal };
 }
 
 // ====== 미등록 트랜스크립트 폴더 탐지 ======
@@ -292,5 +349,7 @@ if (unregistered.length) {
   for (const u of unregistered) console.error(`  - ${u.folder} (${u.jsonl} jsonl)  ← 포함하려면 yaml 에 등록`);
 }
 const staleProjects = summaries.filter(s => s.newSinceDistill > 0).map(s => s.project);
+const segregated = summaries.filter(s => s.segregated).map(s => s.project);
+if (segregated.length) console.error(`\n[⛔ 사내정보 자동격리] ${segregated.join(', ')} — 평문 raw 가 커밋에서 빠짐(.gitignore). 검토 후 안전하면 archive-sources.yaml 에 allow_internal: true.`);
 console.error(`\n[ingest:${arg}] ${summaries.length}개 처리. ${staleProjects.length ? `재distill 권장: ${staleProjects.join(', ')}` : '모든 지식 최신'}.`);
-console.log(JSON.stringify({ mode: arg, projects: summaries, unregistered, anyResidualSecret: summaries.some(s => s.secrets > 0) }));
+console.log(JSON.stringify({ mode: arg, projects: summaries, unregistered, anyResidualSecret: summaries.some(s => s.secrets > 0), anySegregated: segregated.length > 0 }));
