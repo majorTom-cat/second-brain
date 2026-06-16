@@ -31,12 +31,12 @@
   - (a) **greenfield-ingest**: 기획 문서(요구·화면기획·프로토타입) → 번호 docs + REQ표, 화면 1개=`REQ-SCR`. _(intra)_
   - (b) **change-ingest**: 기존 프로젝트에 델타 인입. `<repo>/resource/changes/` → `docs/changes/CR-NNN` 규약, **REQ crosswalk(구→신) 표 강제**, 핵심 불변식(익명성·단방향 해시 등) **상속 검증을 critic 차원에 추가**. _(agora CR-001)_
 
-### P2 — rough/full 2단계 rigor
-- [ ] **수정** `/develop` 명령 + `req-implementer` 스킬: `rough` 모드(스캐폴드+화면, 화면별 테스트·6차원 critic·worktree **생략**) vs `full` 모드. 스택은 **최종 목표 기준** 선택 강제(러프가 실제 앱이 되도록).
+### P2 — rough/full 2단계 rigor  ✅ 완료 2026-06-16
+- [x] **수정** `/develop` 명령 + `req-implementer` 스킬: `rough` 모드(스캐폴드+화면, 화면별 테스트·6차원 critic·worktree **생략**, 빌드만 게이트) vs `full` 모드. 스택은 **최종 목표 기준** 선택 강제. 인자 `/develop <slug> [rough|full]`, 기본 full. rough 는 HANDBACK 산출·`/deploy` 거부.
 
-### P3 — 핸드백 품질 (작지만 반복될 마찰)
-- [ ] **수정** HANDBACK 템플릿(핸드백 산출물): `deliverable_stage`(rough|proto|final) 라벨 + `recommended_delivery`(정적 PNG 금지 → 라이브 링크/프리뷰) 필드.
-- [ ] **수정** 화면 스펙(screens): `menu_visible: bool` 플래그 — 자동생성 GNB가 dev/QA용 전체 화면 인벤토리를 사용자 메뉴로 노출하지 않게.
+### P3 — 핸드백 품질 (작지만 반복될 마찰)  ✅ 완료 2026-06-16
+- [x] **신규** `rails/handoff/HANDBACK.template.md`: `deliverable_stage`(rough-skeleton|hifi-prototype|final) 라벨 + `recommended_delivery`(정적 PNG 금지 → 라이브 링크/프리뷰) 필드 + 화면 인벤토리.
+- [x] **규약** `menu_visible: bool`: req-implementer 가 네비 자동생성 시 `menu_visible: true` 화면만 상위 메뉴 노출(흐름내/개발용은 false). 선언 위치 = REQ-SCR 항목. HANDBACK 인벤토리에 컬럼.
 
 ### P3 — tier 라우팅 엔진 (R4, 기존 백로그 재확인)
 - [ ] **신규** `rails/model-tiers.yaml` + `.env` 읽는 라우팅 엔진. llm-wiki `lib/anthropic.ts`·`lib/cost.ts`·`lib/fallback.ts`(서빙모델 tier별 프롬프트 재선택) 포팅. bulk→무료(로컬/Gemini), judgment→Claude 소액.
@@ -48,8 +48,9 @@
 ## 게이트 결정 (2026-06-16)
 - 승인: 색인 기록(LESSONS·index) + 위 2개 패턴 승격.
 - ✅ **P1 외부타깃 빌드 착수·완료**(2026-06-16): `rails/projects.yaml`·`rails/project-paths.md` 신설, 5개 명령 경로 변수화. 하위호환 유지(미등록 slug=기존 동작). 아직 external 프로젝트에 명령 실제 실행은 안 함(P2 인입 모드가 선결).
-- **backlog(미착수)**: P2 수렴/변경인입 모드 · P2 rough/full · P3 핸드백/menu_visible · P3 R4 tier 엔진.
-- ⏸ **P2 보류(사용자 결정 2026-06-16)**: 시작점이 항상 문서는 아니다 — **한 줄 아이디어로 시작**할 수도 있다. 그래서 P2는 기존 **발산(한 줄 아이디어) 경로를 유지한 채 수렴(문서) 모드를 추가**하는 것이어야 한다(대체 아님). 모드 자동 판별(아이디어 vs 문서 인입)을 설계에 포함할 때 착수.
+- ✅ **P2-b(rough/full) + P3(핸드백·menu_visible) 완료**(2026-06-16): `/develop [rough|full]`, `req-implementer` rigor 모드 + `menu_visible` 규칙, `rails/handoff/HANDBACK.template.md`. 아직 external 프로젝트에 실제 실행은 안 함(검증은 다음).
+- **backlog(미착수)**: P3 R4 tier 엔진.
+- ⏸ **P2-a 보류(사용자 결정 2026-06-16)**: 시작점이 항상 문서는 아니다 — **한 줄 아이디어로 시작**할 수도 있다. 그래서 P2-a(수렴/문서 모드)는 기존 **발산(한 줄 아이디어) 경로를 유지한 채 모드를 추가**하는 것이어야 한다(대체 아님). 모드 자동 판별(아이디어 vs 문서 인입)을 설계에 포함할 때 착수.
 
 ---
 근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`.
