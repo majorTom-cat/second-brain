@@ -10,9 +10,10 @@
 | 3 | 2026-06-13 00:27 | E--llm-wiki | 안녕, 이제 인트라넷 프로젝트와 llm wiki 프로젝트를 claude agent로 구성해보면서 생긴 노하우로 개인 second brain 프로젝트를 구성해보려… | [raw/0054d9c4-5164-4838-b40a-53b762e0edcd.jsonl](raw/0054d9c4-5164-4838-b40a-53b762e0edcd.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 4 | 2026-06-15 01:44 | E--llm-wiki | 자료 탭에서 원본 그대로 추가에 2개의 md파일을 드래그해서 놓았는데 자동으로 업로드 되는건지 원본 그대로 추가 버튼이 접근금지 커서로 바뀌면서 안눌리네. 그리… | [raw/10cf2565-5785-400f-a9d5-e39828890d19.jsonl](raw/10cf2565-5785-400f-a9d5-e39828890d19.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 5 | 2026-06-15 01:53 | E--llm-wiki | 로컬호스트 4310으로 docker desktop에서는 떠잇는데 화면이 안보여. 재기동 해줘 | [raw/03bf49fb-8b0c-450e-8b08-0f492f4cc82b.jsonl](raw/03bf49fb-8b0c-450e-8b08-0f492f4cc82b.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 6 | 2026-06-16 15:19 | E--llm-wiki | 인텔리제이가 갑자기 종료되었는데 어디까지 했지? | [raw/bc5bec65-aa74-48c1-9dc1-cd095c4a48f1.jsonl](raw/bc5bec65-aa74-48c1-9dc1-cd095c4a48f1.jsonl) | `~/.claude/projects/E--llm-wiki` |
 
 ## 요약 통계
 
-- 총 세션: 5 개
-- 기간: 2026-06-11 14:30 ~ 2026-06-15 01:53
-- 원본 용량: 51.6M
+- 총 세션: 6 개
+- 기간: 2026-06-11 14:30 ~ 2026-06-16 15:19
+- 원본 용량: 56.0M
