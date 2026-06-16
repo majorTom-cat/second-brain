@@ -9,11 +9,12 @@ argument-hint: "<slug>"
 
 대상 프로젝트: `$ARGUMENTS` (slug)
 
-## 0. 게이트 확인 (하드 거부)
+## 0. 경로 해석 + 게이트 확인 (하드 거부)
 
-1. `projects/<slug>/.state/pipeline.yaml` 에서 개발 게이트가 `approved` 가 **아니면 거부**한다.
-2. `develop/DEV.manifest.yaml` 와 `creative/SPEC.manifest.yaml`(deploy_profile) 을 입력으로 읽는다.
-3. 모든 P0 REQ가 `status: done` 인지 확인. 아니면 게이트로 돌려보낸다.
+1. **경로 해석**: `rails/project-paths.md` 규약으로 `<slug>` → `$DOCS`/`$META`/`$STATE`/`$CODE` 확정(미등록 slug 는 internal = `projects/<slug>/` 기존 동작). 이하 경로는 이 변수로 쓴다.
+2. `$STATE`(pipeline.yaml)에서 개발 게이트가 `approved` 가 **아니면 거부**한다.
+3. 개발 `DEV.manifest.yaml` 와 창작 `SPEC.manifest.yaml`(deploy_profile) — 대조표의 해당 stage 메타 행 — 을 입력으로 읽는다.
+4. 모든 P0 REQ가 `status: done` 인지 확인. 아니면 게이트로 돌려보낸다.
 
 ## 1. 프로파일 분기  (deploy-runbook 스킬)  `[tier: judgment]`
 
@@ -24,7 +25,7 @@ argument-hint: "<slug>"
 
 ## 2. 산출물 생성  `[tier: bulk]`
 
-배포 파일과 `deploy/RUNBOOK.md` 를 생성한다. **두 프로파일 공통 필수**: `/api/health` 엔드포인트,
+배포 파일(`$CODE` 에)과 `$META/RUNBOOK.md` 를 생성한다. **두 프로파일 공통 필수**: `/api/health` 엔드포인트,
 SIGTERM graceful shutdown(DB 풀 close), 시크릿 외부화(.env / CI 변수, 코드 금지).
 
 ## 3. 배포 + REQ별 smoke  `[tier: bulk]`
@@ -39,7 +40,7 @@ OPS 체크리스트를 적대적으로 검증한다: 모든 P0 REQ smoke green �
 
 ## 5. 계약 작성 + 게이트에서 정지
 
-1. `deploy/DEPLOY.manifest.yaml`(profile·endpoints·health·smoke·rollback·ops_gaps) 을 채운다.
-2. `deploy/HANDOFF.md` 와 `deploy/GATE.md`(라이브 엔드포인트 + REQ별 smoke + 롤백 + ops_gaps)를 쓴다.
-3. `.state/pipeline.yaml` 을 `stage: deploy / gate: pending` 으로 갱신.
+1. `$META/DEPLOY.manifest.yaml`(profile·endpoints·health·smoke·rollback·ops_gaps) 을 채운다.
+2. `$META/HANDOFF.md` 와 `$META/GATE.md`(라이브 엔드포인트 + REQ별 smoke + 롤백 + ops_gaps)를 쓴다.
+3. `$STATE`(pipeline.yaml)를 `stage: deploy / gate: pending` 으로 갱신.
 4. 사용자에게 요약을 출력하고 **멈춘다**. 다음으로 **`/retro <slug>`** 를 제안한다.

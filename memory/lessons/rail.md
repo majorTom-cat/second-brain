@@ -21,10 +21,10 @@
 
 ## 레일 수정 제안 (diff 식, 우선순위)
 
-### P1 — 외부 타깃 지원 (다른 모든 개선의 선결)
-- [ ] **신규** `rails/projects.yaml`: `slug → {root, layout(internal|external), deploy_profile}` 레지스트리.
-- [ ] **신규** `rails/project-paths.md`: 경로해석 규약. `layout=external` 이면 산출물을 `docs/`+루트 코드+`.rail/` 로 매핑. **미등록 slug = 기존 `projects/<slug>/` 동작 유지(하위호환).**
-- [ ] **수정** `/creative`·`/develop`·`/deploy` 명령: `projects/<slug>/` 하드코딩 → 경로해석 규약 호출로 교체.
+### P1 — 외부 타깃 지원 (다른 모든 개선의 선결)  ✅ 완료 2026-06-16
+- [x] **신규** `rails/projects.yaml`: `slug → {root, layout(internal|external), deploy_profile}` 레지스트리. intra 등록.
+- [x] **신규** `rails/project-paths.md`: 경로해석 규약($DOCS/$META/$STATE/$CODE). external = `<root>/docs/`(문서)+`<root>/`(코드)+`<root>/.rail/`(메타·상태). **미등록 slug = 기존 `projects/<slug>/` 동작 유지(하위호환).**
+- [x] **수정** `/creative`·`/develop`·`/deploy`·`/retro`·`/status` 명령: `projects/<slug>/` 하드코딩 → 경로해석 변수로 교체. status 는 등록된 external 도 스캔.
 
 ### P2 — 수렴(ingest) 모드 + 변경 인입 게이트  〔승격 후보〕
 - [ ] **수정** `/creative` 명령 + `spec-author` 스킬: 모드 분기 추가.
@@ -47,7 +47,9 @@
 
 ## 게이트 결정 (2026-06-16)
 - 승인: 색인 기록(LESSONS·index) + 위 2개 패턴 승격.
-- **backlog(미착수)**: P1 외부타깃 빌드 · P2 수렴/변경인입 모드 · P2 rough/full · P3 핸드백/menu_visible · P3 R4 tier 엔진. 다음 작업 세션에서 착수.
+- ✅ **P1 외부타깃 빌드 착수·완료**(2026-06-16): `rails/projects.yaml`·`rails/project-paths.md` 신설, 5개 명령 경로 변수화. 하위호환 유지(미등록 slug=기존 동작). 아직 external 프로젝트에 명령 실제 실행은 안 함(P2 인입 모드가 선결).
+- **backlog(미착수)**: P2 수렴/변경인입 모드 · P2 rough/full · P3 핸드백/menu_visible · P3 R4 tier 엔진.
+- ⏸ **P2 보류(사용자 결정 2026-06-16)**: 시작점이 항상 문서는 아니다 — **한 줄 아이디어로 시작**할 수도 있다. 그래서 P2는 기존 **발산(한 줄 아이디어) 경로를 유지한 채 수렴(문서) 모드를 추가**하는 것이어야 한다(대체 아님). 모드 자동 판별(아이디어 vs 문서 인입)을 설계에 포함할 때 착수.
 
 ---
 근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`.

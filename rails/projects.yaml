@@ -1,0 +1,34 @@
+# projects.yaml — 레일 명령(/creative·/develop·/deploy·/retro·/status)의 프로젝트 주소록.
+#
+# slug → 그 프로젝트의 산출물이 "어디 사는지". 명령은 경로를 직접 박지 말고
+# rails/project-paths.md 의 규약으로 이 파일을 읽어 <slug> 를 실제 경로로 해석한다.
+#
+# ★하위호환: 여기 없는(미등록) slug 는 기존처럼 projects/<slug>/ 로 동작한다. 즉 이 파일이 비어 있어도
+#   레일은 오늘과 똑같이 작동한다. external 프로젝트만 등록하면 된다.
+#
+# 필드:
+#   layout:
+#     internal = 레일 repo 안. 산출물 = projects/<slug>/{creative,develop,deploy}/, 상태 = projects/<slug>/.state/.
+#                (기본값 — 등록 안 해도 이 동작)
+#     external = 별도 repo. 산출물 = <root>/docs/(설계문서) + <root>/(코드) + <root>/.rail/(레일 메타·상태).
+#   root:    external 일 때 그 repo 의 절대경로. internal 이면 생략.
+#   deploy_profile: local | intranet  (모르면 생략 — /creative 가 정함)
+#
+# 규율: 읽기전용 prior-art repo(참조용 원본)는 등록하지 않는다(레일이 거기에 파일을 만들면 안 됨).
+#       external repo 에도 레일은 <root>/.rail/ 와 <root>/docs/ 에만 쓴다(프로젝트 코드와 안 섞임).
+
+# ── 등록된 프로젝트 ──
+
+intra:
+  layout: external
+  root: E:\intra            # agora 동일계열 사내 인트라넷(차량·회의실·익명게시판). agora 인플레이스 리디자인의 그린필드 재시작.
+  deploy_profile: intranet
+  # 주의: 아직 레일 명령(/creative 등)을 돌리지 않았다 — 등록만 된 상태. 첫 실행 시 <root>/.rail/ 가 생성된다.
+  # 기존 산출물(docs/screens.md·HANDBACK.md)은 ad-hoc 로 만든 것. P2(수렴 모드) 착수 시 정식 인입 예정.
+
+# ── 예시(주석) — 등록하면 이렇게 ──
+# todo-app:                 # (없음) → 미등록이므로 internal: projects/todo-app/ 로 동작
+# my-saas:
+#   layout: external
+#   root: E:\my-saas
+#   deploy_profile: local

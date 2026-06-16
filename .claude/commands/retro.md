@@ -10,10 +10,11 @@ argument-hint: "<slug>"
 
 대상 프로젝트: `$ARGUMENTS` (slug)
 
-## 1. 수집  `[tier: bulk]`
+## 1. 경로 해석 + 수집  `[tier: bulk]`
 
-`projects/<slug>/` 의 세 모듈 `HANDOFF.md`(델타 + §3 critic 루프백) 와 각 `GATE.md` 결과,
-`.state/pipeline.yaml` 을 읽는다. "어디서 막혔나 / critic이 뭘 거부했나 / 게이트에서 뭘 고쳤나" 를 모은다.
+**경로 해석**: `rails/project-paths.md` 규약으로 `<slug>` → `$META`/`$STATE` 확정(미등록 slug 는 internal = `projects/<slug>/` 기존 동작).
+세 모듈(creative·develop·deploy)의 `$META/HANDOFF.md`(델타 + §3 critic 루프백) 와 각 `$META/GATE.md` 결과,
+`$STATE`(pipeline.yaml) 을 읽는다. "어디서 막혔나 / critic이 뭘 거부했나 / 게이트에서 뭘 고쳤나" 를 모은다.
 
 ## 2. distill  (lesson-distiller 스킬)  `[tier: judgment]`
 
