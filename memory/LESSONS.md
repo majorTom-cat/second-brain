@@ -6,7 +6,7 @@
 
 ## 색인
 
-(아직 없음 — 첫 프로젝트의 `/retro` 후 채워진다)
+- [rail](lessons/rail.md) (2026-06-16) — 레일이 **외부 repo·변경 인입을 못 받음**(그린필드·발산 전제) → 승격: [patterns/ingest-convergence.md](patterns/ingest-convergence.md), [patterns/external-project-layout.md](patterns/external-project-layout.md). 명령/tier 빌드(P1~3·R4)는 backlog.
 
 <!-- 형식:
 - [<slug>](lessons/<slug>.md) — <한 줄 교훈> → 반영: <레일 수정 요약 또는 patterns/<name>.md>
