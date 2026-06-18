@@ -7,11 +7,11 @@
 | 원본 repo | `E:\llm-wiki` (읽기 전용 참조) |
 | 민감도 | personal |
 | 자동 푸시 | 예(개인 데이터) |
-| 세션 수 | 10 개 |
+| 세션 수 | 11 개 |
 | 채팅 원본 | 평문(chats/raw/) |
-| 원본 용량 | 76.0M |
-| 사내정보 | 2166건 (STRONG) → allow_internal 평문유지 ([SENSITIVE.md](chats/SENSITIVE.md)) |
-| 마지막 인제스트 | 2026-06-18 14:21 |
+| 원본 용량 | 77.3M |
+| 사내정보 | 2170건 (STRONG) → allow_internal 평문유지 ([SENSITIVE.md](chats/SENSITIVE.md)) |
+| 마지막 인제스트 | 2026-06-18 15:21 |
 | distill 후 새 세션 | 0 개 |
 
 ## 이 폴더 안내

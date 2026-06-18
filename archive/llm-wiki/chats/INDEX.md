@@ -15,9 +15,10 @@
 | 8 | 2026-06-16 21:46 | E--llm-wiki | 딱 한 단어로만 답해: 안녕 | [raw/f6c47918-4ada-45f5-87dc-63db3a6b42cb.jsonl](raw/f6c47918-4ada-45f5-87dc-63db3a6b42cb.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 9 | 2026-06-16 21:46 | E--llm-wiki | 1+1은? | [raw/4d41468e-ecf7-4bc8-b8d7-a74d5ed6a209.jsonl](raw/4d41468e-ecf7-4bc8-b8d7-a74d5ed6a209.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 10 | 2026-06-16 21:48 | E--llm-wiki | 1+1은? | [raw/4fdd79a5-a08a-4e19-bd92-9e221dc2c612.jsonl](raw/4fdd79a5-a08a-4e19-bd92-9e221dc2c612.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 11 | 2026-06-18 15:10 | E--llm-wiki | 위캐의 지식에 맨 마지막에 출처가 있고 출처가 sha256:5c268e91ea665bcf8fa546ba510e03e6cecd41f34c7dea2fd7a67fd2… | [raw/3908c05b-cc4b-4ca6-8706-5f93488163e6.jsonl](raw/3908c05b-cc4b-4ca6-8706-5f93488163e6.jsonl) | `~/.claude/projects/E--llm-wiki` |
 
 ## 요약 통계
 
-- 총 세션: 10 개
-- 기간: 2026-06-11 14:30 ~ 2026-06-16 21:48
-- 원본 용량: 76.0M
+- 총 세션: 11 개
+- 기간: 2026-06-11 14:30 ~ 2026-06-18 15:10
+- 원본 용량: 77.3M
