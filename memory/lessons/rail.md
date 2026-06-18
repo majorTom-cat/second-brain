@@ -134,4 +134,25 @@ intra-toy 스탠드인을 실제로 띄워보니(Next dev 렌더) **실 intra �
 - 없음(레일 ingest/rough 절차 자체 수정 대상).
 
 ---
-근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`. 4회차 근거: `projects/intra-toy/*`(검증 스탠드인)·실 `E:\intra`(읽기전용 비교).
+
+# 5회차 회고 (2026-06-18) — 진짜 일이 왔다: bns-intranet (그만 만들고 쓸 때)
+intra-toy 검증·정리 후 `/retro`. §0 아카이브에서 **새 실제 프로젝트**가 잡힘.
+
+## ★발견 (§0 새 세션)
+- **second-brain #6**: "E드라이브에 **bns-intranet** 프로젝트가 생겼어 — **사내 서버에 배포**할건데 어떻게?" → **실제 인트라넷 배포 프로젝트 등장.** 이게 validation-debt 가 가리키던 **남은 ❌(intranet 배포·external 경로)의 실검증 대상**. (intra 의 실배포판일 가능성.)
+- llm-wiki #11(위키 출처/sha256) — llm-wiki 자체 작업(재distill 권장, 레일과 무관).
+
+## 결정·마찰 (열린 교훈)
+1. **★빌드 vs 사용의 갈림길 — 이제 사용 쪽.** 이 세션에 레일을 4~5번 회고하며 계속 만들고 고쳤다(P1~R4a·패턴10·열린학습·sweep·검증부채·ingest/rough 정정). 능력은 성숙했고 toy로 검증도 됐다. **이제 진짜 분기는 "또 만들기 vs 실프로젝트에 쓰기"** — bns-intranet 라는 **실제 대상이 생겼다**. 트레이드오프: 더 회고/빌드=완벽 추구·but 검증부채·수익체감 / 실사용=진짜 검증·교훈은 실전에서 / **언제 빌드**: 명확한 갭. **언제 사용(=지금)**: 성숙·검증됨·실대상 있음.
+2. **(소) 러프 스캐폴드 runnability** — intra-toy 를 띄우려니 Sonnet 산출이 그대로는 안 돌았다(tsconfig 없음·Tailwind v3/v4 불일치·deps 미설치). I2 의 **진입점 기동 smoke** 게이트가 이걸 잡게 돼 있음(=커버됨). 추가 교훈: rough 스캐폴드는 **프레임워크 설정(tsconfig 등)까지** 포함해 *바로 떠야* 한다(smoke 가 강제).
+3. **회고의 수익 체감.** 5회차째 — 새 broad 패턴 0(이미 10개), 새 능력 갭도 거의 없음. **회고가 회고를 부르는 단계는 끝.** 다음 교훈은 회고가 아니라 **실프로젝트(bns-intranet)** 에서 나온다.
+
+## 레일 수정 제안 (열린 구조)
+- **제안 없음(의도적).** 레일은 성숙·검증됨. validation-debt 권고대로 **새 빌드 자제.** 대신 **권고(강제 아님)**: 사용자가 원하면 `bns-intranet` 을 `rails/projects.yaml` 에 등록(external·intranet) → 준비되면 `/creative ingest`(프로토타입까지·I1) → `/develop ... full`(품질 바·I2) → `/deploy`(intranet, `intranet-deploy` 패턴) 로 **남은 ❌(external·change-ingest·intranet 배포)를 실전 검증.** 이게 second brain 의 진짜 보상 회수.
+- (보류) llm-wiki #11 archive 재distill — 레일과 무관, 필요시 `/archive llm-wiki`.
+
+## 승격 후보
+- 없음. (도메인특화는 `_candidates.md` 백로그 유지.)
+
+---
+근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`. 4회차 근거: `projects/intra-toy/*`(검증 스탠드인)·실 `E:\intra`(읽기전용 비교). 5회차 근거: §0 새 세션(second-brain #6 bns-intranet).
