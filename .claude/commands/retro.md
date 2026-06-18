@@ -24,7 +24,10 @@ argument-hint: "[<slug>]  # 생략 시 전체(archive all + 레일 회고)"
 - **slug 가 주어졌고** 그 프로젝트에 레일 산출물이 있으면: `rails/project-paths.md` 규약으로 `$META`/`$STATE` 를 해석해
   세 모듈(creative·develop·deploy)의 `$META/HANDOFF.md`(델타 + §3 critic 루프백)·각 `$META/GATE.md`·`$STATE`(pipeline.yaml)를 읽는다.
 - **slug 생략 또는 레일 산출물이 없으면(레일 수준 회고)**: §0에서 갓 distill된 `archive/*/knowledge.md`·`ideas.md`(특히 새 세션 반영분)를 마찰·교훈 소스로 삼는다.
-- **(레일 수준) cross-project 패턴 sweep** `[tier: judgment]`: `archive/*/{knowledge,ideas}.md` 를 **가로질러** — 2개 이상 프로젝트에서 반복되는 노하우/결정을 **재사용 패턴 후보**로 모은다. (과거 프로젝트 지식을 레일로 옮기는 경로 — 이전엔 빠져서 사람이 손으로 하던 단계. 이제 회고가 자동으로 한다.)
+- **(레일 수준) cross-project 패턴 sweep** `[tier: judgment]`: `archive/*/{knowledge,ideas}.md` 를 **가로질러** 2개 이상 프로젝트에서 반복되는 노하우/결정을 **재사용 패턴 후보**로 모은다.
+  - **dedup**: 이미 `memory/patterns/*.md` 에 있는 결정은 **제외** — 신규 후보만 제안(안 그러면 매 sweep 마다 기존 패턴 재제안).
+  - **백로그**: 1개 프로젝트·도메인 특화 후보는 `memory/patterns/_candidates.md` 로 보낸다(매 sweep 재분석 X). **매칭 프로젝트가 올 때** 승격.
+  - (과거 프로젝트 지식을 레일로 옮기는 경로 — 이전엔 사람이 손으로 하던 단계.)
 "어디서 막혔나 / critic·기획자가 뭘 거부·지적했나 / 게이트에서 뭘 고쳤나 / 어떤 갭·결정이 반복되나" 를 모은다.
 
 ## 2. distill  (lesson-distiller 스킬)  `[tier: judgment]`
@@ -34,6 +37,8 @@ argument-hint: "[<slug>]  # 생략 시 전체(archive all + 레일 회고)"
 **교훈·패턴은 열린 구조**(결정·계기·트레이드오프·언제 같게/다르게 — `lesson-distiller` ★)로 — *재현 레시피로 적지 않는다*. 과거를 복제가 아니라 **판단을 물려주기**.
 
 ## 3. 레일 수정 제안 + 패턴 승격 후보 (열린 구조)  `[tier: judgment]`
+
+> **먼저 `rails/validation-debt.md` 를 본다.** 빌드됐으나 **실프로젝트 미실행(❌) 능력이 쌓여 있으면**, 새 빌드 제안보다 **"실프로젝트 검증 우선"을 권고**한다(열린 권고·강제 아님 — 선택권은 사용자). 능력을 빌드/검증하면 그 표를 한 줄 갱신.
 
 구체적 수정안 + (레일 수준이면) cross-project **재사용 패턴 승격 후보**를 낸다. **모두 열린 결정으로**(다음 프로젝트가 이대로도, 다르게도 고를 수 있게). 예:
 - 템플릿: `DEPLOY.manifest.yaml` 에 `rollback_tested: bool` 추가

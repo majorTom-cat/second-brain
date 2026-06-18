@@ -10,6 +10,8 @@
 - [rail 2회차](lessons/rail.md#2회차-회고-2026-06-18--빌드-누적--아카이브-churn) (2026-06-18) — 빌드가 **end-to-end 미검증으로 누적** + 아카이브 **타임스탬프 churn·재distill 헛알림**이 `/retro` 자동선행으로 증폭 → 반영: 엔진 P-B(churn 억제·활성세션 제외·임시폴더 무시) + P-C(distill 결과 단정 금지). P-A(toy 1바퀴 실검증) 보류.
 - [todo-toy](lessons/todo-toy.md) (2026-06-18) — 레일 **첫 end-to-end 1바퀴 완주**(P-A): 테스트 green인데 진입점 실행이 깨짐(Windows main-guard)·배포에서 OPS 뒤늦게 보강 → 반영: `/develop` **진입점 기동 smoke 강제(T1)** · `/creative` **배포가능 서비스 OPS REQ 선반영(T2)** · critic 검증가능성 문구(T3). bulk=Sonnet 전환.
 - **아카이브 채굴** (2026-06-18) — agora·llm-wiki 의 검증된 노하우를 **재사용 패턴 8개로 승격**([패턴 라이브러리](index.md)) → `spec-author`(prior-art 참조)·`adversarial-review`(constraints/권한 차원)·`deploy-runbook`(intranet) 배선. = 과거 프로젝트 지식이 다음 프로젝트를 더 똑똑하게(second brain 보상).
+- **열린 학습 구조** (2026-06-18) — 교훈·패턴을 *복제 레시피*가 아니라 **결정·트레이드오프·언제 같게/다르게**로(선택권 보존). `lesson-distiller`·`/retro`·CLAUDE.md + 패턴 10개 전부 정렬.
+- [rail 3회차](lessons/rail.md) (2026-06-18) — **검증 부채**: 능력은 폭증(P1~R4a·패턴10·sweep)인데 실검증은 toy 1개 → 반영: `validation-debt.md` 트래커(V1)·sweep dedup+`_candidates.md` 백로그(V2). ★결론: **빌드보다 검증**(다음=intra).
 
 <!-- 형식:
 - [<slug>](lessons/<slug>.md) — <한 줄 교훈> → 반영: <레일 수정 요약 또는 patterns/<name>.md>

@@ -9,7 +9,7 @@
 - **배포(deploy/ops)**: 외부 repo 산출 타깃(레지스트리+경로해석) · **배포가능 서비스 OPS REQ(health·graceful·bind) 선반영** → [patterns/external-project-layout.md](patterns/external-project-layout.md), [lessons/todo-toy.md](lessons/todo-toy.md)
 - **tier/비용**: R4a 활성 — `[tier: bulk]`→**Sonnet** 서브에이전트 위임 / `[tier: judgment]`→메인(Opus). 계약 `rails/routing.md`·`model-tiers.yaml`(다이얼 haiku/sonnet/opus). R4b(로컬 qwen/Gemini 진짜 $0)는 옵션 → [lessons/rail.md](lessons/rail.md), [lessons/todo-toy.md](lessons/todo-toy.md)
 - **archive 엔진**: churn 억제(ts 안정 write·활성세션 제외·임시폴더 무시) + distill 결과 단정 금지(`⚠️확인요망`) → [lessons/rail.md](lessons/rail.md) (2회차)
-- **검증/리스크**: ✅ **레일 1바퀴 완주**(todo-toy: creative→develop→deploy 실검증, 실버그 1건·OPS 보강 2건 회수) → [lessons/todo-toy.md](lessons/todo-toy.md)
+- **검증/리스크**: ✅ 레일 1바퀴 완주(todo-toy) · ⚠️ **검증 부채**(능력 폭증 vs 실검증 toy 1개) → `rails/validation-debt.md`(`/status` 표시) · 다음=intra 실검증 → [lessons/todo-toy.md](lessons/todo-toy.md), [lessons/rail.md](lessons/rail.md)
 
 ## 패턴 라이브러리 (`patterns/` — 승격된 재사용 패턴)
 > 대부분 아카이브(agora·llm-wiki) 채굴로 승격(2026-06-18). `spec-author` 가 아이디어 유형별로 prior-art 참조.

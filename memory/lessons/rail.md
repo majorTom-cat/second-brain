@@ -82,4 +82,30 @@
 - 없음(이번 마찰은 second-brain 레일/엔진 자체 한정 — 다른 프로젝트 반복 아님). P-B 계열은 엔진 버그픽스라 패턴 승격보다 직접 수정 대상.
 
 ---
+
+# 3회차 회고 (2026-06-18) — 능력은 폭증, 검증은 toy 1개 (검증 부채)
+R4a·Sonnet·아카이브 채굴(패턴 10개)·열린 학습 구조·cross-project sweep 까지 한 세션에 쌓은 뒤, 새 `/retro`(sweep+열린구조)를 처음 돌린 회고.
+
+## 무엇이 잘 됐나
+- **second brain 보상이 실제로 작동**: 과거 프로젝트(agora·llm-wiki) 노하우 → 재사용 패턴 10개 → 다음 프로젝트(intra)가 더 똑똑하게 시작.
+- churn 수정(P-B) 지속 유효: 재distill 헛알림 0·Temp 미등장.
+- 새 `/retro`(sweep) 첫 실행이 **스스로 작동 검증**: broad 패턴 0 신규(이미 다 승격)를 정확히 식별.
+
+## 결정·마찰 (열린 교훈)
+1. **★검증 부채 — 빌드 vs 검증의 갈림길.** 이 세션에 레일 *능력*을 대량 추가(P1·P2·P3·R4a·패턴10·열린학습·sweep)했지만 **실프로젝트 검증은 toy 1개(diverge→full→local)뿐.** ingest·rough·change-ingest·intranet-deploy·R4b·sweep 전부 **실프로젝트 미실행.** `/retro` 가 매번 *더* 만들어 부채를 키운다. → 트레이드오프: 계속 빌드(능력↑·검증 안 된 위험 누적) vs 검증 전환(느리지만 진짜 작동 확인). **언제 빌드: 갭이 명확하고 작을 때. 언제 검증: 미검증 능력이 쌓였을 때(=지금).** 첫 실검증 대상 = intra(디자인 파일 대기).
+2. **cross-project sweep 자기 교훈(첫 실행).** ① **dedup 없음** — 이미 `patterns/` 에 있는 걸 매 sweep마다 재제안할 구조(이번엔 수동 회피). ② **도메인 특화 후보**(익명성·추출·동적게시판 등 1프로젝트)는 broad와 섞이면 노이즈 → 백로그로 분리해 매칭 프로젝트 올 때 승격.
+
+## 레일 수정 제안 (열린 구조, 우선순위)
+- **[V1] (메타·최우선) 검증 부채 가시화 + "빌드보다 검증 우선" 권고**: `/status`(또는 `/retro` 끝)가 "빌드됐으나 실프로젝트 미실행" 레일 능력을 표로 표시. `/retro` §3 에 "미검증 능력이 N개 이상이면 새 빌드보다 **검증을 권고**" 한 줄. (강제 아님 — 선택권은 사용자. 열린 권고.)
+- **[V2] sweep 정교화(방금 만든 것 버그픽스)**: ① sweep은 `patterns/` 에 이미 있는 결정을 **제외**(dedup), 신규 후보만 제안. ② 1프로젝트·도메인특화 후보는 `patterns/_candidates.md` 백로그로(매 sweep 재분석 X), 매칭 프로젝트 올 때 승격.
+
+## 적용 결과 (2026-06-18 게이트 = V1+V2)
+- ✅ **V1**: `rails/validation-debt.md`(검증 부채 트래커, 현재 ❌6+⛔1) + `/status` §5 표시 + `/retro` §3 "검증 우선 권고".
+- ✅ **V2**: `/retro` sweep 에 **dedup**(기존 `patterns/` 제외) + `memory/patterns/_candidates.md` 백로그(도메인특화 후보 7개).
+- ★**결론(강제 아님)**: 다음은 빌드가 아니라 **검증** — intra 디자인 파일 대기. 이 회고가 자기 자신에게 "그만 만들고 검증하라"를 권고했고, 가시화 장치(validation-debt)까지 둠.
+
+## 승격 후보
+- 없음(broad 패턴은 이미 10개 다 승격). 도메인특화 후보는 V2 의 `_candidates.md` 백로그로 보류.
+
+---
 근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`.
