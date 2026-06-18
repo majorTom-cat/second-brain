@@ -135,6 +135,17 @@ const fmt = (iso) => {
 const trunc = (s, n) => (s && s.length > n ? s.slice(0, n - 1) + '…' : (s || ''));
 const human = (b) => b > 1 << 20 ? (b / (1 << 20)).toFixed(1) + 'M' : (b / 1024).toFixed(0) + 'K';
 
+// [P-B1] 타임스탬프만 바뀐 무변경 재생성 churn 방지: ts 라벨 라인을 뺀 본문이 같으면 기존 파일을 유지(diff 0).
+function writeStable(filePath, content, tsLabels = []) {
+  if (tsLabels.length && fs.existsSync(filePath)) {
+    const strip = (s) => s.split(/\r?\n/).filter(l => !tsLabels.some(lbl => l.includes(lbl))).join('\n');
+    if (strip(fs.readFileSync(filePath, 'utf8')) === strip(content)) return;   // ts 외 동일 → 기존 유지
+  }
+  fs.writeFileSync(filePath, content);
+}
+const NOW = Date.now();
+const ACTIVE_GRACE_MS = 180_000;   // [P-B2] 최근 3분 내 갱신된 세션 = 진행 중(라이브)로 보고 '새 세션' 카운트에서 제외
+
 // ====== 한 프로젝트 인제스트 ======
 async function ingestProject(project, cfg) {
   const baseEnc = (cfg.repo || '').replace(/[:\\/]+/g, '-');     // E:\agora → E--agora
@@ -167,7 +178,7 @@ async function ingestProject(project, cfg) {
     }
   }
   rows.sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  const newSinceDistill = rows.filter(r => r.mtime > kMtime).length;
+  const newSinceDistill = rows.filter(r => r.mtime > kMtime && (NOW - r.mtime) > ACTIVE_GRACE_MS).length;   // [P-B2] 활성(라이브) 세션 제외
 
   // 사내정보 판정: 로컬규칙 마커 1건 이상 또는 사설 IP 다수면 회사 데이터로 본다.
   // personal 이라도 격리(.gitignore)가 안전 기본값(allow_internal 로만 해제).
@@ -212,7 +223,7 @@ ${idxRows}
       ? `발견된 키/비밀 **${redactedTotal}건을 사본에서 자동 마스킹**했습니다(원본 \`~/.claude/projects\` 는 불변).`
         + (company ? ' 회사 데이터라 평문 raw 는 `.gitignore` 처리됨. 클라우드 백업은 `encrypt.sh` 로 `raw.tar.gpg` 만.' : ' 평문 raw 커밋해도 키 노출 위험 없음.')
       : '발견 없음.' + (company ? ' (회사 실명/내부주소는 별도 판단 — 평문 raw 는 `.gitignore`).' : '');
-  fs.writeFileSync(path.join(outDir, 'chats', 'SECRETS.md'),
+  writeStable(path.join(outDir, 'chats', 'SECRETS.md'),
 `# ${project} — 비밀 스캔 리포트
 
 > \`/archive ${project}\` 가 \`chats/raw/\` 사본을 마스킹·스캔한 결과. **푸시 전에 반드시 확인.**
@@ -234,7 +245,7 @@ ${secretRows}
 ## 권고
 
 ${rec}
-`);
+`, ['스캔 일시']);
 
   // ---- chats/SENSITIVE.md (사내정보 감지 리포트) ----
   const intRows = Object.keys(internalTotals).length
@@ -267,7 +278,7 @@ raw.tar
 
   // README.md (재생성)
   const chatsState = fs.existsSync(path.join(outDir, 'chats', 'raw.tar.gpg')) ? '🔒 암호화(chats/raw.tar.gpg)' : ((company || segregate) ? '평문 raw(로컬 전용 — .gitignore)' : '평문(chats/raw/)');
-  fs.writeFileSync(path.join(outDir, 'README.md'),
+  writeStable(path.join(outDir, 'README.md'),
 `# ${project} — 아카이브
 
 > 과거 프로젝트의 지식·아이디어·채팅 이력 보관소. \`/archive ${project}\` 가 생성/갱신한다.
@@ -291,7 +302,7 @@ raw.tar
 - [\`chats/INDEX.md\`](chats/INDEX.md) — 세션 색인(날짜·주제·원본 경로).
 - [\`chats/SECRETS.md\`](chats/SECRETS.md) — 비밀 스캔 리포트.
 - \`chats/raw/\` — 원본 트랜스크립트(JSONL). 암호화 시 \`chats/raw.tar.gpg\`.
-`);
+`, ['마지막 인제스트']);
 
   // knowledge.md / ideas.md 스캐폴드(없을 때만)
   const tpl = (name) => fs.readFileSync(path.join(REPO, 'rails', 'artifact-templates', 'archive', name), 'utf8')
@@ -317,12 +328,15 @@ raw.tar
 }
 
 // ====== 미등록 트랜스크립트 폴더 탐지 ======
+// [P-B3] 임시/일시 폴더(Temp 등)는 프로젝트가 아니므로 등록 후보에서 제외.
+const TRANSIENT_FOLDERS = [/AppData-Local-Temp/i, /-Local-Temp\b/i, /-Temp$/i, /Windows-Temp/i, /-Temp-/i];
 function findUnregistered() {
   const registered = new Set(Object.values(sources).flatMap(c => c.sessions));
   const out = [];
   if (!fs.existsSync(PROJECTS_BASE)) return out;
   for (const folder of fs.readdirSync(PROJECTS_BASE)) {
     if (registered.has(folder)) continue;
+    if (TRANSIENT_FOLDERS.some(re => re.test(folder))) continue;   // 임시 폴더 제외
     const d = path.join(PROJECTS_BASE, folder);
     if (!fs.statSync(d).isDirectory()) continue;
     const n = fs.readdirSync(d).filter(f => f.endsWith('.jsonl')).length;

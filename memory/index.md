@@ -8,5 +8,7 @@
 - **개발(dev)**: rough/full 2단계 rigor(러프=테스트·critic 생략, 스택은 최종목표 기준) → [lessons/rail.md](lessons/rail.md)
 - **배포(deploy/ops)**: 외부 repo 산출 타깃(레지스트리+경로해석) → [patterns/external-project-layout.md](patterns/external-project-layout.md)
 - **tier/비용**: R4 라우팅 엔진(model-tiers.yaml, llm-wiki anthropic/cost/fallback 포팅) — backlog → [lessons/rail.md](lessons/rail.md)
+- **archive 엔진**: churn 억제(ts 안정 write·활성세션 제외·임시폴더 무시) + distill 결과 단정 금지(`⚠️확인요망`) → [lessons/rail.md](lessons/rail.md) (2회차)
+- **검증/리스크**: 레일 입구는 빌드됐으나 **end-to-end 미실행**(toy 1바퀴로 실검증 필요) → [lessons/rail.md](lessons/rail.md)
 
 <!-- 형식: - <키워드> → [lessons/<slug>.md](lessons/<slug>.md) 또는 [patterns/<name>.md](patterns/<name>.md) -->

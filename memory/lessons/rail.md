@@ -54,4 +54,30 @@
 - **backlog(미착수)**: P3 R4 tier 엔진.
 
 ---
+
+# 2회차 회고 (2026-06-18) — 빌드 누적 + 아카이브 churn
+첫 회고 이후 P1·P2-b·P3·P2-a·retro-chaining 을 한 세션에 몰아 빌드한 뒤, `/retro`(=archive all 자동선행)를 처음 돌리며 나온 마찰.
+
+## 마찰 (근거: 이 세션 실행 관찰)
+1. **레일 변경이 전부 미검증으로 누적**. P1·P2-b·P3·P2-a·chaining 5건이 모두 *프롬프트(설명서) 수정* — 실제 프로젝트에 `/creative→/develop→/deploy` 를 **한 번도 안 돌렸다**. agora distill을 "성공"으로 잘못 적었다 사용자가 정정한 것과 같은 위험(검증 없이 "됐다"고 단정). 첫 실검증 대상=intra인데 디자인 파일 대기로 보류 → 미검증 빌드만 쌓임.
+2. **아카이브 churn 이 `/retro` 자동선행으로 증폭**. ① README/SECRETS/SENSITIVE 의 타임스탬프가 매 실행 재생성 → 무변경에도 diff. ② `newSinceDistill` 이 **mtime 기반**이라 진행 중인 활성 세션(second-brain)이 매번 자기를 1로 표시하고, 재인제스트가 raw mtime을 갱신해 "재distill 권장"이 노이즈로 뜸. → `/retro` 가 archive를 매번 돌리니 이 churn·헛판단이 매 회고마다 반복.
+3. **미등록 `...AppData\Local\Temp`(15 jsonl)가 매 실행 재등장**. 임시 폴더라 등록 대상이 아닌데 매번 "추가할까요?" 후보로 떠 노이즈.
+4. **distill 정확성에 검증 비트가 없음**. agora "성공" 오기는 *사용자*만 잡았다. company-internal·복잡 세션의 distill 결론을 사실로 단정하면 틀려도 안 걸린다.
+
+## 레일 수정 제안 (diff 식, 우선순위)
+- **[P-A] 미검증 빌드 가시화 + 첫 실검증**: `/status` 또는 회고에 "빌드됐으나 end-to-end 미실행" 레일 기능 목록을 표시. 그리고 **작은 내부 프로젝트로 `/creative→/develop→/deploy` 1바퀴**를 돌려 입구들을 실제 검증(intra 대기와 무관한 toy slug로). → "레일 1바퀴 검증" backlog와 합침.
+- **[P-B1] 타임스탬프 churn 억제**(엔진 `ingest.mjs`): README/SECRETS/SENSITIVE 의 생성시각을 **내용 해시가 바뀔 때만** 갱신(무변경 diff 0).
+- **[P-B2] distill 트리거 정교화**(엔진): `newSinceDistill` 을 mtime 대신 **내용 비교**로, 그리고 **현재 활성 세션 제외**(자기 자신을 매번 새로 표시하지 않게).
+- **[P-B3] 임시 폴더 무시 휴리스틱**(엔진 미등록 탐지): `AppData\Local\Temp`·`%TEMP%` 등 transient 경로는 unregistered 후보에서 기본 제외.
+- **[P-C] distill 검증 비트**: company-internal/대형 세션 distill은 **결과(outcome)를 단정하지 말고** 불확실 항목을 "사용자 확인 요망"으로 표시(또는 distill 산출에 가벼운 critic 1패스). 코드 grep으로 그라운딩 가능한 주장만 단정.
+
+## 적용 결과 (2026-06-18 게이트 승인 = P-B 3종 + P-C)
+- ✅ **P-B1/B2/B3**(`ingest.mjs`): `writeStable`(ts 라벨 외 본문 동일하면 미기록) · `newSinceDistill` 활성세션 제외(`NOW-mtime>180s`) · `TRANSIENT_FOLDERS` 미등록 후보 제외. **재실행 검증**: 새세션 0(활성 제외 작동)·Temp 경고 사라짐·agora README/SECRETS 재실행 해시 동일(churn 0).
+- ✅ **P-C**(`chat-archivist/SKILL.md` §3): distill 결과 단정 금지·불확실은 `⚠️확인요망`·게이트 전 self-check 1패스.
+- ⏸ **P-A 보류**: "미검증 빌드 가시화 + toy 1바퀴 실검증"은 다음 작업으로(별도). 현재 레일 입구 5종이 end-to-end 미실행 상태인 점은 유효한 리스크.
+
+## 승격 후보
+- 없음(이번 마찰은 second-brain 레일/엔진 자체 한정 — 다른 프로젝트 반복 아님). P-B 계열은 엔진 버그픽스라 패턴 승격보다 직접 수정 대상.
+
+---
 근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`.

@@ -43,6 +43,7 @@ node .claude/skills/chat-archivist/ingest.mjs auto         # auto_push:true(개�
 `knowledge.md`(무엇·스택·핵심결정·노하우·함정·미해결)와 `ideas.md`(백로그·스파크·개선)를 **실제 내용으로 채운다**.
 - 민감 프로젝트(`sensitivity: company-internal`)는 이 레이어에서 **실명·내부주소·비밀키를 일반화**한다(원본은 raw 에만).
 - 출처 경로를 인용한다. 추측 금지 — 불명확하면 표시.
+- **[P-C] 결과(outcome)를 사실로 단정하지 말 것.** 코드/문서 grep 으로 그라운딩 가능한 주장만 단정하고, **결말·성공여부 등 불확실한 것은 `⚠️확인 요망` 으로 표시**한다(과거 agora CR-001 을 "성공"으로 오기했다 사용자가 "실은 폐기·재시작"으로 정정한 사례). 크거나 민감한 세션의 distill 은 게이트 전 **가벼운 self-check 1패스**(이 결론이 raw·repo와 모순되지 않나?).
 
 ### 4) (선택) 원본 암호화  `[tier: bulk]`  — `--encrypt` 일 때만
 비밀 정보를 클라우드에서 잠그려면:
