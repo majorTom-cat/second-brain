@@ -14,6 +14,7 @@
 - [rail 3회차](lessons/rail.md) (2026-06-18) — **검증 부채**: 능력은 폭증(P1~R4a·패턴10·sweep)인데 실검증은 toy 1개 → 반영: `validation-debt.md` 트래커(V1)·sweep dedup+`_candidates.md` 백로그(V2). ★결론: **빌드보다 검증**(다음=intra).
 - [rail 4회차](lessons/rail.md) (2026-06-18) — **intra-toy 검증이 드러낸 ingest/rough 품질 갭**: ① ingest가 화면목록만 먹고 프로토타입 미소비(시안 충실도 0) ② "러프=저품질" 오프레이밍(실 intra 러프는 고품질) → 반영: I1 spec-author 프로토타입 소비·I2 req-implementer 러프 품질 바+기동 smoke. ★레일은 흐름을 자동화하지 품질을 자동화 안 함.
 - [rail 5회차](lessons/rail.md) (2026-06-18) — **그만 만들고 쓸 때**: 레일 성숙·검증됨, 회고 수익 체감, 제안 없음(의도). `bns-intranet`(사내 배포)은 **남이 만든 걸 배포만** → 레일 파이프라인/archive 대상 아님([[deploy-only-third-party-policy]]); 배포 교훈만 일반화 캡처. ★다음 교훈은 회고가 아니라 실전에서.
+- [bns-intranet](lessons/bns-intranet.md) (2026-06-18) — **첫 실배포(deploy-only)**: 기성 클러스터엔 prior-art **전체 설정 선채택**(CSI노드·CPU/MariaDB·공용pull시크릿·dind·gradle내장이미지 — 부분만 옮겨 6연속 실패) + **`validate`면 스키마 변경 자동 반영 X**(수동 ALTER/Flyway 권고) → 반영: [patterns/intranet-deploy.md](patterns/intranet-deploy.md) 실배포 함정 보강.
 
 <!-- 형식:
 - [<slug>](lessons/<slug>.md) — <한 줄 교훈> → 반영: <레일 수정 요약 또는 patterns/<name>.md>

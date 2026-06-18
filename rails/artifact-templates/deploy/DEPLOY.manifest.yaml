@@ -5,7 +5,7 @@ profile: <local|intranet>
 
 target:
   # local:    { kind: docker-compose, where: "로컬/단일 호스트" }
-  # intranet: { kind: k8s, where: "intranet.bns.co.kr / bnspace ns", registry: "harbor.bns.co.kr" }
+  # intranet: { kind: k8s, where: "<사내도메인> / <사내ns> ns", registry: "<harbor레지스트리>" }
   kind: <docker-compose|k8s>
   where: <...>
 
@@ -13,7 +13,7 @@ secrets: [DATABASE_URL, SESSION_SECRET]   # 외부화된 env 이름만 (값 아�
 
 endpoints:
   - name: web
-    url: <http://localhost:3000 | https://<app>.intranet.bns.co.kr>
+    url: <http://localhost:3000 | https://<app>.<사내도메인>>
 
 health:
   path: /api/health

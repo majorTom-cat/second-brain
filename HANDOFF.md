@@ -73,7 +73,7 @@
    레일의 거친 부분을 첫 교훈으로 만들면 루프가 닫힌다.
 2. **R4 — 비용 라우팅 엔진**: `lib/anthropic.ts`/`models.ts`/`cost.ts`(llm-wiki) 포팅. 이미 깔린 `[tier: ...]`
    태그 + `rails/model-tiers.yaml` 을 읽어 bulk→무료, judgment→Claude 라우팅 + 일 예산. R1~R3는 그대로.
-3. **public 전환 시**: `intranet.bns.co.kr`·`harbor.bns.co.kr`·`bnspace`·`@bns.co.kr` 참조 일반화 후.
+3. **public 전환 시**: 사내 마커(도메인·`harbor` 레지스트리·네임스페이스·메일도메인 — 실제값은 gitignore된 `rails/internal-markers.local`) 참조를 일반화 후.
 
 ## 6. 전체 설계 근거 (repo 밖, 필요 시 Read)
 

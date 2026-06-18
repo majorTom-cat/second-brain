@@ -109,4 +109,29 @@ CI 배포 명령(`set image` vs `apply`).
 - **tmux/nohup port-forward 즉사**: `nohup`/`tmux new -d`는 PATH·KUBECONFIG 미로딩 → 즉사.
   올바른 방법: **빈 tmux 세션 먼저 열고 `send-keys`로 명령 전송**. 로컬 DB 포트와 터널 포트 혼동 금지.
 
-관련: [[ingest-convergence]], lessons.
+## ★ 기성 클러스터 실배포 추가 함정 (bns-intranet 검증, 2026-06-18 — deploy-only)
+
+같은 사내 인프라에 **이미 도는 앱이 있으면 그 검증된 설정을 "전체" 복사**하라. 부분만 옮기고 "나중에 확인"으로
+미룬 제약이 줄줄이 런타임 실패가 됐다(아래 전부 prior-art엔 이미 있던 것). 환경 고유값이라 *같은* 클러스터엔 그대로, *다른* 클러스터엔 재확인.
+
+- **CSI 없는 노드 → `nodeAffinity` 로 제외.** 스토리지 CSI 없는 노드에 볼륨 파드가 뜨면 `ContainerCreating`에서 멈춤
+  (PVC는 `Bound`라도 — 바인딩≠노드마운트). `kubernetes.io/hostname NotIn [<CSI없는노드>]`. 볼륨 없는 파드(정적 nginx 등)는 무관.
+- **노드 CPU가 구식이면 최신 DB 이미지 회피.** CPU가 `x86-64-v2` 미지원이면 최신 `mysql:8.0`(8.0.31+) 이미지가
+  `Fatal glibc error`로 즉사 → CrashLoop. **클러스터가 이미 쓰는 엔진(예: MariaDB)** 채택 — MariaDB는 MySQL 드라이버·`jdbc:mysql://`·스키마·`MYSQL_*` 환경변수·initdb 호환이라 **앱 무수정**.
+- **공용 pull 시크릿 재사용.** 모든 워크로드가 쓰는 레지스트리 pull 시크릿이 이미 있다 → 매니페스트에서 그 이름 참조.
+  개인 계정으로 새로 만들면 그 계정에 pull 권한이 없어 `401`(이미지 없을 때도 레지스트리가 401을 줌 → not-found와 혼동 주의).
+- **CI dind 연결 변수 필수.** dind 서비스로 빌드하려면 `DOCKER_HOST=tcp://docker:2376` + `DOCKER_TLS_VERIFY`/`DOCKER_CERT_PATH`
+  + `until docker info` 대기. 없으면 `docker build`가 로컬 소켓 찾다 "Cannot connect to the Docker daemon".
+- **사내 CI는 외부 빌드툴 다운로드가 막힐 수 있다.** `gradlew`가 `services.gradle.org`에서 gradle 배포본을 받다 타임아웃 →
+  **gradle 내장 이미지**(`gradle:<ver>-jdk<n>`)로 빌드해 그 다운로드를 없앤다(이미지는 레지스트리에서 받으므로 가능). 의존성은 사내 Maven 미러 권장.
+- **(deploy-only) 팀 코드의 test/lint 실패가 배포를 막으면 게이트만 비차단.** 내가 안 만든 앱의 test 1건·lint 에러가
+  `build:images`를 차단 → CI test 잡을 `allow_failure: true`(실행·표시는 하되 비차단). **앱 코드는 안 고치고 팀에 보고.**
+
+## ★ 스키마 변경은 자동 반영 안 됨 (`ddl-auto: validate` + 마이그레이션 없음)
+
+- 코드 로직 변경은 push→빌드→배포로 자동. **DB 컬럼 추가/변경은 ❌ 자동 아님** — Hibernate가 검증만 하고 DDL을 안 바꿈.
+  엔티티에 컬럼 추가하고 배포하면 새 이미지가 **validate 실패로 안 뜸**(무중단이라 서비스는 유지·새 버전 미반영). initdb 스크립트는 빈 DB 최초 1회만.
+- 갈림길: **validate**(안전·수동 ALTER 필요) / **update**(편함·rename/drop/타입변경 위험, 운영 비권장) / **Flyway·Liquibase**(편함+안전, 단 앱 코드 변경).
+  **언제 수동 ALTER**: 단발·도구 미도입. **언제 도구 권고**: 스키마가 자주 바뀌면(= 활성 개발 대부분 → 앱 팀에 권고).
+
+관련: [[ingest-convergence]], [lessons/bns-intranet.md](../lessons/bns-intranet.md), [[deploy-only-third-party-policy]].
