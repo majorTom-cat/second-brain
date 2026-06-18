@@ -26,8 +26,8 @@
 - [x] **신규** `rails/project-paths.md`: 경로해석 규약($DOCS/$META/$STATE/$CODE). external = `<root>/docs/`(문서)+`<root>/`(코드)+`<root>/.rail/`(메타·상태). **미등록 slug = 기존 `projects/<slug>/` 동작 유지(하위호환).**
 - [x] **수정** `/creative`·`/develop`·`/deploy`·`/retro`·`/status` 명령: `projects/<slug>/` 하드코딩 → 경로해석 변수로 교체. status 는 등록된 external 도 스캔.
 
-### P2 — 수렴(ingest) 모드 + 변경 인입 게이트  〔승격 후보〕
-- [ ] **수정** `/creative` 명령 + `spec-author` 스킬: 모드 분기 추가.
+### P2 — 수렴(ingest) 모드 + 변경 인입 게이트  〔승격 후보〕  ✅ 빌드 완료 2026-06-18
+- [x] **수정** `/creative` 명령 + `spec-author` 스킬: 모드 분기 추가(발산 자동/수렴 자동 판별, 발산 경로 유지).
   - (a) **greenfield-ingest**: 기획 문서(요구·화면기획·프로토타입) → 번호 docs + REQ표, 화면 1개=`REQ-SCR`. _(intra)_
   - (b) **change-ingest**: 기존 프로젝트에 델타 인입. `<repo>/resource/changes/` → `docs/changes/CR-NNN` 규약, **REQ crosswalk(구→신) 표 강제**, 핵심 불변식(익명성·단방향 해시 등) **상속 검증을 critic 차원에 추가**. _(agora CR-001)_
 
@@ -49,8 +49,8 @@
 - 승인: 색인 기록(LESSONS·index) + 위 2개 패턴 승격.
 - ✅ **P1 외부타깃 빌드 착수·완료**(2026-06-16): `rails/projects.yaml`·`rails/project-paths.md` 신설, 5개 명령 경로 변수화. 하위호환 유지(미등록 slug=기존 동작). 아직 external 프로젝트에 명령 실제 실행은 안 함(P2 인입 모드가 선결).
 - ✅ **P2-b(rough/full) + P3(핸드백·menu_visible) 완료**(2026-06-16): `/develop [rough|full]`, `req-implementer` rigor 모드 + `menu_visible` 규칙, `rails/handoff/HANDBACK.template.md`. 아직 external 프로젝트에 실제 실행은 안 함(검증은 다음).
+- ✅ **P2-a(수렴/ingest 모드) 빌드 완료**(2026-06-18): `/creative` 모드 자동 판별(발산 vs 수렴) + `spec-author` greenfield-ingest·change-ingest 절차. 보류 조건(발산 경로 유지 + 모드 자동 판별) 충족. **⏸ intra 실제 실행은 디자이너 화면 디자인 파일 대기 중이라 보류** — 지금 태우면 스펙이 또 바뀌고 러프 작업과 겹침(디자인-퍼스트). 파일 도착 시 `/creative ingest intra` → 게이트 → `/develop intra rough`.
 - **backlog(미착수)**: P3 R4 tier 엔진.
-- ⏸ **P2-a 보류(사용자 결정 2026-06-16)**: 시작점이 항상 문서는 아니다 — **한 줄 아이디어로 시작**할 수도 있다. 그래서 P2-a(수렴/문서 모드)는 기존 **발산(한 줄 아이디어) 경로를 유지한 채 모드를 추가**하는 것이어야 한다(대체 아님). 모드 자동 판별(아이디어 vs 문서 인입)을 설계에 포함할 때 착수.
 
 ---
 근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`.
