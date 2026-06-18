@@ -25,6 +25,7 @@ description: 배포 모듈 내부 절차. deploy_profile(local/intranet)에 따�
   Service, Ingress(cert-manager ClusterIssuer 주석으로 TLS 자동), 필요시 ConfigMap initdb(1회성), PDB.
 - 시크릿 = `kubectl create secret`(CI 변수에서). 스토리지 = 단일 RWO / 멀티 RWX 구분.
 - 롤백 = `kubectl set image deployment/<app> <app>=<registry>/<app>:<old-sha>`.
+- 📐 **상세 레시피·운영 DB 플레이북·반복 함정**(probe 분리·PDB·`set image` 사각·port-forward `send-keys`·시크릿 경로) = `memory/patterns/intranet-deploy.md`(agora+llm-wiki 2개 프로젝트 일반화). intra 가 첫 실사용.
 
 ## 런북 생성
 `RUNBOOK.template.md` 로 `deploy/RUNBOOK.md` 를 채운다: 시작/중지/롤백/health/env/트러블슈팅/백업·모니터링 갭.

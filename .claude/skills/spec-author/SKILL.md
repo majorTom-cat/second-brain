@@ -9,6 +9,13 @@ description: 창작 모듈 내부 절차. 두 입구 — (발산) 아이디어 �
 **수렴(ingest)**: 시작점이 아이디어가 아니라 **문서**일 때 — 기획 문서가 먼저 온 프로젝트나 기존 프로젝트 변경 — 발산 대신 문서를 읽어 정규화한다.
 어느 입구든 산출물은 동일: `01·02·03·08·09` 번호 문서 + `SPEC.manifest.yaml`. 호출자(/creative)가 모드를 지정한다.
 
+## prior-art 참조 (`memory/patterns/`) — 합성 전에 유형에 맞는 승격 패턴을 본다
+- LLM 제품 → [[llm-trilemma]](비용·프라이버시·하드웨어로 좁힘) · [[llm-provider-routing]]
+- 예약·자원선점·동시성·익명성 → [[constraints-as-truth]](불변식을 구조로 강제)
+- 권한/scope 앱 → [[single-permission-point]] · [[soft-delete-hide-recover]]
+- 지식·콘텐츠 시스템 → [[git-as-source-of-truth]]
+- 디자이너 핸드오프·러프 → [[design-ready-skin]] · 사내 배포 → [[intranet-deploy]]
+
 ## 입력
 - **발산 모드**: `00-brief.md` (한 줄 정의·대상·방향·제약·비목표·deploy_profile)
 - **수렴 모드(ingest)**: 기존 기획 문서(요구사항·화면기획·프로토타입) 또는 변경 문서 묶음 + (변경이면) 기존 프로젝트의 이전 REQ/스펙. **출처 경로를 인용**한다.

@@ -11,4 +11,11 @@
 - **archive 엔진**: churn 억제(ts 안정 write·활성세션 제외·임시폴더 무시) + distill 결과 단정 금지(`⚠️확인요망`) → [lessons/rail.md](lessons/rail.md) (2회차)
 - **검증/리스크**: ✅ **레일 1바퀴 완주**(todo-toy: creative→develop→deploy 실검증, 실버그 1건·OPS 보강 2건 회수) → [lessons/todo-toy.md](lessons/todo-toy.md)
 
+## 패턴 라이브러리 (`patterns/` — 승격된 재사용 패턴)
+> 대부분 아카이브(agora·llm-wiki) 채굴로 승격(2026-06-18). `spec-author` 가 아이디어 유형별로 prior-art 참조.
+- **아키텍처**: [constraints-as-truth](patterns/constraints-as-truth.md)(불변식=구조로 강제) · [single-permission-point](patterns/single-permission-point.md)(단일 권한 계산처) · [git-as-source-of-truth](patterns/git-as-source-of-truth.md)(AI 산출물=append-only git) · [soft-delete-hide-recover](patterns/soft-delete-hide-recover.md)(archivedAt 하나로 숨기고 복구)
+- **배포**: [intranet-deploy](patterns/intranet-deploy.md)(사내 k8s 무중단+운영 플레이북) · [external-project-layout](patterns/external-project-layout.md)(외부 repo 산출 타깃)
+- **창작/인입**: [ingest-convergence](patterns/ingest-convergence.md)(문서→수렴/변경인입) · [design-ready-skin](patterns/design-ready-skin.md)(구조 먼저·비주얼은 토큰 1패스)
+- **LLM**: [llm-trilemma](patterns/llm-trilemma.md)(무료·빠름·비공개) · [llm-provider-routing](patterns/llm-provider-routing.md)(공급자 추상화·폴백·비용안전·BYOK = R4b 토대)
+
 <!-- 형식: - <키워드> → [lessons/<slug>.md](lessons/<slug>.md) 또는 [patterns/<name>.md](patterns/<name>.md) -->
