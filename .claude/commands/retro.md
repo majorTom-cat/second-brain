@@ -24,25 +24,29 @@ argument-hint: "[<slug>]  # 생략 시 전체(archive all + 레일 회고)"
 - **slug 가 주어졌고** 그 프로젝트에 레일 산출물이 있으면: `rails/project-paths.md` 규약으로 `$META`/`$STATE` 를 해석해
   세 모듈(creative·develop·deploy)의 `$META/HANDOFF.md`(델타 + §3 critic 루프백)·각 `$META/GATE.md`·`$STATE`(pipeline.yaml)를 읽는다.
 - **slug 생략 또는 레일 산출물이 없으면(레일 수준 회고)**: §0에서 갓 distill된 `archive/*/knowledge.md`·`ideas.md`(특히 새 세션 반영분)를 마찰·교훈 소스로 삼는다.
-"어디서 막혔나 / critic·기획자가 뭘 거부·지적했나 / 게이트에서 뭘 고쳤나 / 어떤 갭이 반복되나" 를 모은다.
+- **(레일 수준) cross-project 패턴 sweep** `[tier: judgment]`: `archive/*/{knowledge,ideas}.md` 를 **가로질러** — 2개 이상 프로젝트에서 반복되는 노하우/결정을 **재사용 패턴 후보**로 모은다. (과거 프로젝트 지식을 레일로 옮기는 경로 — 이전엔 빠져서 사람이 손으로 하던 단계. 이제 회고가 자동으로 한다.)
+"어디서 막혔나 / critic·기획자가 뭘 거부·지적했나 / 게이트에서 뭘 고쳤나 / 어떤 갭·결정이 반복되나" 를 모은다.
 
 ## 2. distill  (lesson-distiller 스킬)  `[tier: judgment]`
 
 `lesson-distiller` 스킬로 `memory/lessons/<slug>.md`(레일 수준 회고면 `memory/lessons/rail.md` 에 append)를 만든다:
 레일이 틀린 점, 빠진 템플릿 필드, 잘못 단 tier, 반복될 위험. 추상적 소감이 아니라 **다음에 바꿀 구체적 항목**으로.
+**교훈·패턴은 열린 구조**(결정·계기·트레이드오프·언제 같게/다르게 — `lesson-distiller` ★)로 — *재현 레시피로 적지 않는다*. 과거를 복제가 아니라 **판단을 물려주기**.
 
-## 3. 레일 수정 제안 (diff 식)  `[tier: judgment]`
+## 3. 레일 수정 제안 + 패턴 승격 후보 (열린 구조)  `[tier: judgment]`
 
-구체적 수정안을 목록으로 낸다. 예:
+구체적 수정안 + (레일 수준이면) cross-project **재사용 패턴 승격 후보**를 낸다. **모두 열린 결정으로**(다음 프로젝트가 이대로도, 다르게도 고를 수 있게). 예:
 - 템플릿: `DEPLOY.manifest.yaml` 에 `rollback_tested: bool` 추가
 - 명령 step: "/creative critic은 acceptance 없는 REQ를 반드시 거부" 문구 강화
 - tier: 특정 step을 bulk→judgment 재배정
+- **패턴 승격**: 2+ 프로젝트 반복 결정 → `patterns/<name>.md`(결정·트레이드오프·언제 같게/다르게)
 
 ## 4. 사람 게이트 (레일 변경 승인)
 
 수정 제안을 사용자에게 제시하고 **승인을 받는다**. 승인된 것만:
 - `memory/LESSONS.md` 에 한 줄 포인터 append, `memory/index.md` 갱신.
-- 여러 프로젝트에서 반복 검증된 교훈은 `memory/patterns/<name>.md` 로 **승격**.
+- 여러 프로젝트에서 반복 검증된 교훈은 `memory/patterns/<name>.md` 로 **승격**(열린 구조로 작성) + 배선(spec-author prior-art·critic 차원·deploy-runbook).
 - 템플릿/명령/스킬 파일을 실제로 수정(레일 진화).
 
 > 가드레일: 교훈은 append-only. 승격된 패턴만 템플릿을 바꾼다(레일 안정성). 미승인 제안은 lessons에만 남긴다.
+> **열린 구조 가드레일**: 패턴/교훈은 *복제 레시피*가 아니라 *결정+트레이드오프+언제 다르게* — 다음 프로젝트의 선택권을 뺏지 않는다.
