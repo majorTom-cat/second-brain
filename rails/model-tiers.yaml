@@ -1,23 +1,31 @@
-# 비용 계층 라우팅 정책 (seam) — llm-wiki lib/anthropic.ts providerFor() 일반화.
+# 비용 계층 라우팅 정책 — llm-wiki lib/anthropic.ts providerFor() 일반화.
 #
-# 지금(R1~R3): 이 파일은 "의도"만 선언한다. 명령/스킬 step의 [tier: ...] 태그가 여기를 가리킨다.
-#   사람이 직접 실행할 땐 무시해도 된다.
-# 나중(R4): 라우팅 엔진이 이 파일 + .env 를 읽어 step의 tier 태그에 따라 프로바이더를 고른다.
-#   해석 우선순위(llm-wiki 규약 일반화): .env 의 <TIER>_PROVIDER > LLM_PROVIDER > default_tier.
+# 명령/스킬 step의 [tier: ...] 태그가 여기를 가리킨다(라우팅 계약 — 태그 임의변경 금지).
+# 실행 규약(어떻게 위임하나) = rails/routing.md.
+#
+# active_profile:
+#   r4a (현재 활성, 설정0·하네스 내): bulk → 더 싼 Claude(Haiku) 서브에이전트 위임, judgment → 메인(Opus).
+#   r4b (옵션·미구현, 진짜 $0): bulk → 로컬 qwen(Ollama)/Gemini 무료. rails/route.mjs + .env 필요.
+#     해석 우선순위(llm-wiki 규약): .env 의 <TIER>_PROVIDER > LLM_PROVIDER > default_tier.
 
-default_tier: bulk            # tier 태그가 없으면 비용 안전한 무료로
+active_profile: r4a
+default_tier: bulk            # tier 태그가 없으면 비용 안전쪽(bulk)으로
 
 tiers:
   judgment:
-    # 판단이 중요한 소수 단계: 아이디어 프레이밍, N안 심사, 적대적 리뷰, 최종 통합
+    # 판단이 중요한 소수 단계: 아이디어 프레이밍, N안 심사, 적대적 리뷰, 최종 통합, distill 결론
     provider: anthropic
     model: claude-opus-4-8
     budget_hint: small        # 유료 Claude는 여기에만 소액 배정
   bulk:
-    # 대량·지루한 단계: 초안 작성, 보일러플레이트 코드, 문서 확장, smoke 생성
-    provider: ollama          # 무료·로컬 (qwen)
-    model: qwen3:8b
-    fallback: gemini          # 무료 등급·외부 (⚠️ 민감자료 금지)
+    # 대량·지루한 단계: 초안 작성, 보일러플레이트 코드, 문서 확장, 화면 스캐폴드, smoke 생성
+    # R4a (활성): 하네스 내 더 싼 Claude. Agent/Task 를 model=haiku 로 위임.
+    provider: anthropic
+    model: claude-haiku-4-5
+    # R4b (대안·미구현): 진짜 무료. provider: ollama / model: qwen3:8b / fallback: gemini (⚠️ 민감자료 금지)
+    r4b_provider: ollama
+    r4b_model: qwen3:8b
+    r4b_fallback: gemini
 
 # 단계 분류 가이드 (명령/스킬 작성 시 태그 부여 기준)
 #   judgment ← 틀리면 비싼 결정/품질 게이트: 요구 프레이밍, 아키텍처 선택, critic, 통합

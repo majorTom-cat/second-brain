@@ -23,10 +23,11 @@ Claude의 **행동 규칙**이다.
 ## 비용 계층 (무료~소과금)
 
 - 명령·스킬의 각 step에 `[tier: judgment]` 또는 `[tier: bulk]` 태그가 붙어 있다.
-  - `judgment` = 판단이 중요한 소수 단계(아이디어 프레이밍, 심사, 적대적 리뷰, 최종 통합) → 유료 Claude(소액).
-  - `bulk` = 대량·지루한 작업(초안, 보일러플레이트, 문서 확장) → 무료(로컬 qwen / Gemini).
-- 지금(R1~R3)은 태그만 의미를 가지며 전부 직접 실행해도 된다. 실제 라우팅은 R4 엔진이
-  `rails/model-tiers.yaml` + `.env` 를 읽어 수행한다. 태그를 임의로 바꾸지 말 것(라우팅 계약).
+  - `judgment` = 판단이 중요한 소수 단계(아이디어 프레이밍, 심사, 적대적 리뷰, 최종 통합) → 메인 모델(Opus)이 직접.
+  - `bulk` = 대량·지루한 작업(초안, 보일러플레이트, 문서 확장, 스캐폴드) → **더 싼 모델로 위임**.
+- **R4a 활성(라우팅 계약 = `rails/routing.md`)**: `[tier: bulk]` step 은 **`Agent`/`Task` 를 `model: haiku` 로 띄워 위임**하고(대량은 병렬),
+  `[tier: judgment]` step 은 메인(Opus)이 직접 한다. 경계가 애매하면 judgment(품질 안전). 정본 매핑 = `rails/model-tiers.yaml`.
+  태그를 임의로 바꾸지 말 것(라우팅 계약). 진짜 $0(로컬 qwen/Gemini)은 R4b(옵션·미구현, `route.mjs`+`.env`).
 
 ## prior art — 읽기 전용 참조 (복사 금지)
 

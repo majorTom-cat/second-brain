@@ -38,8 +38,9 @@
 - [x] **신규** `rails/handoff/HANDBACK.template.md`: `deliverable_stage`(rough-skeleton|hifi-prototype|final) 라벨 + `recommended_delivery`(정적 PNG 금지 → 라이브 링크/프리뷰) 필드 + 화면 인벤토리.
 - [x] **규약** `menu_visible: bool`: req-implementer 가 네비 자동생성 시 `menu_visible: true` 화면만 상위 메뉴 노출(흐름내/개발용은 false). 선언 위치 = REQ-SCR 항목. HANDBACK 인벤토리에 컬럼.
 
-### P3 — tier 라우팅 엔진 (R4, 기존 백로그 재확인)
-- [ ] **신규** `rails/model-tiers.yaml` + `.env` 읽는 라우팅 엔진. llm-wiki `lib/anthropic.ts`·`lib/cost.ts`·`lib/fallback.ts`(서빙모델 tier별 프롬프트 재선택) 포팅. bulk→무료(로컬/Gemini), judgment→Claude 소액.
+### P3 — tier 라우팅 엔진 (R4)  ✅ R4a 완료 2026-06-18 / ⏸ R4b 옵션
+- [x] **R4a(하네스 내, 설정0)**: `rails/routing.md`(라우팅 계약) + `rails/model-tiers.yaml`(active_profile: r4a, bulk→Haiku) + `CLAUDE.md` 배선. `[tier: bulk]` step 은 `Agent`/`Task` 를 `model: haiku` 로 위임, judgment 는 메인(Opus). 핵심 깨달음: 레일이 Claude Code 안에서 도니 "라우팅"=서브에이전트 모델 위임(외부 스크립트 불필요). 싸지나 무료는 아님.
+- [ ] **R4b(옵션·미구현, 진짜 $0)**: `rails/route.mjs` 디스패처 + `.env` 로 bulk→로컬 qwen(Ollama)/Gemini 무료. llm-wiki `lib/anthropic.ts`·`cost.ts`·`fallback.ts` 포팅. ⚠️ 소형 로컬모델 구조화 실패율↑·민감자료 외부금지.
 
 ## 승격됨 (2026-06-16 게이트 승인 — 2+ 프로젝트 반복)
 - ✅ **수렴(ingest) 모드**: intra(greenfield) + agora(change) → [`patterns/ingest-convergence.md`](../patterns/ingest-convergence.md).
@@ -51,7 +52,8 @@
 - ✅ **P2-b(rough/full) + P3(핸드백·menu_visible) 완료**(2026-06-16): `/develop [rough|full]`, `req-implementer` rigor 모드 + `menu_visible` 규칙, `rails/handoff/HANDBACK.template.md`. 아직 external 프로젝트에 실제 실행은 안 함(검증은 다음).
 - ✅ **P2-a(수렴/ingest 모드) 빌드 완료**(2026-06-18): `/creative` 모드 자동 판별(발산 vs 수렴) + `spec-author` greenfield-ingest·change-ingest 절차. 보류 조건(발산 경로 유지 + 모드 자동 판별) 충족. **⏸ intra 실제 실행은 디자이너 화면 디자인 파일 대기 중이라 보류** — 지금 태우면 스펙이 또 바뀌고 러프 작업과 겹침(디자인-퍼스트). 파일 도착 시 `/creative ingest intra` → 게이트 → `/develop intra rough`.
 - ✅ **UX: `/retro` 가 `/archive all` 을 자동 선행**(2026-06-18, 사용자 요청): 매번 둘을 따로 칠 필요 없게 — `/retro` 한 번 = 수집·distill(§0) + 레일 회고. `/archive all` 단독은 빠른 백업용으로 유지(매 백업에 무거운 회고가 붙지 않게 retro→archive 방향 선택).
-- **backlog(미착수)**: P3 R4 tier 엔진.
+- ✅ **R4a(tier 라우팅, 하네스 내) 완료**(2026-06-18): bulk→Haiku 위임, judgment→Opus. `rails/routing.md`+`model-tiers.yaml`+`CLAUDE.md`.
+- **backlog(미착수)**: R4b(진짜 $0 로컬/Gemini, 옵션) · P-A(toy 1바퀴 실검증).
 
 ---
 
