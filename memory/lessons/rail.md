@@ -139,7 +139,7 @@ intra-toy 스탠드인을 실제로 띄워보니(Next dev 렌더) **실 intra �
 intra-toy 검증·정리 후 `/retro`. §0 아카이브에서 **새 실제 프로젝트**가 잡힘.
 
 ## ★발견 (§0 새 세션)
-- **second-brain #6**: "E드라이브에 **bns-intranet** 프로젝트가 생겼어 — **사내 서버에 배포**할건데 어떻게?" → **실제 인트라넷 배포 프로젝트 등장.** 이게 validation-debt 가 가리키던 **남은 ❌(intranet 배포·external 경로)의 실검증 대상**. (intra 의 실배포판일 가능성.)
+- **second-brain #6**: "E드라이브에 **bns-intranet** — **사내 서버에 배포**할건데?" → **남(동료)이 만든 프로젝트를 *배포만*** 하는 의뢰(사용자 본인 프로젝트 아님). ⇒ 정책 [[deploy-only-third-party-policy]]: **archive 금지·배포 교훈만 일반화·타깃엔 문서 1개만**. **레일 빌드 파이프라인 대상이 아니다**(만든 게 아니라 배포만). 단 `intranet-deploy` 패턴이 배포 *참조*로는 쓰임. ⚠️정정: 이 회고 초안이 "bns-intranet 을 레일에 태워 ❌ 검증"이라 적었으나 **틀림** — 사용자 설명으로 정정.
 - llm-wiki #11(위키 출처/sha256) — llm-wiki 자체 작업(재distill 권장, 레일과 무관).
 
 ## 결정·마찰 (열린 교훈)
@@ -148,7 +148,9 @@ intra-toy 검증·정리 후 `/retro`. §0 아카이브에서 **새 실제 프�
 3. **회고의 수익 체감.** 5회차째 — 새 broad 패턴 0(이미 10개), 새 능력 갭도 거의 없음. **회고가 회고를 부르는 단계는 끝.** 다음 교훈은 회고가 아니라 **실프로젝트(bns-intranet)** 에서 나온다.
 
 ## 레일 수정 제안 (열린 구조)
-- **제안 없음(의도적).** 레일은 성숙·검증됨. validation-debt 권고대로 **새 빌드 자제.** 대신 **권고(강제 아님)**: 사용자가 원하면 `bns-intranet` 을 `rails/projects.yaml` 에 등록(external·intranet) → 준비되면 `/creative ingest`(프로토타입까지·I1) → `/develop ... full`(품질 바·I2) → `/deploy`(intranet, `intranet-deploy` 패턴) 로 **남은 ❌(external·change-ingest·intranet 배포)를 실전 검증.** 이게 second brain 의 진짜 보상 회수.
+- **제안 없음(의도적).** 레일 성숙·검증됨. validation-debt 권고대로 **새 빌드 자제.**
+- **bns-intranet 처리(정책, [[deploy-only-third-party-policy]])**: 레일 파이프라인에 **안 태운다**(남이 만든 걸 배포만). archive 등록 X · 배포는 `intranet-deploy` 패턴을 *참조*로 수행 · **배포하며 얻은 일반화 교훈만** `memory/lessons/` 에 · 타깃 repo 엔 `DEPLOY.md` **한 장만**(기존 소스·md 무수정).
+- 남은 rail 파이프라인 ❌(external·change-ingest·intranet 배포)의 실검증은 **사용자 본인의 새 프로젝트**가 와야(bns-intranet 으론 안 됨 — 배포 전용이라 빌드 단계가 없음).
 - (보류) llm-wiki #11 archive 재distill — 레일과 무관, 필요시 `/archive llm-wiki`.
 
 ## 승격 후보
