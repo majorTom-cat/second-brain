@@ -9,10 +9,10 @@
 | 자동 푸시 | 아니오(수동 검토 후) |
 | 세션 수 | 4 개 |
 | 채팅 원본 | 평문 raw(로컬 전용 — .gitignore) |
-| 원본 용량 | 10.3M |
-| 사내정보 | 208건 (STRONG) ([SENSITIVE.md](chats/SENSITIVE.md)) |
-| 마지막 인제스트 | 2026-06-18 10:37 |
-| distill 후 새 세션 | 1 개 — knowledge.md 재정리 권장 |
+| 원본 용량 | 11.0M |
+| 사내정보 | 209건 (STRONG) ([SENSITIVE.md](chats/SENSITIVE.md)) |
+| 마지막 인제스트 | 2026-06-18 11:26 |
+| distill 후 새 세션 | 0 개 |
 
 ## 이 폴더 안내
 
