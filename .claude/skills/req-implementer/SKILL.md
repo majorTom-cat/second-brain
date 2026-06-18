@@ -11,9 +11,9 @@ description: 개발 모듈 내부 절차. REQ-ID별로 git worktree에서 독립
 
 - **full** (기본): 아래 `## 절차` 전체 — REQ별 worktree + acceptance 테스트 + (호출자의) 6차원 critic. **배포 대상 코드**.
 - **rough**: 디자이너 반복용 *버려질 수도 있는* 산출. 목적 = **화면·흐름을 빨리 눈에 보이게**. 다음을 **생략**: worktree 격리·REQ별 acceptance 테스트·6차원 critic. 대신:
-  - 공유 셸(GNB·레이아웃·라우팅)을 먼저 세우고 `REQ-SCR-*` 화면마다 컴포넌트 1개를 스캐폴드(목 데이터).
+  - ★**품질 바: 러프 ≠ 저품질.** 공유 셸(GNB·레이아웃·라우팅) + **전 `REQ-SCR` 화면이 클릭 가능**하게 스캐폴드(목 데이터). **프로토타입(`design-input`)이 있으면 레이아웃·인터랙션을 참조**한다. (아키타입 몇 개·mock 덤프·프로토타입 미참조는 *검증용 축소*일 뿐 표준 아님 — 같은 '러프'라도 손으로 키운 intra 러프가 훨씬 나았다, intra-toy 교훈.)
   - **스택은 러프 단계가 아니라 최종 목표 기준**(`03-architecture.md`)으로 고른다 — 러프가 그대로 실제 앱으로 자라게(임시 스택 쓰면 재작성).
-  - 유일한 게이트 = **빌드 통과**(`npm run build`). REQ를 `done` 으로 표시하지 않는다(테스트·critic 없음) → `/deploy` 가 러프를 거부(러프는 배포 대상 아님).
+  - 게이트 = **빌드 통과**(`npm run build`) + **진입점 기동 smoke**(실제로 떠서 렌더되는지 — `npm run dev`/기동 후 확인, intra-toy 교훈: 파일만 있고 안 뜨면 의미 없음). REQ를 `done` 으로 표시하지 않는다(테스트·critic 없음) → `/deploy` 가 러프를 거부(러프는 배포 대상 아님).
   - 산출 = **HANDBACK**(`rails/handoff/HANDBACK.template.md`) — DEV 게이트가 아니라 기획자 핸드백.
   - GNB/메뉴는 **`menu_visible: true` 화면만** 노출(아래 규칙).
 

@@ -108,4 +108,30 @@ R4a·Sonnet·아카이브 채굴(패턴 10개)·열린 학습 구조·cross-proj
 - 없음(broad 패턴은 이미 10개 다 승격). 도메인특화 후보는 V2 의 `_candidates.md` 백로그로 보류.
 
 ---
-근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`.
+
+# 4회차 회고 (2026-06-18) — intra-toy 검증이 드러낸 ingest·rough 품질 갭
+intra-toy 스탠드인을 실제로 띄워보니(Next dev 렌더) **실 intra 구현·프로토타입과 품질 차이가 큼**. 사용자가 그 갭을 짚어 나온 교훈.
+
+## 무엇이 잘 됐나
+- 검증 토이가 **실제로 기동**(Next dev 렌더·GNB·health) — 파일만 있는 게 아니라 돈다.
+- 사용자가 "기존 intra/프로토타입과 차이 크다"를 즉시 포착 → 레일 한계가 드러남(검증의 본 목적).
+
+## 결정·마찰 (열린 교훈)
+1. **★ingest 입력 — 화면 목록만 vs 프로토타입·PRD까지.** 이번 ingest는 `docs/screens.md`(화면 *목록*)만 먹어 **시안 충실도 0**. intra `design-input/` 엔 **프로토타입 HTML·PRD·수용기준**이 있는데 안 읽혔다. 트레이드오프: 목록만=가볍고 빠름·but 비주얼/인터랙션 의도 소실 / 프로토타입까지=충실도↑·but 파싱(docx·html) 비용. **언제 목록만**: 프로토타입이 없거나 구조만 필요할 때. **언제 프로토타입까지**: design-input 에 시안이 *있을* 때(있는데 안 먹는 건 손해).
+2. **★"러프 ≠ 저품질" — 같은 '러프' 지시가 전혀 다른 결과.** 실 intra도 *러프로* 지시했는데 33화면 클릭 가능·프로토타입 참조·다듬어진 결과. intra-toy 러프(=Sonnet 한 방·아키타입 6개·mock·프로토타입 미참조)는 훨씬 낮음. ⇒ **"러프는 의도적으로 못생긴 게 맞다"는 (내) 프레이밍은 틀렸다** — 러프의 *품질 바*는 실 intra 러프(클릭 가능·시안 참조·전 화면)다. 갭의 원인 = ① 프로토타입 미소비 ② 전 화면 아니라 아키타입만 ③ 한 방(반복 없음). 트레이드오프: 빠른 한 방=검증엔 충분·but 손으로 키운 러프 못 따라감 / 시안참조+전화면+반복=품질↑·시간↑. **언제 한 방**: 기계 검증. **언제 품질 바**: 기획자에게 실제 핸드백할 산출.
+3. **레일은 *흐름*을 자동화하지 *품질*을 자동화하지 않는다.** intra급 = 프로토타입까지 먹이고 + full + 게이트마다 사람 반복. 한 방 러프로는 안 됨(레일은 가속·구조화, 품질은 여전히 노력·반복 의존).
+
+## 레일 수정 제안 (열린 구조)
+- **[I1] ingest가 프로토타입·시안을 소비**: `/creative` 수렴 모드 + `spec-author` greenfield-ingest — `design-input/`(또는 지정 경로)에 **프로토타입 HTML·PRD·수용기준이 있으면 함께 읽어** 비주얼/인터랙션 의도를 03-architecture·09 에 반영(화면 목록만으로 끝내지 않음). 없으면 목록만(현행). docx 등은 추출 비용 있으니 "있으면 소비" 휴리스틱.
+- **[I2] rough 품질 바 명시 + 프로토타입 참조**: `req-implementer` rough 절차 — "러프=저품질" 아님을 명문화. 러프의 목표 = **전 REQ-SCR 화면 클릭 가능 + 프로토타입(있으면) 레이아웃 참조 + 디자인 토큰 골격**(아키타입 몇 개·mock 덤프가 아니라). 한 방 스캐폴드 후 **빌드 통과 + 진입점 기동 smoke** 까지(이번엔 띄워서 확인). "아키타입만/프로토타입 미참조"는 *검증용 축소*일 뿐 표준 아님.
+
+## 적용 결과 (2026-06-18 게이트 = I1+I2)
+- ✅ **I1**: `spec-author` greenfield-ingest — `design-input` 에 프로토타입·PRD 있으면 **반드시 소비**(목록만 X), 03·09 에 비주얼/인터랙션 반영.
+- ✅ **I2**: `req-implementer` rough — **러프≠저품질 품질 바** 명시(전 화면 클릭 가능·프로토타입 참조) + 게이트에 **진입점 기동 smoke** 추가.
+- 정정: "러프는 의도적으로 못생긴 게 맞다"(이전 프레이밍)는 틀림 — 품질 바는 손으로 키운 실 intra 러프.
+
+## 승격 후보
+- 없음(레일 ingest/rough 절차 자체 수정 대상).
+
+---
+근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`. 4회차 근거: `projects/intra-toy/*`(검증 스탠드인)·실 `E:\intra`(읽기전용 비교).
