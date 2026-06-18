@@ -29,7 +29,7 @@ description: 창작 모듈 내부 절차. 두 입구 — (발산) 아이디어 �
 승자 기준으로 채운다:
 - `01-concept-goals.md` : 개념·목표·성공기준·대표 시나리오
 - `02-requirements.md` : **REQ-ID 표**. 각 P0/P1 REQ에 `acceptance`(given/when/then) 필수.
-  `deploy_profile: intranet` 이면 OPS REQ(health, graceful shutdown) 자동 포함.
+  **배포 가능한 장기 실행 서비스**면(`intranet` 이든 `local`+Docker 든) OPS REQ(health·graceful shutdown·configurable bind) 자동 포함(todo-toy 교훈).
 - `03-architecture.md` : 스택 결정(근거)·컴포넌트·데이터 스케치·배포 타깃
 - `08-roadmap.md` : Phase별 scope + 검증 체크리스트 + 불변원칙
 - `09-risks-security.md` : 리스크 표·보안·프라이버시 경계

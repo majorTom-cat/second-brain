@@ -42,12 +42,12 @@ argument-hint: "<아이디어 한 문단>  |  ingest <slug 또는 문서경로>"
 
 `$META/SPEC.manifest.yaml` 을 번호 문서와 **일치**하게 채운다. 모든 P0/P1 REQ는 비어있지 않은
 `acceptance`(given/when/then)를 가져야 한다 — 이게 개발의 테스트이자 배포의 smoke가 된다.
-`deploy_profile: intranet` 이면 OPS REQ(health·graceful shutdown)를 자동 포함한다.
+**배포 가능한 장기 실행 서비스**면 `deploy_profile` 이 `intranet` 이든 `local`(+Docker)이든 OPS REQ(health·graceful shutdown·**configurable bind**)를 자동 포함한다(한 줄 도구·라이브러리는 제외). 이유: local+Docker 도 graceful/bind 가 필요(todo-toy 교훈).
 
 ## 4. CRITIC  (adversarial-review 스킬)  `[tier: judgment]`
 
 `adversarial-review` 스킬로 스펙을 적대적으로 검증한다. 특히:
-- acceptance 가 비었거나 검증 불가한 REQ → **거부**.
+- acceptance 가 비었거나 **선택한 테스트 수단으로 검증 불가**한 REQ → **거부**. (브라우저 클릭 등 단위테스트 불가한 것은 serve-check[페이지·요소 존재]+배포 smoke 로 분해해 검증 가능하게.)
 - 00의 한 줄 정의/비목표를 벗어난 범위 확장(scope creep) → 표시.
 - 숨은 가정·모순.
 

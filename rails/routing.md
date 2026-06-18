@@ -8,10 +8,10 @@
 | tier | 누가 실행 | 무엇 |
 | --- | --- | --- |
 | `judgment` | **메인 모델(Opus)** 이 직접 | 아이디어 프레이밍·N안 심사·적대적 리뷰·통합·게이트 요약·distill 결론 |
-| `bulk` | **더 싼 모델(Haiku) 서브에이전트로 위임** | 초안·보일러플레이트 코드·문서 확장·화면 스캐폴드·smoke 생성 |
+| `bulk` | **더 싼 모델(Sonnet) 서브에이전트로 위임** | 초안·보일러플레이트 코드·문서 확장·화면 스캐폴드·smoke 생성 |
 
 ## 실행 방법 (R4a — 하네스 내, 설정 0)
-- `[tier: bulk]` step 을 만나면: **`Agent`(또는 `Task`) 를 `model: haiku` 로 띄워 그 step 만 위임**하고, 결과를 받아 이어간다.
+- `[tier: bulk]` step 을 만나면: **`Agent`(또는 `Task`) 를 `model: sonnet` 으로 띄워 그 step 만 위임**하고, 결과를 받아 이어간다. (다이얼: `model-tiers.yaml` bulk.model — haiku=최저가/sonnet=현재/opus=절감0)
   - 대량 산출(N개 화면 스캐폴드, REQ별 초안 등)은 **병렬 Haiku 서브에이전트**로.
   - 위임 프롬프트엔 입력 산출물 경로(스펙·번호문서)를 명시 — 서브에이전트는 대화맥락이 없다(산출물=인터페이스 원칙).
 - `[tier: judgment]` step 은 **메인(Opus)이 직접**. 위임하지 않는다.

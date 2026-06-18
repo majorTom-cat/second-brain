@@ -39,9 +39,10 @@ worktree 격리로 병렬 변경 충돌을 막는다.
 각 REQ 구현을 6차원으로 리뷰한다. **REQ는 (a) acceptance 테스트 통과 + (b) 리뷰 PASS 일 때만 `status: done`.**
 둘 중 하나라도 실패면 그 REQ로 루프백(3단계). 루프백 사건은 개발 `$META/HANDOFF.md` §3 에 기록.
 
-## 5. 통합  `[tier: judgment]`
+## 5. 통합 + 진입점 기동 smoke  `[tier: judgment]`
 
 worktree들을 병합하고 전체 빌드/테스트를 돌린다(`npm run build`, `npm test`). 통합 단계에서 깨지면 고친다.
+- ★**진입점 기동 smoke(필수)**: 단위/통합 테스트가 green이어도 **실제 진입점을 직접 기동**해 동작을 확인한다 — 서비스면 `node <entry>`(또는 `docker run`) 후 `curl /api/health` + 기본 라우트, CLI면 실제 인자로 실행. 이유: 단위/통합은 함수를 직접 호출하므로 **기동 경로(진입점 가드·바인드·시그널) 결함을 못 잡는다**(예: Windows ESM main-guard 로 `node index.js` 가 listen 안 함 — 테스트 green인데 실행 깨짐, todo-toy). 기동 smoke 실패면 해당 REQ로 루프백.
 
 ## 6. 계약 작성 + 게이트에서 정지
 

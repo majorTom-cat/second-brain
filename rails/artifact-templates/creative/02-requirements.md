@@ -11,7 +11,7 @@
 - 카테고리(CAT) 예시 — 프로젝트에 맞게 정함:
   - `CORE` 핵심 기능 · `AUTH` 인증 · `UI` 화면 · `DATA` 데이터/스키마 · `API` 외부연동
   - `OPS` 운영(health·graceful shutdown·백업·모니터링) · `SEC` 보안/프라이버시
-- `deploy_profile: intranet` 이면 **OPS REQ를 자동 포함**: health 엔드포인트, graceful shutdown 최소 2개.
+- **배포 가능한 장기 실행 서비스**면(`deploy_profile: intranet` 이든 `local`+Docker 든) **OPS REQ를 자동 포함**: `health` 엔드포인트 · `graceful shutdown`(SIGTERM) · `configurable bind`(HOST/PORT). 이유: local+Docker 도 graceful·bind 가 필요(todo-toy 교훈). 한 줄 도구·라이브러리는 제외.
 
 ## 요구사항 표
 

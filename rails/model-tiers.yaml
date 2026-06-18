@@ -4,7 +4,7 @@
 # 실행 규약(어떻게 위임하나) = rails/routing.md.
 #
 # active_profile:
-#   r4a (현재 활성, 설정0·하네스 내): bulk → 더 싼 Claude(Haiku) 서브에이전트 위임, judgment → 메인(Opus).
+#   r4a (현재 활성, 설정0·하네스 내): bulk → 더 싼 Claude(Sonnet) 서브에이전트 위임, judgment → 메인(Opus).
 #   r4b (옵션·미구현, 진짜 $0): bulk → 로컬 qwen(Ollama)/Gemini 무료. rails/route.mjs + .env 필요.
 #     해석 우선순위(llm-wiki 규약): .env 의 <TIER>_PROVIDER > LLM_PROVIDER > default_tier.
 
@@ -19,9 +19,10 @@ tiers:
     budget_hint: small        # 유료 Claude는 여기에만 소액 배정
   bulk:
     # 대량·지루한 단계: 초안 작성, 보일러플레이트 코드, 문서 확장, 화면 스캐폴드, smoke 생성
-    # R4a (활성): 하네스 내 더 싼 Claude. Agent/Task 를 model=haiku 로 위임.
+    # R4a (활성): 하네스 내 더 싼 Claude. Agent/Task 를 model=sonnet 으로 위임.
+    # (haiku=가장 쌈/초벌, sonnet=중간·안정 초벌, opus=절감0. 사용자 선택으로 sonnet 채택 2026-06-18.)
     provider: anthropic
-    model: claude-haiku-4-5
+    model: claude-sonnet-4-6
     # R4b (대안·미구현): 진짜 무료. provider: ollama / model: qwen3:8b / fallback: gemini (⚠️ 민감자료 금지)
     r4b_provider: ollama
     r4b_model: qwen3:8b
