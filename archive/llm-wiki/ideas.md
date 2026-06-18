@@ -23,7 +23,8 @@
 - **사내 k8s 배포 + DB 접속 플레이북**(`docs\18`): 사내 레지스트리·GitLab CI 자동배포·migrate-job·port-forward+SSH 터널·CI 러너 secret 권한 우회(first-setup.sh) — agora·llm-wiki 공통 패턴으로 second-brain 배포 레일에 흡수 가능.
 - **무료등급 사용량 가시화**: 요청수/무료 한도 기준 게이지 + 공급자 응답헤더 실시간 잔여(Groq) vs 추정(Gemini) 구분 — 무료 LLM 운영툴 일반화.
 - **"프라이빗 기본 + 본인 승격" 협업 지식 모델**: 개인 질의/노트는 기본 비공개(검색·grounding·타인 재사용 미진입, 단 본인 맥락엔 인용 없이 활용)·가치 있으면 본인이 공용으로 승격. 자동 누적의 프라이버시 부작용을 끄고 *옵트인 큐레이션*으로 바꾸는 패턴 — 공유 지식베이스 어디에나 재사용(스키마는 `visibility`+`userId` 한 쌍만).
-- **구독형 CLI($0)를 백엔드 LLM 공급자로**: 이미 결제한 ChatGPT 구독을 `codex exec` CLI로 호출해 종량 API 없이 인제스트/질의(`callStructured` 한 분기 추가). k8s엔 CLI 설치+`auth.json` Secret 주입+쓰기 PVC(`CODEX_HOME`)·strict 스키마 변환·stdin 전달 등 운영 plumbing이 자산. ⚠개인구독 자동백엔드는 약관 회색·전사 한도 공유·외부전송 → 비민감·실험 한정.
+- **구독형 CLI($0)를 백엔드 LLM 공급자로**: 이미 결제한 ChatGPT 구독을 `codex exec` CLI로, **Claude Max 구독을 `claude -p` CLI로** 호출해 종량 API 없이 인제스트/질의(`callStructured` 한 분기씩 추가, codex→claude-cli는 거의 1:1 미러). k8s엔 CLI 설치+`auth.json`/`CLAUDE_CODE_OAUTH_TOKEN` Secret 주입+쓰기 PVC(`CODEX_HOME`)·strict/인라인 스키마 변환·stdin 전달 등 운영 plumbing이 자산. ⚠개인구독 자동백엔드는 약관 회색·전사 한도 공유·외부전송 → 비민감·실험 한정. ⚠⚠**런타임 CPU 의존 주의**: 컴파일된 CLI는 노드 CPU 명령어셋에 막힐 수 있다 — Bun 컴파일(Claude Code)은 **AVX 필수**라 구형 노드에서 SIGILL 크래시, Rust 컴파일(codex)은 무관. "구독 CLI를 배포 노드에 넣기 전 `lscpu`/AVX 확인"을 체크리스트로.
+- **소프트삭제를 "지우지 말고 숨겨서 복구 가능"으로 — 읽기전용 scope 한 경로**: 아카이브(soft-delete)된 컨테이너(룸·프로젝트·워크스페이스)를 사이드바 접이식 섹션에 다시 노출하고, **쓰기 가드는 그대로 둔 채 읽기 경로만 통과**시켜 읽기전용 열람 + 소유자 복원. 스키마는 `archivedAt` 타임스탬프 하나면 충분(별 테이블·휴지통 불필요), 권한 계산처(`canManageScope`)가 archived를 이미 막고 있으면 편집 버튼은 자동으로 숨음. ACL/권한이 있는 어떤 멀티테넌트 앱에도 재사용.
 - **유료 전환 비용 정당화 산출물(결재요청 문서)**: 무료/구독/종량 API의 한계(예: 무료 모델 ~8K TPM에 엑셀 1개도 막힘)와 대안(NotebookLM 등) 비교로 *유료 도입 사유서*를 LLM이 작성 — 사내 LLM 도입 어느 프로젝트에도 재사용(`~/Downloads/LLM-Wiki-유료전환-결재요청.md` 형태, 세션 03bf49fb).
 
 ## 개선 아이디어 (이 프로젝트를 다시 한다면)

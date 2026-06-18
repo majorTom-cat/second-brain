@@ -11,8 +11,8 @@
 | 채팅 원본 | 평문 raw(로컬 전용 — .gitignore) |
 | 원본 용량 | 50.3M |
 | 사내정보 | 8903건 (STRONG) ([SENSITIVE.md](chats/SENSITIVE.md)) |
-| 마지막 인제스트 | 2026-06-16 15:26 |
-| distill 후 새 세션 | 1 개 — knowledge.md 재정리 권장 |
+| 마지막 인제스트 | 2026-06-18 10:37 |
+| distill 후 새 세션 | 0 개 |
 
 ## 이 폴더 안내
 

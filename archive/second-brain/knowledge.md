@@ -48,10 +48,19 @@
 - **정지 이미지로 전달하면 인터랙션·반응형이 구현돼 있어도 "없는 것"이 된다.** 반응형·햄버거 드로어(768px 미만)는 이미 `AppShell.tsx`에 구현·모바일 샷도 생성돼 있었는데, 전달이 **PNG 48장(shots.zip)** 이라 ⓐ 화면 목록처럼 보이고 ⓑ 창을 줄일 수 없어 햄버거가 안 보였다. → 디자이너 반복형 산출물은 **실행 링크/배포 프리뷰로 "만지게"** 줘야 한다(최소 데스크탑+모바일 샷 병치). 이미지 묶음은 러프를 실제보다 못하게 보이게 함.
 - **용어 정합이 기대치를 가른다.** 우리가 "러프 골격"이라 부른 것이 전달 과정에서 "프로토타입"으로 불렸는데, **디자인팀에게 "프로토타입"은 클릭·반응형으로 실제처럼 동작하는 시안**을 뜻한다. 단어가 어긋나면 기대치가 어긋남 → 핸드백 시 산출물 단계명("러프 골격" vs "하이파이 프로토타입")을 명시적으로 합의할 것. → 레일 진화 후보: `HANDBACK.md` 템플릿에 **산출물 단계 라벨 + 권장 전달방식(실행 링크) 필드** 추가, screens 명세에 `menu_visible` 플래그.
 
+## 레일 진화 — 첫 회고 + P1·P2·P3 빌드 (2026-06-16~18)
+intra·아카이브에서 드러난 갭을 `/retro`(첫 회고)로 distill해 레일을 **실제 개조**했다. 교훈은 append-only `memory/lessons/rail.md`, 반복 검증 패턴은 `memory/patterns/` 로 승격. 사람 게이트 후 승인분만 반영.
+- **첫 `/retro`(2026-06-16)**: `projects/` 정식 생성물이 없어 아카이브 distill을 소스로 삼음. 패턴 2개 승격 — `ingest-convergence`(수렴 모드)·`external-project-layout`(외부 산출 타깃). ★agora CR-001을 "성공"으로 적은 distill 초안을 사용자가 정정 → "**기존 코드 관성**(전면 리디자인은 인플레이스보다 그린필드)" 교훈으로 바로잡음.
+- **P1 — 외부 타깃 지원(완료)**: `rails/projects.yaml`(주소록)+`rails/project-paths.md`(경로해석 `$DOCS/$META/$STATE/$CODE`). 5개 명령의 `projects/<slug>/` 하드코딩 → 변수화. external = `<root>/docs/`+`<root>/`(코드)+`<root>/.rail/`(메타·상태). **미등록 slug = 기존 동작(하위호환)**. intra external 등록.
+- **P2-b — 러프/풀 모드(완료)**: `/develop <slug> [rough|full]`(기본 full). rough=스캐폴드+화면, 테스트·6차원 critic·worktree 생략, 빌드만 게이트, REQ `done` 미표시 → `/deploy` 거부(배포 대상 아님). 산출=HANDBACK. 스택은 최종 목표 기준.
+- **P3 — 핸드백 품질·menu_visible(완료)**: `rails/handoff/HANDBACK.template.md`(전달단계 라벨·권장 전달방식=정적 PNG 금지·화면 인벤토리). `req-implementer` 가 네비 자동생성 시 `menu_visible: true` 화면만 노출.
+- **P2-a — 수렴(ingest) 입구(완료, 2026-06-18)**: `/creative` 가 발산(한 줄 아이디어) vs 수렴(문서)을 **자동 판별**. `spec-author` 에 greenfield-ingest(문서→REQ표, 화면=`REQ-SCR`)·change-ingest(변경문서→`CR`+크로스워크+불변식 상속) 절차. ★사용자 조건 = **발산 경로 유지 + 모드 자동 판별**(대체 아님).
+- **방법론 메모**: 모든 빌드는 *설명서(프롬프트) 수준* — 진짜 검증은 실제 프로젝트 실행이라야(아직 미실행). 회고→빌드→사람 게이트→커밋 단위로 진행. 비전문가 사용자 대상이라 매 단계 평이하게 설명.
+
 ## 미해결 / 다음에 이어가면
-- **R4 비용 라우팅 엔진** 미구현(`rails/model-tiers.yaml`+`.env` 읽어 bulk→무료/judgment→Claude).
-- **레일 1바퀴 검증(부분)**: intra로 레일 *방법*은 적용했으나 `/creative`→`/develop`→`/deploy` *명령* 자체는 미실행(외부 타깃 지원이 선결). 상세 디자인 회수 후 Phase 2에서 명령 개조 + 풀 실행 예정.
-- **agora 원본 raw 암호화** 보류(사용자 선택). 미등록 프로젝트 자동탐지의 민감도 안전 기본값.
+- **R4 비용 라우팅 엔진** 미구현(`rails/model-tiers.yaml`+`.env` 읽어 bulk→무료/judgment→Claude). 남은 backlog 1순위.
+- **레일 end-to-end 미검증**: P1·P2·P3 입구는 빌드됐으나 실제 프로젝트에 `/creative→/develop→/deploy` 를 돌린 적 없음(프롬프트 정합까지). 첫 대상 = intra 인데 **디자이너 화면 디자인 파일 대기 중이라 보류**(지금 태우면 스펙 재변동+러프 중복). 파일 도착 시 `/creative ingest intra`→게이트→`/develop intra rough`.
+- **agora 원본 raw 암호화** 보류(사용자 선택). 미등록 폴더 `...AppData\Local\Temp`(15 jsonl) 감지됨 — 임시폴더라 등록 안 함.
 - 타임스탬프 churn 억제, company-internal 색인 주제(topic) 추가 정제 검토.
 
 ---

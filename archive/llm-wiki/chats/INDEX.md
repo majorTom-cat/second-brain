@@ -11,9 +11,13 @@
 | 4 | 2026-06-15 01:44 | E--llm-wiki | 자료 탭에서 원본 그대로 추가에 2개의 md파일을 드래그해서 놓았는데 자동으로 업로드 되는건지 원본 그대로 추가 버튼이 접근금지 커서로 바뀌면서 안눌리네. 그리… | [raw/10cf2565-5785-400f-a9d5-e39828890d19.jsonl](raw/10cf2565-5785-400f-a9d5-e39828890d19.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 5 | 2026-06-15 01:53 | E--llm-wiki | 로컬호스트 4310으로 docker desktop에서는 떠잇는데 화면이 안보여. 재기동 해줘 | [raw/03bf49fb-8b0c-450e-8b08-0f492f4cc82b.jsonl](raw/03bf49fb-8b0c-450e-8b08-0f492f4cc82b.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 6 | 2026-06-16 15:19 | E--llm-wiki | 인텔리제이가 갑자기 종료되었는데 어디까지 했지? | [raw/bc5bec65-aa74-48c1-9dc1-cd095c4a48f1.jsonl](raw/bc5bec65-aa74-48c1-9dc1-cd095c4a48f1.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 7 | 2026-06-16 15:30 | E--llm-wiki | 배포판에서 룸 하나를 삭제(아키아브) 했는데, 아카이브라 완전 삭제는 아니고 어딘가에 보관되어 있을거 아니야? 그렇다면 사이드바에 아카이브 룸 이라고 해서 하단… | [raw/68cccbe2-6171-4629-8ede-3c48e0fc9851.jsonl](raw/68cccbe2-6171-4629-8ede-3c48e0fc9851.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 8 | 2026-06-16 21:46 | E--llm-wiki | 딱 한 단어로만 답해: 안녕 | [raw/f6c47918-4ada-45f5-87dc-63db3a6b42cb.jsonl](raw/f6c47918-4ada-45f5-87dc-63db3a6b42cb.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 9 | 2026-06-16 21:46 | E--llm-wiki | 1+1은? | [raw/4d41468e-ecf7-4bc8-b8d7-a74d5ed6a209.jsonl](raw/4d41468e-ecf7-4bc8-b8d7-a74d5ed6a209.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 10 | 2026-06-16 21:48 | E--llm-wiki | 1+1은? | [raw/4fdd79a5-a08a-4e19-bd92-9e221dc2c612.jsonl](raw/4fdd79a5-a08a-4e19-bd92-9e221dc2c612.jsonl) | `~/.claude/projects/E--llm-wiki` |
 
 ## 요약 통계
 
-- 총 세션: 6 개
-- 기간: 2026-06-11 14:30 ~ 2026-06-16 15:19
-- 원본 용량: 56.0M
+- 총 세션: 10 개
+- 기간: 2026-06-11 14:30 ~ 2026-06-16 21:48
+- 원본 용량: 73.9M
