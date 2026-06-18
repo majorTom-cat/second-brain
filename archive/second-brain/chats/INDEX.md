@@ -9,9 +9,10 @@
 | 2 | 2026-06-15 23:24 | E--second-brain | E 드라이브에 intra 라는 프로젝트를 새로 시작할거고 요구사항 문서, 화면 기획 문서, 프로토타입 html 등을 기획자에게 받았고 대략적인 구현을 해서 전체… | [raw/065dc788-f465-4369-9141-83d4eddc337e.jsonl](raw/065dc788-f465-4369-9141-83d4eddc337e.jsonl) | `~/.claude/projects/E--second-brain` |
 | 3 | 2026-06-16 10:26 | E--second-brain | intra 프로젝트에서, 이런 피드백을 받았어. 어떻게 하는게 좋을까? 지금 준 내용은 좌측 화면 목록이 기본적으로 있어서 프로토타입이라고는 말할수 없는것 같아… | [raw/6ee83c8c-5f72-4971-a010-a3afd49ad8c8.jsonl](raw/6ee83c8c-5f72-4971-a010-a3afd49ad8c8.jsonl) | `~/.claude/projects/E--second-brain` |
 | 4 | 2026-06-16 15:25 | E--second-brain | # /archive — 과거 프로젝트 아카이브 (전역판) 이 명령은 **어느 프로젝트에서 실행하든** 데이터를 항상 `E:/second-brain` 의 `arc… | [raw/6c015af4-a7d9-4ede-909a-ec60450c9131.jsonl](raw/6c015af4-a7d9-4ede-909a-ec60450c9131.jsonl) | `~/.claude/projects/E--second-brain` |
+| 5 | 2026-06-18 11:29 | E--second-brain | 다른 프로젝트들에서 얻은 지식과 교훈으로 더 나은 걸 만드려고 이 second brain을 만든건데, 다른 프로젝트들의 채팅 이력들도 다 남아있나? | [raw/e3170006-88e5-4b37-9832-cb1f66fd577b.jsonl](raw/e3170006-88e5-4b37-9832-cb1f66fd577b.jsonl) | `~/.claude/projects/E--second-brain` |
 
 ## 요약 통계
 
-- 총 세션: 4 개
-- 기간: 2026-06-13 01:38 ~ 2026-06-16 15:25
-- 원본 용량: 11.0M
+- 총 세션: 5 개
+- 기간: 2026-06-13 01:38 ~ 2026-06-18 11:29
+- 원본 용량: 12.4M

@@ -55,6 +55,8 @@ intra·아카이브에서 드러난 갭을 `/retro`(첫 회고)로 distill해 �
 - **P2-b — 러프/풀 모드(완료)**: `/develop <slug> [rough|full]`(기본 full). rough=스캐폴드+화면, 테스트·6차원 critic·worktree 생략, 빌드만 게이트, REQ `done` 미표시 → `/deploy` 거부(배포 대상 아님). 산출=HANDBACK. 스택은 최종 목표 기준.
 - **P3 — 핸드백 품질·menu_visible(완료)**: `rails/handoff/HANDBACK.template.md`(전달단계 라벨·권장 전달방식=정적 PNG 금지·화면 인벤토리). `req-implementer` 가 네비 자동생성 시 `menu_visible: true` 화면만 노출.
 - **P2-a — 수렴(ingest) 입구(완료, 2026-06-18)**: `/creative` 가 발산(한 줄 아이디어) vs 수렴(문서)을 **자동 판별**. `spec-author` 에 greenfield-ingest(문서→REQ표, 화면=`REQ-SCR`)·change-ingest(변경문서→`CR`+크로스워크+불변식 상속) 절차. ★사용자 조건 = **발산 경로 유지 + 모드 자동 판별**(대체 아님).
+- **R4a — 비용 라우팅(완료, 2026-06-18)**: `[tier: bulk]`→더 싼 Claude 서브에이전트 위임(기본 **Sonnet**, 다이얼 haiku/sonnet/opus)·`[tier: judgment]`→Opus. `rails/routing.md`+`model-tiers.yaml`+`CLAUDE.md` 배선. 핵심 = 레일이 Claude Code 안에서 도니 "라우팅"=서브에이전트 모델 위임(외부 스크립트=R4b 옵션). `/retro`→`/archive all` 자동선행, 엔진 churn 수정(P-B)도 이 라운드.
+- **레일 1바퀴 실검증(todo-toy, 2026-06-18)**: `creative→develop→deploy` **첫 완주**(throwaway 토이). 실버그 1건(**Windows ESM main-guard** — 테스트 20/20 green인데 `node index.js` 실행 깨짐)·OPS 보강 2건(HOST·SIGTERM) 회수 → `/develop` **진입점 기동 smoke 강제**·`/creative` **OPS REQ 선반영**(`memory/lessons/todo-toy.md`). R4a 실집행 검증(Haiku 구현·Sonnet 배포물, critic 안전망).
 - **방법론 메모**: 모든 빌드는 *설명서(프롬프트) 수준* — 진짜 검증은 실제 프로젝트 실행이라야(아직 미실행). 회고→빌드→사람 게이트→커밋 단위로 진행. 비전문가 사용자 대상이라 매 단계 평이하게 설명.
 
 ## 미해결 / 다음에 이어가면

@@ -9,9 +9,9 @@
 | 자동 푸시 | 예(개인 데이터) |
 | 세션 수 | 10 개 |
 | 채팅 원본 | 평문(chats/raw/) |
-| 원본 용량 | 75.0M |
-| 사내정보 | 2159건 (STRONG) → allow_internal 평문유지 ([SENSITIVE.md](chats/SENSITIVE.md)) |
-| 마지막 인제스트 | 2026-06-18 11:26 |
+| 원본 용량 | 76.0M |
+| 사내정보 | 2166건 (STRONG) → allow_internal 평문유지 ([SENSITIVE.md](chats/SENSITIVE.md)) |
+| 마지막 인제스트 | 2026-06-18 14:21 |
 | distill 후 새 세션 | 0 개 |
 
 ## 이 폴더 안내
