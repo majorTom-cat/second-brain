@@ -50,6 +50,7 @@
 - ✅ **P1 외부타깃 빌드 착수·완료**(2026-06-16): `rails/projects.yaml`·`rails/project-paths.md` 신설, 5개 명령 경로 변수화. 하위호환 유지(미등록 slug=기존 동작). 아직 external 프로젝트에 명령 실제 실행은 안 함(P2 인입 모드가 선결).
 - ✅ **P2-b(rough/full) + P3(핸드백·menu_visible) 완료**(2026-06-16): `/develop [rough|full]`, `req-implementer` rigor 모드 + `menu_visible` 규칙, `rails/handoff/HANDBACK.template.md`. 아직 external 프로젝트에 실제 실행은 안 함(검증은 다음).
 - ✅ **P2-a(수렴/ingest 모드) 빌드 완료**(2026-06-18): `/creative` 모드 자동 판별(발산 vs 수렴) + `spec-author` greenfield-ingest·change-ingest 절차. 보류 조건(발산 경로 유지 + 모드 자동 판별) 충족. **⏸ intra 실제 실행은 디자이너 화면 디자인 파일 대기 중이라 보류** — 지금 태우면 스펙이 또 바뀌고 러프 작업과 겹침(디자인-퍼스트). 파일 도착 시 `/creative ingest intra` → 게이트 → `/develop intra rough`.
+- ✅ **UX: `/retro` 가 `/archive all` 을 자동 선행**(2026-06-18, 사용자 요청): 매번 둘을 따로 칠 필요 없게 — `/retro` 한 번 = 수집·distill(§0) + 레일 회고. `/archive all` 단독은 빠른 백업용으로 유지(매 백업에 무거운 회고가 붙지 않게 retro→archive 방향 선택).
 - **backlog(미착수)**: P3 R4 tier 엔진.
 
 ---

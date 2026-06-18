@@ -1,25 +1,35 @@
 ---
-description: 끝난 프로젝트의 교훈을 distill해 memory에 쌓고, 레일 수정을 제안한다(사람 승인 후 반영). = second brain의 보상.
-argument-hint: "<slug>"
+description: 먼저 /archive all 로 최신 지식을 모은 뒤 교훈을 distill해 memory에 쌓고, 레일 수정을 제안한다(사람 승인 후 반영). = 배우고 개선하기 = second brain의 보상.
+argument-hint: "[<slug>]  # 생략 시 전체(archive all + 레일 회고)"
 ---
 
-# /retro — 회고 / 되먹임 루프
+# /retro — 회고 / 되먹임 루프 (배우고 개선하기)
 
-당신은 second-brain의 **회고 모듈**이다. 한 프로젝트에서 배운 것을 추출해 **레일을 개선**한다.
+당신은 second-brain의 **회고 모듈**이다. 배운 것을 추출해 **레일을 개선**한다.
 이게 다음 프로젝트를 더 빠르게 만드는 핵심이다. **레일 변경은 제안만 하고, 사람이 승인한다.**
 
-대상 프로젝트: `$ARGUMENTS` (slug)
+대상: `$ARGUMENTS` — slug 가 있으면 그 프로젝트, **생략하면 전체(레일 수준 회고)**.
 
-## 1. 경로 해석 + 수집  `[tier: bulk]`
+## 0. 최신 지식 수집 — `/archive all` 자동 실행  `[tier: bulk→judgment]`
 
-**경로 해석**: `rails/project-paths.md` 규약으로 `<slug>` → `$META`/`$STATE` 확정(미등록 slug 는 internal = `projects/<slug>/` 기존 동작).
-세 모듈(creative·develop·deploy)의 `$META/HANDOFF.md`(델타 + §3 critic 루프백) 와 각 `$META/GATE.md` 결과,
-`$STATE`(pipeline.yaml) 을 읽는다. "어디서 막혔나 / critic이 뭘 거부했나 / 게이트에서 뭘 고쳤나" 를 모은다.
+회고는 **최신 지식 위에서** 해야 의미가 있으므로, 본 회고 전에 `/archive all` 을 **자동으로 먼저 수행**한다(사용자가 따로 칠 필요 없음). `/archive` 명령·`chat-archivist` 스킬 절차를 그대로 따른다:
+1. `node .claude/skills/chat-archivist/ingest.mjs all` — 채팅 수집·비밀 마스킹·색인.
+2. **비밀/사내정보 게이트**: 각 `archive/<p>/chats/SECRETS.md` 판정 확인(잔여 비밀 있으면 **보고·정지**), 미등록 폴더 안내.
+3. **distill**`[tier: judgment]`: `newSinceDistill > 0` 인 프로젝트만 `archive/<p>/knowledge.md`·`ideas.md` 갱신(company-internal 은 실명·내부주소 일반화).
+
+> `/archive all` 만 단독으로(빠른 백업) 쓰고 싶으면 여전히 `/archive all` 을 직접 호출하면 된다 — 이 자동 수집은 `/retro` 안에서만 일어난다.
+
+## 1. 마찰·교훈 수집  `[tier: bulk]`
+
+- **slug 가 주어졌고** 그 프로젝트에 레일 산출물이 있으면: `rails/project-paths.md` 규약으로 `$META`/`$STATE` 를 해석해
+  세 모듈(creative·develop·deploy)의 `$META/HANDOFF.md`(델타 + §3 critic 루프백)·각 `$META/GATE.md`·`$STATE`(pipeline.yaml)를 읽는다.
+- **slug 생략 또는 레일 산출물이 없으면(레일 수준 회고)**: §0에서 갓 distill된 `archive/*/knowledge.md`·`ideas.md`(특히 새 세션 반영분)를 마찰·교훈 소스로 삼는다.
+"어디서 막혔나 / critic·기획자가 뭘 거부·지적했나 / 게이트에서 뭘 고쳤나 / 어떤 갭이 반복되나" 를 모은다.
 
 ## 2. distill  (lesson-distiller 스킬)  `[tier: judgment]`
 
-`lesson-distiller` 스킬로 `memory/lessons/<slug>.md` 를 만든다: 레일이 틀린 점, 빠진 템플릿 필드,
-잘못 단 tier, 반복될 위험. 추상적 소감이 아니라 **다음에 바꿀 구체적 항목**으로.
+`lesson-distiller` 스킬로 `memory/lessons/<slug>.md`(레일 수준 회고면 `memory/lessons/rail.md` 에 append)를 만든다:
+레일이 틀린 점, 빠진 템플릿 필드, 잘못 단 tier, 반복될 위험. 추상적 소감이 아니라 **다음에 바꿀 구체적 항목**으로.
 
 ## 3. 레일 수정 제안 (diff 식)  `[tier: judgment]`
 

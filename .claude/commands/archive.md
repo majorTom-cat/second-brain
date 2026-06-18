@@ -9,6 +9,8 @@ argument-hint: "<project> [--encrypt]"
 `archive/<project>/` 한곳에 모아 **클라우드 백업 가능한 형태**로 만든다. `projects/`(레일 생성물)·
 `memory/`(retro 교훈)와 별개 영역이다.
 
+> 💡 **빠른 백업만** 원하면 `/archive all`(이 명령). **배우고 레일까지 개선**하려면 `/retro` — 그게 이 `/archive all` 을 **자동으로 먼저 돌린 뒤** 회고한다(둘을 따로 칠 필요 없음).
+
 입력:
 > $ARGUMENTS   (예: `llm-wiki`, `all`, `agora --encrypt`)
 
