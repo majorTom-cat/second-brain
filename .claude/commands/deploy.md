@@ -37,6 +37,7 @@ SIGTERM graceful shutdown(DB 풀 close), 시크릿 외부화(.env / CI 변수, �
 
 OPS 체크리스트를 적대적으로 검증한다: 모든 P0 REQ smoke green · health 응답 · graceful shutdown ·
 시크릿 외부화 · rollback 명시 · 백업/모니터링 갭 플래그(`ops_gaps`). blocker면 2~3단계로 루프백.
+★**`rails/false-done-checklist.md` D(통합/배포) 항목 + 생성형 프리모템**: `health 200` ≠ 사용 가능 — 배포(또는 로컬 기동) 후 **실제 로그인 + 핵심 액션 1회**를 직접 해본다(런타임 시크릿/CONFIG 드리프트·CORS-behind-TLS — bns-intranet 운영 교훈). 관찰 못 한 항목은 `ops_gaps` 에 명시(조용한 건너뜀 금지).
 
 ## 5. 계약 작성 + 게이트에서 정지
 

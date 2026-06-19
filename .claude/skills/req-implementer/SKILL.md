@@ -42,6 +42,7 @@ description: 개발 모듈 내부 절차. REQ-ID별로 git worktree에서 독립
 ### 3) 자체 검증
 - 그 REQ의 테스트를 돌려 통과를 확인한다(`npm test` 또는 해당 러너).
 - 통과하지 않으면 done 으로 표시하지 않는다.
+- ★**UI REQ(`REQ-SCR-*`·화면을 만드는 REQ)는 테스트 통과만으로 done 금지.** 앱을 띄워(`npm run dev` — 또는 `/verify`·`/run`) **(a) 렌더 화면을 `design-input` 시안과 나란히 대조**('대충 비슷' 아님 — 레이아웃·컴포넌트가 일치) + **(b) 모든 버튼·링크·폼을 클릭**해 내비게이션·액션이 실제 동작하는지 **직접 관찰**한다. 단위테스트는 시각 일치·링크 배선을 검증하지 않으므로, 시안과 다르게 뭉뚱그리거나 버튼에 링크가 없어도 green 일 수 있다(이 갭이 "테스트 done" 거짓완료의 원인). 관찰 못 하면 done 아님.
 
 ### 4) 호출자에게 반환
 각 REQ의 {id, files, tests, 통과여부}를 호출자(/develop)에 넘긴다. 호출자가 adversarial-review로
@@ -49,6 +50,7 @@ description: 개발 모듈 내부 절차. REQ-ID별로 git worktree에서 독립
 
 ## 규칙
 - acceptance 테스트 없이 `done` 금지.
+- UI REQ는 **렌더 관찰(시안 대조 + 인터랙티브 요소 클릭) 없이 `done` 금지** — 호출자에게 반환할 때 "테스트 green" 과 "관찰된 동작" 을 구분해 보고한다([[verify-by-observation]]).
 - 기존 코드/유틸을 우선 재사용한다(새로 짜기 전에 찾는다).
 - 시크릿은 코드에 넣지 않는다. 환경변수 이름만 DEV.manifest.run.env 에 남긴다.
 - 통합은 호출자가 한다. 여기선 REQ 단위까지만 책임진다.

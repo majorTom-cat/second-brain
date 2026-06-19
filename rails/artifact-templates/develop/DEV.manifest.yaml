@@ -1,5 +1,7 @@
 # DEV.manifest.yaml — 개발→배포 기계가독 계약 (경계 B 산출물).
 # /deploy 가 이 파일만으로 동작한다. 규칙: REQ는 acceptance에 매핑된 테스트가 통과해야만 status: done.
+# UI REQ(REQ-SCR-*)는 추가로 ui_verified(시안 대조 + 버튼·링크 클릭스루를 실제 렌더로 관찰) 없이는 done 금지
+#   — 테스트 green 은 시각 일치·링크 배선을 검증하지 않는다(거짓완료 방지).
 
 project: <slug>
 
@@ -10,6 +12,12 @@ reqs:
     files: [src/...]
     tests: [test/...]       # acceptance 를 검증하는 테스트
     verification: pass      # adversarial-review 결과: pass | fail
+  - id: REQ-SCR-001         # UI/화면 REQ — 렌더 관찰 증거 필수
+    status: done
+    files: [src/app/...]
+    tests: [test/...]
+    verification: pass
+    ui_verified: "design-input 시안 대조 + 버튼·링크 클릭스루 관찰(npm run dev)"  # 없으면 done 금지
   - id: REQ-OPS-001
     status: done
     files: [src/api/health.ts]

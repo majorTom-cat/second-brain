@@ -37,6 +37,7 @@ description: 창작 모듈 내부 절차. 두 입구 — (발산) 아이디어 �
 - `01-concept-goals.md` : 개념·목표·성공기준·대표 시나리오
 - `02-requirements.md` : **REQ-ID 표**. 각 P0/P1 REQ에 `acceptance`(given/when/then) 필수.
   **배포 가능한 장기 실행 서비스**면(`intranet` 이든 `local`+Docker 든) OPS REQ(health·graceful shutdown·configurable bind) 자동 포함(todo-toy 교훈).
+  **UI/화면 REQ(`REQ-SCR-*`)의 acceptance 는 관찰 가능한 시각·인터랙션 결과로 적는다**: "시안(design-input)과 레이아웃 일치" + "각 버튼·링크 클릭 시 명세 화면으로 이동/액션"(죽은 링크 0). 안 적으면 critic·테스트가 검증할 게 없어 거짓완료가 통과한다.
 - `03-architecture.md` : 스택 결정(근거)·컴포넌트·데이터 스케치·배포 타깃
 - `08-roadmap.md` : Phase별 scope + 검증 체크리스트 + 불변원칙
 - `09-risks-security.md` : 리스크 표·보안·프라이버시 경계
@@ -51,6 +52,7 @@ description: 창작 모듈 내부 절차. 두 입구 — (발산) 아이디어 �
 - `01-concept-goals.md`: 문서가 밝힌 목표·대상·성공기준을 정리(새로 발명하지 않음).
 - `02-requirements.md`: 문서에서 **REQ-ID 표를 추출**, 각 P0/P1에 `acceptance`(given/when/then).
   **화면 1개 = `REQ-SCR-NNN`**, 각 화면에 `menu_visible`(상위 메뉴 노출 여부 — 흐름내/개발용은 `false`).
+  화면 REQ의 acceptance 는 **시안 일치 + 버튼·링크 동작을 관찰 가능 기준**으로 적는다(화면 *목록*만 옮기면 acceptance 가 비어 시안 충실도·링크 배선을 아무도 검증 못 함 — develop critic 7번이 거부).
 - `03-architecture.md`: 스택은 **최종 목표 기준**(러프가 실제 앱으로 자라게). 프로토타입이 쓴 임시 스택에 끌려가지 말 것.
 - ★**프로토타입·시안을 반드시 소비**(있으면): `design-input/`(또는 지정 경로)에 **프로토타입 HTML·PRD·수용기준**이 있으면 화면 *목록*(inventory)만 보지 말고 **레이아웃·인터랙션·비주얼 의도까지 읽어** `03`(컴포넌트/UI 스케치)·`09` 에 반영한다. 목록만 정규화하면 **시안 충실도 0**(intra-toy 교훈 — screens.md만 먹어 프로토타입과 무관한 골격이 나옴). docx 등 바이너리는 추출(텍스트/이미지)해서. 없으면 목록만(현행). ※스택만은 프로토타입 임시구현에 안 끌려감(위 03).
 - `08·09`: 문서 범위에서 채우고 없으면 빈칸 + 표시.

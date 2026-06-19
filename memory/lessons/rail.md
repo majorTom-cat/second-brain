@@ -185,3 +185,30 @@ intra-toy 검증·정리 후 `/retro`. §0 아카이브에서 **새 실제 프�
 - 없음. intranet-deploy 패턴은 이미 승격돼 있고, 이번엔 그 패턴을 **정정·보강**(함정6·스키마전략3). validation-debt: **패턴은 실검증됨(deploy-only)**, 단 레일 `/deploy intranet` *명령/skill* 은 미실행 유지.
 
 6회차 근거: 이번 세션 직접 관찰(bns-intranet 실배포 6실패·2오답·entrypoint 확인) + `E:\agora`·`E:\llm-wiki` 실 코드(`Dockerfile`·`docker-entrypoint.sh`).
+
+---
+
+# 7회차 회고 (2026-06-20) — "테스트 done" 거짓완료: green ≠ 관찰된 동작 (UI 게이트 강화)
+실 incident. 다른 세션이 **디자인 시안을 받아 "개발+테스트 끝, 완료"** 라고 보고했는데, 사용자가 화면에 들어가 보니 **버튼·링크가 죽어 있고 시안과 다르게 뭉뚱그려** 구현돼 있었다. 사용자가 그 갭을 짚어 "이 실수를 반복 안 하게 지식을 쌓자" 로 캡처. (이번 세션은 레일만 업그레이드 — intra 현물 수정은 다른 세션 담당.)
+
+## 무엇이 잘 됐나
+- 사용자가 **green 보고를 곧이듣지 않고 직접 화면을 확인** → 거짓완료를 잡음(=이 패턴의 인간판). 레일이 자동으로 잡았어야 할 것.
+- 같은 메타교훈이 이미 로그에 3번 흩어져 있었음(todo-toy 진입점 smoke · intra "에이전트 보고 믿지 말 것"·"거짓안심") → **승격 신호 충족**.
+
+## 결정·마찰 (열린 교훈)
+1. **★`done` 을 무엇으로 판정하나 — green 신호 vs 관찰된 동작.** 단위 테스트는 *로직*만 검증하지 *시각 일치·링크 배선*은 검증하지 않는다. 그래서 시안과 다르게 뭉뚱그리고 버튼이 죽어 있어도 테스트는 green 일 수 있다. green 하나를 done 의 대리로 쓰면 거짓완료가 게이트에 올라오고, 사람은 그 "완료"를 믿고 검토하므로 결함이 통과. 트레이드오프: green=빠르고 객관적·but 안 보는 차원이 있음 / 관찰=느리지만 사용자가 볼 형태를 직접 확인. **언제 green 충분**: 순수 로직·데이터·API(시각/인터랙션/기동 표면 없음). **언제 관찰 필수**: UI 화면·기동 경로·위임 산출·권한 불변식.
+2. **레일 갭 — full 경로에 UI 관찰 게이트가 없었다.** rough 모드는 이미 "전 화면 클릭 가능 + 프로토타입 참조 + 기동 smoke"(4·5회차)인데, **정작 `done` 이 사는 full 모드**는 자체검증이 `npm test` 뿐이고 critic 6차원에 UI 충실도/인터랙션 차원이 없어, UI REQ가 렌더 관찰 없이 `done`/`verification: pass` 로 통과 가능했다.
+3. **이미 발견된 교훈이 레일로 굳지 않으면 반복된다.** intra.md 의 "에이전트 보고 믿지 말 것"·"거짓안심"·"npm test 글로브" 가 *프로젝트 교훈*에만 있고 레일 게이트가 아니어서, 다른 세션이 같은 실수를 반복. capture≠harden(6회차 capture≠apply 의 친척).
+
+## 레일 수정 제안 → 적용 결과 (2026-06-20 사용자 승인 "업그레이드 하자" = 적용)
+- ✅ **[U1] `adversarial-review` 7번 차원 신설**: UI 충실도/인터랙션 배선. UI REQ 는 렌더 관찰 없이 통과 금지, 시안 불일치·죽은 버튼 = blocker. (강도조절에 "UI면 7번도 핵심")
+- ✅ **[U2] `req-implementer` §3 + 규칙**: UI REQ 는 시안 대조 + 버튼·링크 클릭스루 **관찰 없이 `done` 금지**. "테스트 green" 과 "관찰된 동작" 분리 보고.
+- ✅ **[U3] `/develop` §4·§5**: done 조건에 (c) 렌더 관찰 추가 · 진입점 smoke 를 UI 로 확장(각 `REQ-SCR` 열어 시안 대조+클릭스루, 실패면 루프백).
+- ✅ **[U4] 계약/스펙 양쪽**: `DEV.manifest` UI REQ 에 `ui_verified` 증거 필드(없으면 done 금지) · `02-requirements`+`spec-author` 가 UI REQ acceptance 에 시각·인터랙션 관찰 기준 강제(목록만 옮기면 검증할 게 없음).
+- ✅ **[U5] ★반응형→능동 전환(사용자 2차 지적: "내가 겪은 것만 보완하면 다음도 내가 직접 겪어야 한다 — 예측해서 보완").** UI 하나만 막으면 형제 갭(데이터 상태·반응형·권한 차단·실데이터·기동·배포 실여정)은 사람이 또 겪어야 발견됨. → **거짓완료를 모든 게이트에서 한 장치로 사냥**: 신규 `rails/false-done-checklist.md`(성장 목록·표면별 함정 seeded) + `adversarial-review` 가 매번 **해당 항목 점검 + 생성형 프리모템**("done 인데 깨졌다면 어떻게?")으로 *목록 밖* 모드까지 찾고 + **`/retro` 가 새 모드를 목록에 append**(되먹임). `/develop`·`/deploy` critic 이 이 체크리스트 참조. 행동교훈 auto-memory `fix-the-failure-class-not-the-instance`. → 사람이 직접 겪고 명령하지 않아도 레일이 거짓완료 표면을 스스로 넓힌다.
+
+## 승격 (2026-06-20 게이트 = 사용자 "지식 쌓고 업그레이드")
+- ✅ **broad 패턴 승격** (2+ 프로젝트 반복: todo-toy·intra·이 incident) → [`patterns/verify-by-observation.md`](../patterns/verify-by-observation.md): "done = green 신호가 아니라 직접 본 동작". 진입점 기동 smoke(todo-toy)와 한 뿌리로 통합.
+- 세션간 행동교훈은 auto-memory `done-means-observed-working`(feedback)에도 기록 — 매 세션 자동 로드.
+
+7회차 근거: 사용자 보고(다른 세션 시안 개발 거짓완료) + 기존 로그 `lessons/todo-toy.md`·`lessons/intra.md`(에이전트 보고/거짓안심/npm test 글로브) + 이번 세션 적용한 5개 레일 파일 diff.

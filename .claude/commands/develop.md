@@ -36,19 +36,20 @@ worktree 격리로 병렬 변경 충돌을 막는다.
 
 ## 4. CRITIC  (adversarial-review 스킬)  `[tier: judgment]`
 
-각 REQ 구현을 6차원으로 리뷰한다. **REQ는 (a) acceptance 테스트 통과 + (b) 리뷰 PASS 일 때만 `status: done`.**
-둘 중 하나라도 실패면 그 REQ로 루프백(3단계). 루프백 사건은 개발 `$META/HANDOFF.md` §3 에 기록.
+각 REQ 구현을 7차원 + **`rails/false-done-checklist.md` 해당 항목 + 생성형 프리모템**("done 인데 깨졌다면 어떻게?")으로 리뷰한다. **REQ는 (a) acceptance 테스트 통과 + (b) 리뷰 PASS, 그리고 UI REQ(`REQ-SCR-*`)는 추가로 (c) 렌더 관찰(시안 대조 + 버튼·링크 클릭스루) 통과 일 때만 `status: done`.** 체크리스트의 데이터상태·반응형·실데이터·차단경로 항목도 해당되면 관찰 또는 명시적 N/A(조용한 건너뜀 = 미검증).
+하나라도 실패면 그 REQ로 루프백(3단계). 루프백 사건은 개발 `$META/HANDOFF.md` §3 에 기록.
 
 ## 5. 통합 + 진입점 기동 smoke  `[tier: judgment]`
 
 worktree들을 병합하고 전체 빌드/테스트를 돌린다(`npm run build`, `npm test`). 통합 단계에서 깨지면 고친다.
 - ★**진입점 기동 smoke(필수)**: 단위/통합 테스트가 green이어도 **실제 진입점을 직접 기동**해 동작을 확인한다 — 서비스면 `node <entry>`(또는 `docker run`) 후 `curl /api/health` + 기본 라우트, CLI면 실제 인자로 실행. 이유: 단위/통합은 함수를 직접 호출하므로 **기동 경로(진입점 가드·바인드·시그널) 결함을 못 잡는다**(예: Windows ESM main-guard 로 `node index.js` 가 listen 안 함 — 테스트 green인데 실행 깨짐, todo-toy). 기동 smoke 실패면 해당 REQ로 루프백.
+- ★**UI/화면 REQ면 추가로 시안대조+클릭스루(필수)**: `npm run dev` 로 띄워 **각 `REQ-SCR` 화면을 실제로 열어 `design-input` 시안과 대조**(레이아웃·컴포넌트가 '대충 비슷'이 아니라 일치) **+ 모든 버튼·링크·폼을 클릭**해 내비게이션·액션이 동작하는지 확인한다. 이유: 단위/통합 green 은 **시각 일치도, 링크 배선도 검증하지 않는다** — 시안과 다르게 뭉뚱그리거나 버튼에 링크가 없어도 테스트는 통과할 수 있다(거짓완료: "시안대로 개발+테스트 done" 보고했으나 실제론 링크 없고 시안과 다름). 시안 불일치·죽은 버튼이면 해당 REQ로 루프백.
 
 ## 6. 계약 작성 + 게이트에서 정지
 
 **rough 모드**: §3~§5 대신 — `rails/handoff/HANDBACK.template.md` → `$META/HANDBACK.md` 로 채운다(전달단계 라벨·권장 전달방식·`menu_visible` 포함 화면 인벤토리·목 처리·피드백 방법). `$META/DEV.manifest.yaml` 은 스캐폴드만 기록(REQ별 `status: scaffold`). `$STATE` 는 `stage: develop / rigor: rough / gate: pending`. `$META/GATE.md` 에 **"러프 — 배포 대상 아님(REQ 미검증)"** 을 명시하고, 정지 후 **기획자 핸드백 검토**를 제안한다(다음은 상세 디자인 회수 후 `full` 재실행). 아래 1~4는 **full 모드**.
 
-1. `$META/DEV.manifest.yaml` 을 채운다(REQ별 status·tests·verification, build, run).
+1. `$META/DEV.manifest.yaml` 을 채운다(REQ별 status·tests·verification, build, run). **UI REQ(`REQ-SCR-*`)는 `ui_verified`(시안 대조+클릭스루 관찰) 필드를 채운다 — 없으면 done 금지.**
 2. `$META/HANDOFF.md`(델타·확정결정·루프백) 와 `$META/GATE.md`(REQ별 status 표 + diff 요약)를 쓴다.
 3. `$STATE`(pipeline.yaml)를 갱신한다:
    ```yaml
