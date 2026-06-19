@@ -25,7 +25,10 @@ description: 배포 모듈 내부 절차. deploy_profile(local/intranet)에 따�
   Service, Ingress(cert-manager ClusterIssuer 주석으로 TLS 자동), 필요시 ConfigMap initdb(1회성), PDB.
 - 시크릿 = `kubectl create secret`(CI 변수에서). 스토리지 = 단일 RWO / 멀티 RWX 구분.
 - 롤백 = `kubectl set image deployment/<app> <app>=<registry>/<app>:<old-sha>`.
-- 📐 **상세 레시피·운영 DB 플레이북·반복 함정**(probe 분리·PDB·`set image` 사각·port-forward `send-keys`·시크릿 경로) = `memory/patterns/intranet-deploy.md`(agora+llm-wiki 2개 프로젝트 일반화). intra 가 첫 실사용.
+- 🧭 **★기성 클러스터엔 prior-art "전체" 선채택**(bns-intranet 실배포 6연속 실패 교훈): 같은 인프라에 이미 도는 앱(agora 등)이 있으면 그 검증된 *전체* 설정을 통째로 채택하고 **환경 고유값만 조정**(부분만 옮기면 매 제약이 런타임 실패로 늦게 터짐). 처음부터 확인할 체크리스트:
+  - **CSI 없는 노드** → `nodeAffinity` 제외(볼륨 파드) · **노드 CPU 구식**(x86-64-v2 미지원) → 최신 mysql 이미지 회피(**MariaDB**) · **공용 pull 시크릿 재사용**(개인 계정 새로 만들면 401) · **CI dind 연결변수**(`DOCKER_HOST`/TLS) · **사내 CI 외부 다운로드 차단**(gradle 등 → 내장 이미지·사내 미러) · **러너가 클러스터 접근 있으면 `KUBE_CONFIG` 불필요**.
+- 🗄️ **DB 스키마(마이그레이션) 전략 3** (패턴 참조): (A) 검증만+수동(`validate`+`ALTER`) · (B) ★**기동 시 앱이 자기 DB에 자동 적용**(entrypoint `db push`/Flyway·Liquibase — kubectl·RBAC 불필요, llm-wiki 검증) · (C) migrate Job. 활성 개발이면 **(B) 권장**(추가형만 자동·파괴적은 가드/수동).
+- 📐 **상세 레시피·운영 DB 플레이북·반복 함정**(probe 분리·PDB·`set image` 사각·port-forward `send-keys`·시크릿 경로·클러스터 함정6·스키마전략3) = `memory/patterns/intranet-deploy.md`(agora+llm-wiki+**bns-intranet 실배포 검증** 2026-06-19).
 
 ## 런북 생성
 `RUNBOOK.template.md` 로 `deploy/RUNBOOK.md` 를 채운다: 시작/중지/롤백/health/env/트러블슈팅/백업·모니터링 갭.

@@ -11,6 +11,8 @@
 # auto_push:
 #   true  = 주기적 자동 새로고침(refresh.ps1)이 커밋·푸시까지 자동. 개인 데이터에만.
 #   false = 자동 새로고침에서 제외. 수동 /archive + 검토 후에만 푸시. (회사 데이터 기본값)
+#   ※ [R1] /retro §0 자동수집도 `auto` 모드(auto_push:true=개인)만 수집 → company-internal(false)은 자동수집 제외
+#         (회사데이터를 개인 GitHub 아카이브로 자동 끌어오지 않게). deploy-only 배포물(예: bns-intranet)은 애초에 미등록.
 # allow_internal:
 #   엔진이 채팅에서 사내 마커(사내 도메인·네임스페이스·사설 IP)를 감지하면, personal 이라도
 #   평문 raw 를 자동으로 커밋에서 격리(.gitignore)한다 — 회사정보의 개인 클라우드 유출 방지(안전 기본값).

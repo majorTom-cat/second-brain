@@ -33,4 +33,4 @@
 ## 추가 (2026-06-19 — bns-intranet 실배포 후)
 - **`intranet-deploy` 패턴(지식)은 실배포로 검증·정정됨**(deploy-only): 클러스터 함정 6 + 스키마 전략 3(자동 포함) 발견→패턴 보강.
 - 단 **레일 `/deploy intranet` *명령/skill* 은 여전히 미실행**(bns는 수동) — 명령 검증은 실 intra(full)가 와야.
-- 새 제안 [R1](§0 deploy-only 제외)·[R2](runbook intranet 체크리스트)는 **미빌드**(rail.md 6회차) — 승인 대기.
+- ✅ [R1](§0 deploy-only 제외)·[R2](runbook intranet 체크리스트) **빌드 완료**(2026-06-19 게이트): retro.md §0 = `ingest auto`(회사 자동수집 제외), deploy-runbook intranet 에 선채택 체크리스트+스키마전략3.

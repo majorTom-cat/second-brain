@@ -1,6 +1,6 @@
 ---
-description: 먼저 /archive all 로 최신 지식을 모은 뒤 교훈을 distill해 memory에 쌓고, 레일 수정을 제안한다(사람 승인 후 반영). = 배우고 개선하기 = second brain의 보상.
-argument-hint: "[<slug>]  # 생략 시 전체(archive all + 레일 회고)"
+description: 먼저 개인 소스만 자동 수집(auto — 회사/deploy-only 제외)으로 최신 지식을 모은 뒤 교훈을 distill해 memory에 쌓고, 레일 수정을 제안한다(사람 승인 후 반영). = 배우고 개선하기 = second brain의 보상.
+argument-hint: "[<slug>]  # 생략 시 전체(개인 소스 auto 수집 + 레일 회고)"
 ---
 
 # /retro — 회고 / 되먹임 루프 (배우고 개선하기)
@@ -10,14 +10,18 @@ argument-hint: "[<slug>]  # 생략 시 전체(archive all + 레일 회고)"
 
 대상: `$ARGUMENTS` — slug 가 있으면 그 프로젝트, **생략하면 전체(레일 수준 회고)**.
 
-## 0. 최신 지식 수집 — `/archive all` 자동 실행  `[tier: bulk→judgment]`
+## 0. 최신 지식 수집 — 개인 소스만 `auto` 자동 수집  `[tier: bulk→judgment]`
 
-회고는 **최신 지식 위에서** 해야 의미가 있으므로, 본 회고 전에 `/archive all` 을 **자동으로 먼저 수행**한다(사용자가 따로 칠 필요 없음). `/archive` 명령·`chat-archivist` 스킬 절차를 그대로 따른다:
-1. `node .claude/skills/chat-archivist/ingest.mjs all` — 채팅 수집·비밀 마스킹·색인.
+회고는 **최신 지식 위에서** 해야 의미가 있으므로, 본 회고 전에 자동 수집을 먼저 한다(사용자가 따로 칠 필요 없음).
+**★단 `auto` 모드(개인 데이터만)로만 — `all` 아님.** 회사/deploy-only 프로젝트(`auto_push: false`·company-internal,
+또는 archive-sources 에 미등록인 deploy-only 배포물 예: bns-intranet)는 **개인 GitHub 아카이브로 회사데이터가 새지 않게**
+자동 수집에서 **제외**한다([R1]·6회차 교훈 — `/retro §0` 가 회사 프로젝트를 안 거르던 갭). 그것들은 사용자가 **명시적으로
+`/archive <slug>`**(검토 후)로만 수집한다. `chat-archivist` 스킬 절차를 그대로 따른다:
+1. `node .claude/skills/chat-archivist/ingest.mjs auto` — **`auto_push:true`(개인) 프로젝트만** 채팅 수집·비밀 마스킹·색인.
 2. **비밀/사내정보 게이트**: 각 `archive/<p>/chats/SECRETS.md` 판정 확인(잔여 비밀 있으면 **보고·정지**), 미등록 폴더 안내.
 3. **distill**`[tier: judgment]`: `newSinceDistill > 0` 인 프로젝트만 `archive/<p>/knowledge.md`·`ideas.md` 갱신(company-internal 은 실명·내부주소 일반화).
 
-> `/archive all` 만 단독으로(빠른 백업) 쓰고 싶으면 여전히 `/archive all` 을 직접 호출하면 된다 — 이 자동 수집은 `/retro` 안에서만 일어난다.
+> 회사 데이터까지 백업하려면 `/archive <slug>`(또는 `/archive all`)를 **직접** 호출(수동·검토 게이트). 자동 수집(§0)은 개인 소스만.
 
 ## 1. 마찰·교훈 수집  `[tier: bulk]`
 

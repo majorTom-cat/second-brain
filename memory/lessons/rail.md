@@ -173,9 +173,13 @@ intra-toy 검증·정리 후 `/retro`. §0 아카이브에서 **새 실제 프�
 2. **★패턴이 "요약 distill"의 한계로 불완전.** `intranet-deploy` 패턴이 archive `knowledge.md` *요약* 에서 distill돼, 실 repo 코드에만 있는 기법(**기동 시 entrypoint 자동 스키마 적용**)과 클러스터 함정들을 안 담았다. → 패턴은 **실 코드로 검증**해야. 반영: 패턴에 클러스터 함정 6 + 스키마 전략 3(자동 포함) 추가.
 3. **/retro §0 가 deploy-only/회사 프로젝트를 안 거른다(레일 갭).** mass-ingest 가 bns-intranet 회사데이터를 개인 아카이브로 가져가려다 분류기에 막힘 — 옳은 차단이나, **레일이 스스로** deploy-only/company-internal 을 §0 인제스트에서 제외해야(분류기 의존 X).
 
-## 레일 수정 제안 (열린 구조 — 사람 승인 필요, ★미빌드★)
-- **[R1] `/retro §0`+archive 가 deploy-only/company-internal 제외**: `rails/archive-sources.yaml`(또는 ingest)에 `deploy_only`/`company_internal` 플래그 → §0 mass-ingest 자동 스킵(분류기 의존 X). bns-intranet 류가 개인 아카이브로 안 새게.
+## 레일 수정 제안 (열린 구조)
+- **[R1] `/retro §0`+archive 가 deploy-only/company-internal 제외**: §0 mass-ingest 자동 스킵(분류기 의존 X). bns-intranet 류가 개인 아카이브로 안 새게.
 - **[R2] `deploy-runbook` intranet 프로파일에 "prior-art 전체 선채택 체크리스트 + 스키마 전략 3"**: 패턴의 함정 6 + (A)수동/(B)기동시자동/(C)Job 을 runbook 체크리스트로 → 다음 intranet 배포의 6실패를 0으로.
+
+## 적용 결과 (2026-06-19 게이트 = R1+R2 승인·빌드)
+- ✅ **R1**: `.claude/commands/retro.md §0` 가 `ingest all` → **`ingest auto`**(개인만, `auto_push:true`)로 — 회사/deploy-only 자동수집 제외(이미 있던 `auto` 모드 재사용). `rails/archive-sources.yaml` 주석 보강.
+- ✅ **R2**: `.claude/skills/deploy-runbook/SKILL.md` intranet 프로파일에 **prior-art 전체 선채택 체크리스트(함정6) + 스키마 전략3** 추가. 📐 라인에 bns-intranet 실검증 표기.
 
 ## 승격 후보
 - 없음. intranet-deploy 패턴은 이미 승격돼 있고, 이번엔 그 패턴을 **정정·보강**(함정6·스키마전략3). validation-debt: **패턴은 실검증됨(deploy-only)**, 단 레일 `/deploy intranet` *명령/skill* 은 미실행 유지.
