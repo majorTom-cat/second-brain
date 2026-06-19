@@ -158,3 +158,26 @@ intra-toy 검증·정리 후 `/retro`. §0 아카이브에서 **새 실제 프�
 
 ---
 근거 파일: `archive/agora/{knowledge,ideas}.md`, `archive/second-brain/{knowledge,ideas}.md`, `archive/llm-wiki/{knowledge,ideas}.md`, `E:\second-brain\CLAUDE.md`. 4회차 근거: `projects/intra-toy/*`(검증 스탠드인)·실 `E:\intra`(읽기전용 비교). 5회차 근거: §0 새 세션(second-brain #6 bns-intranet).
+
+---
+
+# 6회차 회고 (2026-06-19) — 첫 실배포(deploy-only) bns-intranet: capture≠apply 가 생생히
+`bns-intranet`(남이 만든 사내 Spring+SPA)을 사내 k8s에 **실제로 라이브 배포**. 레일 *파이프라인이 아니라* deploy-only(앱 소스 무수정)로. 실전에서만 나온 교훈.
+
+## 무엇이 잘 됐나
+- **deploy-only 정책이 실전서 버팀**: 앱 소스 0수정·신규 파일만(`deploy/`+루트 문서)·푸시 운영자 게이트. `/retro §0` mass-ingest 가 회사데이터를 개인 아카이브로 빨아들이려는 걸 **분류기가 자동 차단**(정책과 일치).
+- 막힐 때마다 로그/이벤트로 **원인 확정 후** 진행(추측 배포 X). 로컬 Docker로 빌드·스키마생성·validate·/api 왕복을 매 단계 검증.
+
+## 결정·마찰 (열린 교훈)
+1. **★capture ≠ apply ≠ verify (생생히).** prior-art(agora/llm-wiki)·`intranet-deploy` 패턴을 *갖고 있었는데도* — ① 전체 설정을 선채택 안 해 **6연속 배포 실패**(CSI노드·CPU/MariaDB·registy-cred·dind·gradle.org·test게이트 — 전부 prior-art엔 있던 것) ② 나중에 `migrate` **grep만** 하고 llm-wiki 의 entrypoint `prisma db push`(자동 스키마)를 못 봐 **"수동"이라 2번 틀린 답**. → 약한 고리는 *캡처*가 아니라 **그 순간 surfacing + 실 코드(entrypoint/Dockerfile) 깊이 읽기**. 반영: [[consult-prior-art-first]] §4(grep 말고 기동경로 읽기).
+2. **★패턴이 "요약 distill"의 한계로 불완전.** `intranet-deploy` 패턴이 archive `knowledge.md` *요약* 에서 distill돼, 실 repo 코드에만 있는 기법(**기동 시 entrypoint 자동 스키마 적용**)과 클러스터 함정들을 안 담았다. → 패턴은 **실 코드로 검증**해야. 반영: 패턴에 클러스터 함정 6 + 스키마 전략 3(자동 포함) 추가.
+3. **/retro §0 가 deploy-only/회사 프로젝트를 안 거른다(레일 갭).** mass-ingest 가 bns-intranet 회사데이터를 개인 아카이브로 가져가려다 분류기에 막힘 — 옳은 차단이나, **레일이 스스로** deploy-only/company-internal 을 §0 인제스트에서 제외해야(분류기 의존 X).
+
+## 레일 수정 제안 (열린 구조 — 사람 승인 필요, ★미빌드★)
+- **[R1] `/retro §0`+archive 가 deploy-only/company-internal 제외**: `rails/archive-sources.yaml`(또는 ingest)에 `deploy_only`/`company_internal` 플래그 → §0 mass-ingest 자동 스킵(분류기 의존 X). bns-intranet 류가 개인 아카이브로 안 새게.
+- **[R2] `deploy-runbook` intranet 프로파일에 "prior-art 전체 선채택 체크리스트 + 스키마 전략 3"**: 패턴의 함정 6 + (A)수동/(B)기동시자동/(C)Job 을 runbook 체크리스트로 → 다음 intranet 배포의 6실패를 0으로.
+
+## 승격 후보
+- 없음. intranet-deploy 패턴은 이미 승격돼 있고, 이번엔 그 패턴을 **정정·보강**(함정6·스키마전략3). validation-debt: **패턴은 실검증됨(deploy-only)**, 단 레일 `/deploy intranet` *명령/skill* 은 미실행 유지.
+
+6회차 근거: 이번 세션 직접 관찰(bns-intranet 실배포 6실패·2오답·entrypoint 확인) + `E:\agora`·`E:\llm-wiki` 실 코드(`Dockerfile`·`docker-entrypoint.sh`).

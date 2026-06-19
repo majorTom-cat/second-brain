@@ -127,11 +127,19 @@ CI 배포 명령(`set image` vs `apply`).
 - **(deploy-only) 팀 코드의 test/lint 실패가 배포를 막으면 게이트만 비차단.** 내가 안 만든 앱의 test 1건·lint 에러가
   `build:images`를 차단 → CI test 잡을 `allow_failure: true`(실행·표시는 하되 비차단). **앱 코드는 안 고치고 팀에 보고.**
 
-## ★ 스키마 변경은 자동 반영 안 됨 (`ddl-auto: validate` + 마이그레이션 없음)
+## ★ 스키마(마이그레이션) 전략 — 자동도 가능 (3 프로젝트 실측)
 
-- 코드 로직 변경은 push→빌드→배포로 자동. **DB 컬럼 추가/변경은 ❌ 자동 아님** — Hibernate가 검증만 하고 DDL을 안 바꿈.
-  엔티티에 컬럼 추가하고 배포하면 새 이미지가 **validate 실패로 안 뜸**(무중단이라 서비스는 유지·새 버전 미반영). initdb 스크립트는 빈 DB 최초 1회만.
-- 갈림길: **validate**(안전·수동 ALTER 필요) / **update**(편함·rename/drop/타입변경 위험, 운영 비권장) / **Flyway·Liquibase**(편함+안전, 단 앱 코드 변경).
-  **언제 수동 ALTER**: 단발·도구 미도입. **언제 도구 권고**: 스키마가 자주 바뀌면(= 활성 개발 대부분 → 앱 팀에 권고).
+코드 배포는 push로 자동이지만 **DB 스키마 변경 반영은 방식에 따라 자동/수동이 갈린다.** 세 프로젝트가 셋 다 다름:
+
+| 방식 | 자동? | 사례 | 핵심 |
+|---|---|---|---|
+| **(A) 검증만 + 수동** (`ddl-auto:validate` 등 + 사람이 `ALTER`/initdb 첫1회) | ❌ 수동 | **bns-intranet**(Hibernate validate), **agora**(Drizzle 파일+ConfigMap initdb, 기존 DB는 수동) | 운영 안전(앱이 함부로 DDL 안 함)·변경마다 수동 |
+| **(B) ★기동 시 앱이 자기 DB에 자동 적용** (entrypoint/프레임워크가 startup 에 sync) | ✅ 자동(안전한 변경만) | **llm-wiki**: `docker-entrypoint.sh` 가 기동마다 `prisma db push`(멱등·비파괴). 자바=Flyway/Liquibase 기동 시 자동 | 파드가 *자기* `DATABASE_URL`로 직접 → **kubectl·RBAC·ConfigMap 불필요**(CI SA 권한 막힘 원천 차단) |
+| **(C) 별도 migrate Job** (`k apply -f migrate-job.yaml`) | △ 트리거 수동 | llm-wiki 의 **폴백** | CI SA에 Job/configmap 권한 필요(없으면 사람이 실행) |
+
+**(B) 안전 주의(llm-wiki 교훈):** 자동 push/Flyway는 **추가형(nullable·새 컬럼)만 무해 자동**. **컬럼 제거·타입 변경 등 파괴적 변경은 데이터손실 가드에 막혀 적용 안 됨**(여전히 사람이 계획). 엔트리포인트가 실패를 `|| echo`로 **흡수**하면 "배포는 됐는데 스키마는 조용히 안 바뀐" 상태 가능 → 파괴적 변경 땐 **파드 로그 확인**.
+
+**언제 어느 것:** 운영 통제·드문 변경 → (A). 활성 개발·잦은 변경 → **(B) 권장**(자바면 Flyway 기동 시 자동 = llm-wiki 패턴의 자바판, **같은 클러스터에서 검증됨**). (B)도 못 쓰면 → (C).
+⚠️ 정정(2026-06-19): 이 패턴은 처음에 (B)를 안 담아 "validate면 무조건 수동"으로 좁게 적었다 — llm-wiki 가 (B)로 **이미 자동**임을 (grep 'migrate'만 보고) 놓쳤다. 스키마 방식은 **실 entrypoint/Dockerfile을 읽어** 확인할 것([[consult-prior-art-first]]).
 
 관련: [[ingest-convergence]], [lessons/bns-intranet.md](../lessons/bns-intranet.md), [[deploy-only-third-party-policy]].

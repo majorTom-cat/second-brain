@@ -20,7 +20,8 @@
 | 패턴 라이브러리 소비 | ✅ 검증 | intra-toy(design-ready-skin·constraints-as-truth 코드 반영) |
 | P1 **external** 타깃(projects.yaml) | ❌ 미실행 | intra-toy는 internal — external 경로 미검증 |
 | P2-a **change-ingest**(변경 인입) | ❌ 미실행 | 변경 문서 오는 프로젝트 필요 |
-| deploy **intranet** 프로파일(k8s) | ❌ 미실행 | rough가 막음 — full 필요(실 intra) |
+| deploy **intranet** 프로파일(k8s) — 레일 `/deploy` 명령 | ❌ 미실행 | bns-intranet은 레일 파이프라인 아닌 **수동 deploy-only**였음 |
+| `intranet-deploy` **패턴**(지식) | ✅ 실검증·정정 | **bns-intranet 실배포(2026-06-19)** — 함정6·스키마전략3 발견→패턴 보강 |
 | R4b(로컬 $0) | ⛔ 미빌드 | 옵션 |
 
 ## 현재 요약 (2026-06-18 — intra-toy 검증 후)
@@ -28,3 +29,8 @@
 - **남은 ❌ 3 + ⛔ 1**: P1 external 경로 · change-ingest · intranet 배포(full 필요) · R4b.
 - 남은 것의 첫 실검증 대상 = **실 intra**(디자인 파일 후 `full`+intranet). external·change-ingest는 그때 또는 별도 toy로.
 - ⇒ 권고: 큰 ❌(ingest·rough·패턴)는 해소됨. 새 빌드보다 남은 검증/실 intra 우선.
+
+## 추가 (2026-06-19 — bns-intranet 실배포 후)
+- **`intranet-deploy` 패턴(지식)은 실배포로 검증·정정됨**(deploy-only): 클러스터 함정 6 + 스키마 전략 3(자동 포함) 발견→패턴 보강.
+- 단 **레일 `/deploy intranet` *명령/skill* 은 여전히 미실행**(bns는 수동) — 명령 검증은 실 intra(full)가 와야.
+- 새 제안 [R1](§0 deploy-only 제외)·[R2](runbook intranet 체크리스트)는 **미빌드**(rail.md 6회차) — 승인 대기.
