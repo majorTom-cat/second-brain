@@ -1,6 +1,6 @@
 ---
 name: adversarial-review
-description: 모듈 내부 CRITIC. 산출물(스펙 또는 코드)을 7개 차원 + false-done 체크리스트(green≠동작) + 생성형 프리모템으로 적대적으로 검증해 결함을 찾고, 통과/루프백 판정을 낸다. /creative·/develop·/deploy 가 사용. (llm-wiki 6차원 적대적 리뷰 일반화)
+description: 모듈 내부 CRITIC. 산출물(스펙 또는 코드)을 8개 차원 + false-done 체크리스트(green≠동작, A~H) + 생성형 프리모템으로 적대적으로 검증해 결함을 찾고, 통과/루프백 판정을 낸다. /creative·/develop·/deploy 가 사용. (llm-wiki 6차원 적대적 리뷰 일반화)
 ---
 
 # adversarial-review — 차원 + false-done 체크리스트 CRITIC
@@ -20,6 +20,7 @@ description: 모듈 내부 CRITIC. 산출물(스펙 또는 코드)을 7개 차�
 5. **단순성/범위** — 00 한 줄 정의·비목표를 벗어난 scope creep, 불필요한 복잡도, 차라리 재사용할 것.
 6. **운영 준비도**(배포 단계에서) — health 응답, graceful shutdown, 롤백 명시, 백업/모니터링 갭.
 7. **UI 충실도/인터랙션 배선**(UI REQ = `REQ-SCR-*` · 화면을 만드는 REQ에서만) — `design-input` 시안이 있으면 **렌더된 화면이 시안과 일치**하나(뭉뚱그림·근사 구현 = 결함, [[design-ready-skin]]), 모든 버튼·링크·폼이 **실제로 배선**됐나(죽은 인터랙션 = 결함). ★이 판정은 **테스트 통과가 아니라 실제 렌더 관찰**(앱 띄워 화면 열고 클릭)에 근거해야 한다 — 단위테스트 green 은 시각 일치·링크 배선을 검증하지 않는다(intra 교훈 "에이전트 보고를 믿지 말 것"). `done`/`verification: pass` 로 올라온 UI REQ가 **렌더 관찰 없이**(테스트만으로) 통과됐거나, 시안 불일치·죽은 버튼이 있으면 **blocker** ([[verify-by-observation]]: done = green 신호가 아니라 직접 본 동작).
+8. **프로세스/레일 자가 무결성**(메타 — 모든 단계) — critic 을 *레일 자신*에 적용한다: 게이트 `approved` 가 산출 세션의 자가승인이 아니라 사람 검수인가 · GATE.md 가 critic 발견을 의역(soft-pedal) 없이 그대로 전사했나 · done 근거가 (a)acceptance/(b)critic/(c)관찰 smoke 로 분리됐나(단일 칸에 묻히지 않았나) · 상류 열린 결정이 미해소인데 통과되지 않았나 · 재개/매핑유지로 건너뛴 `done` 이 *현재* 코드 기준 stale 이 아닌가 · distill 결론이 manifest 로 그라운딩되나(자가보고 단정 아님). 거짓완료는 종종 레일이 *자기 자신을 속이는* 데서 온다 — 좁은 신호(파일 값·자체 요약)가 사람 검수를 대체하면 **blocker/warn** ([[verify-by-observation]]).
 
 ## false-done 점검 — green ≠ 동작 (차원과 별개로 매번)
 
@@ -37,6 +38,6 @@ description: 모듈 내부 CRITIC. 산출물(스펙 또는 코드)을 7개 차�
 
 ## 강도 조절
 - 빠른 점검: 핵심 차원(2·3·4)만, 1회. **UI REQ면 7번도 핵심**(렌더 관찰).
-- 철저(audit): 7차원 전부 + false-done 체크리스트 해당 항목 전수 + 생성형 프리모템 + 동일 결함을 다른 관점으로 2~3표 교차검증 후 다수결.
+- 철저(audit): 8차원 전부 + false-done 체크리스트(A~H) 해당 항목 전수 + 생성형 프리모템 + 동일 결함을 다른 관점으로 2~3표 교차검증 후 다수결.
 
 `[tier: judgment]` — critic은 판단 단계다. 무료 모델로 대체하지 않는다.

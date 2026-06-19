@@ -207,6 +207,27 @@ intra-toy 검증·정리 후 `/retro`. §0 아카이브에서 **새 실제 프�
 - ✅ **[U4] 계약/스펙 양쪽**: `DEV.manifest` UI REQ 에 `ui_verified` 증거 필드(없으면 done 금지) · `02-requirements`+`spec-author` 가 UI REQ acceptance 에 시각·인터랙션 관찰 기준 강제(목록만 옮기면 검증할 게 없음).
 - ✅ **[U5] ★반응형→능동 전환(사용자 2차 지적: "내가 겪은 것만 보완하면 다음도 내가 직접 겪어야 한다 — 예측해서 보완").** UI 하나만 막으면 형제 갭(데이터 상태·반응형·권한 차단·실데이터·기동·배포 실여정)은 사람이 또 겪어야 발견됨. → **거짓완료를 모든 게이트에서 한 장치로 사냥**: 신규 `rails/false-done-checklist.md`(성장 목록·표면별 함정 seeded) + `adversarial-review` 가 매번 **해당 항목 점검 + 생성형 프리모템**("done 인데 깨졌다면 어떻게?")으로 *목록 밖* 모드까지 찾고 + **`/retro` 가 새 모드를 목록에 append**(되먹임). `/develop`·`/deploy` critic 이 이 체크리스트 참조. 행동교훈 auto-memory `fix-the-failure-class-not-the-instance`. → 사람이 직접 겪고 명령하지 않아도 레일이 거짓완료 표면을 스스로 넓힌다.
 
+## 8회차 보강 (2026-06-20) — (a)인라인 + (b)멀티에이전트 sweep 으로 거짓완료 표면 예측·확장
+사용자 "a b 둘 다 해도 돼"(자는 동안 진행). (a) 메인이 레일 전체 정독 후 8후보, (b) **워크플로 `false-done-gap-sweep`: 10개 적대 렌즈 → 55 원시갭 → 35 정규 → 회의적 검증 32 확인**(47 에이전트·~2.7M 토큰·~20분, finder=Sonnet/verify·synth=Opus). (a)⊂(b) 대부분 포함 — 교차검증됨.
+
+### ✅ 적용 (additive·저위험 + 체크리스트로 못 막는 구조적 소수)
+- **[U6] false-done 체크리스트 A~H 로 확장**: 기존 A(UI)·B(서비스)·C(권한)·D(통합/배포)에 항목 추가 + 신규 **E(동시성/멱등성)·F(비명백 출력/주입 — 메일·CSV·파일명)·G(게이트/프로세스 무결성 — 레일 자신)·H(시간축·비기능·정합성 = 완전성 비평이 짚은 미커버 범주)**. critic 이 이미 체크리스트를 매번 참조하므로 *추가만으로 enforce* 됨.
+- **[U7] 체크리스트로 못 막는 구조적 필드/칸**(synthesis "한 줄로는 세션이 같은 필드에 pass 를 쓸 수 있다"):
+  - `DEPLOY.manifest`: `env`(smoke 로컬=dry-run≠pass)·`rollback_tested`·`manifest_changed`·`concurrency_probe` 필드 + `health.expect` 를 `{status:ok, db:ok}`(DB-aware)로.
+  - `GATE.template.md`: done 을 **(a)acceptance/(b)critic/(c)관찰 smoke 3컬럼 분리** + critic 발견 **의역금지 전사** + `[ ] 열린 결정 검토 완료` 칸 + dry-run 비율 — *사람이 거짓 요약 위에서 approve* 하는 최종 거짓완료 차단.
+  - `adversarial-review` **차원 8(프로세스/레일 자가 무결성)**: 자가승인·soft-pedal·stale-done·distill 그라운딩을 critic 이 레일 자신에 적용.
+
+### ⏳ 제안(미적용 — 사람 게이트, 더 침습적)
+- **[P-U1] `/develop §5` 통합 step 확장**: 병합 후 ①REQ 구현 생존 대조 ②provider→consumer cross-REQ 왕복 ③통합앱 기준 critic 재실행 ④inherited/skipped done 재검증. `req-implementer §4` 반환에 'acceptance 절→테스트 매핑' 강제.
+- **[P-U2] `/deploy §3`+`deploy-runbook` smoke 구성 규칙**: acceptance given/when/then 1:1 매핑(의역금지)·빈 DB cold-start·동시 probe·멱등 2회 POST·DB 차단 후 health 전환을 smoke 의무로.
+- **[P-U3] `lesson-distiller` 에 [P-C] 동등 장치**(결과 단정 금지·`⚠️확인요망`·manifest grep 그라운딩) + `/retro §1` 루프백 로그 교차검증(partial→done 수 vs §3 이벤트 수). chat-archivist 만 P-C 보유한 비대칭 해소.
+- **[P-U4] 게이트 승인 채널 구조 분리**(가장 깊은 뿌리): 산출 세션이 `gate:approved` 를 못 쓰게. 레일이 한 세션 권한 안에서 도니 *완전 강제는 어려움* — 현재는 차원 8 + GATE 체크칸으로 **탐지 수준**. 구조적 분리는 별도 결정.
+
+### 완전성 비평 (어떤 렌즈도 못 다룬 *범주* — H 에 인지로 seeded, 깊은 처리는 다음 라운드)
+시간축 거짓완료(인증서 만료·토큰 로테이션·디스크/CVE — '게이트 통과 후 N일 뒤 깨짐') · 비기능(성능 p95·N+1·OOM·관측성) · 사후 데이터 정합성(backfill·부분실패 orphan) · R4a 위임 품질/tier 준수 자가검증. **메타 사각: critic·게이트·distill 이 모두 같은 세션 권한 안 → '레일이 자기를 속이는' 범주는 탐지(차원 8)까지만, 구조적 강제는 미해결**(P-U4).
+
+8회차 근거: 워크플로 `false-done-gap-sweep`(wf67jpbch) 결과 32 확인갭 + 메인 인라인 8후보 + 레일 전체 정독(creative·deploy·deploy-runbook·spec-author·SPEC/DEPLOY.manifest·GATE.template·todo-toy/intra/bns 교훈).
+
 ## 승격 (2026-06-20 게이트 = 사용자 "지식 쌓고 업그레이드")
 - ✅ **broad 패턴 승격** (2+ 프로젝트 반복: todo-toy·intra·이 incident) → [`patterns/verify-by-observation.md`](../patterns/verify-by-observation.md): "done = green 신호가 아니라 직접 본 동작". 진입점 기동 smoke(todo-toy)와 한 뿌리로 통합.
 - 세션간 행동교훈은 auto-memory `done-means-observed-working`(feedback)에도 기록 — 매 세션 자동 로드.

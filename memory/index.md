@@ -16,7 +16,7 @@
 - **아키텍처**: [constraints-as-truth](patterns/constraints-as-truth.md)(불변식=구조로 강제) · [single-permission-point](patterns/single-permission-point.md)(단일 권한 계산처) · [git-as-source-of-truth](patterns/git-as-source-of-truth.md)(AI 산출물=append-only git) · [soft-delete-hide-recover](patterns/soft-delete-hide-recover.md)(archivedAt 하나로 숨기고 복구)
 - **배포**: [intranet-deploy](patterns/intranet-deploy.md)(사내 k8s 무중단+운영 플레이북) · [external-project-layout](patterns/external-project-layout.md)(외부 repo 산출 타깃)
 - **창작/인입**: [ingest-convergence](patterns/ingest-convergence.md)(문서→수렴/변경인입) · [design-ready-skin](patterns/design-ready-skin.md)(구조 먼저·비주얼은 토큰 1패스)
-- **검증**: [verify-by-observation](patterns/verify-by-observation.md)(done = green 신호가 아니라 직접 본 동작 — UI 는 시안대조+클릭스루, 서비스는 기동 smoke, 위임은 경계검증). 운영 도구 = `rails/false-done-checklist.md`(성장 목록) + critic 생성형 프리모템 + `/retro` append(거짓완료 모드를 사람이 겪기 전에 능동 수확)
+- **검증**: [verify-by-observation](patterns/verify-by-observation.md)(done = green 신호가 아니라 직접 본 동작 — UI 는 시안대조+클릭스루, 서비스는 기동 smoke, 위임은 경계검증). 운영 도구 = `rails/false-done-checklist.md`(성장 목록 **A~H**: UI·서비스·권한·통합배포·동시성/멱등·비명백주입·게이트/레일자가무결성·시간축/비기능/정합성) + critic 8차원·생성형 프리모템 + `/retro` append(거짓완료 모드를 사람이 겪기 전에 능동 수확). 32확인갭 sweep=rail.md 8회차
 - **LLM**: [llm-trilemma](patterns/llm-trilemma.md)(무료·빠름·비공개) · [llm-provider-routing](patterns/llm-provider-routing.md)(공급자 추상화·폴백·비용안전·BYOK = R4b 토대)
 
 <!-- 형식: - <키워드> → [lessons/<slug>.md](lessons/<slug>.md) 또는 [patterns/<name>.md](patterns/<name>.md) -->

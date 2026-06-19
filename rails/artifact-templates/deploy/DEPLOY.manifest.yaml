@@ -17,19 +17,26 @@ endpoints:
 
 health:
   path: /api/health
-  expect: '200 {status:"ok"}'
+  expect: '200 {status:"ok", db:"ok"}'   # DB-aware: status 키만이 아니라 핵심 의존(DB) 상태 포함 — DB 끊기면 비정상 반환(false-done D)
 
 shutdown:
   sigterm: true            # graceful shutdown 구현됨 (DB 풀 close)
 
 rollback: "<이전 태그로 재기동 / kubectl set image ...>"
+rollback_tested: <true|N/A+이유>   # 명시 ≠ 실행 — 실제로 1회 행사했나(false-done D). false/공란이면 critic blocker
+manifest_changed: <true|false>     # env/볼륨/configmap/secret 변경 있으면 set image 아닌 kubectl apply -f 강제(false-done D)
 
-smoke:                     # REQ별 — acceptance 를 그대로 검사
+smoke:                     # REQ별 — acceptance 를 given/when/then 1:1, 의역·약화 없이 검사
   - req: REQ-CORE-001
     check: "<curl ... 또는 시나리오>"
-    result: <pass|fail|dry-run>
+    env: <production|staging|dry-run>   # ★로컬 기동(크레덴셜 없음)은 반드시 dry-run — 라이브 클러스터(TLS·인증·CORS·시크릿) 미경유
+    result: <pass|fail|dry-run>         # env:dry-run 이면 result 도 dry-run(≠pass) — 게이트가 라이브 완료로 오인 금지
   - req: REQ-OPS-001
-    check: "curl .../api/health -> 200"
+    check: "curl .../api/health -> 200 {status:ok, db:ok}"
+    env: production
     result: pass
 
-ops_gaps: []               # 백업·모니터링 등 미비점(critic이 채움). 비면 OK.
+concurrency_probe:         # 선점성/쓰기 REQ별 — 동시 N요청·멱등 2회 POST 결과(없으면 ops_gaps). 무상태 REQ는 생략
+  # - { req: REQ-CORE-001, kind: concurrent|idempotent, observed: "동시 2요청 → 성공 row 1" }
+
+ops_gaps: []               # 백업·모니터링·만료/로테이션(time-decay)·비기능(성능/용량) 미비점(critic이 채움). 비면 OK.
