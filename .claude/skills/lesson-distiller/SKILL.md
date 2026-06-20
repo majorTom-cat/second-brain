@@ -65,3 +65,4 @@ HANDOFF §3·GATE 의 "수정됨/완료/통과" 결론을 lessons 로 옮길 때
 ## 규칙
 - 1프로젝트 1교훈 과잉금지: 가장 임팩트 큰 3개 이내로.
 - 제안은 실행 가능해야 한다(어느 파일의 어느 줄을 어떻게).
+- ★**적용 채널**: 프로젝트 특화 *작업 규율*(시안 충실·환경 함정·DB/dev 함정 등)은 `memory/lessons` 에만 적지 말고 **그 프로젝트의 `CLAUDE.md`**(Claude Code 가 작업 디렉터리에서 자동 로드)에도 박는다 — 레일/메모리는 second-brain 세션에만 닿고, 실제 작업은 *그 프로젝트의 freeform 세션*에서 일어나므로 안 그러면 같은 실수 반복(사용자가 영구 QA). 기계적 강제(예: 테스트 후 db:reset)는 그 프로젝트 `settings.json` 훅. ([[enforce-lessons-in-target-claude-md]])
