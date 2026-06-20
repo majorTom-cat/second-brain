@@ -54,8 +54,13 @@ description: 회고 모듈 내부 절차. 한 프로젝트의 HANDOFF/GATE/criti
 ```
 "어떻게 했나"(레시피)보다 **"왜·언제 그렇게 / 언제 다르게"**(판단)를 적는다.
 
+## ★결과 그라운딩 (P-C 동등 — distill 의 거짓완료 방지)
+HANDOFF §3·GATE 의 "수정됨/완료/통과" 결론을 lessons 로 옮길 때, 그게 **좁은 자가보고 신호**일 뿐 실제 코드·배포·검증 반영이 아닐 수 있다(틀린 done 이 lessons→prior-art 로 전파돼 다음 프로젝트가 틀린 전제로 시작). 그래서:
+- '완료/수정됨/통과' 단정 전 `DEV.manifest`·`DEPLOY.manifest`·`pipeline.yaml`(또는 해당 레일 파일)에 **실제 반영 여부를 grep 으로 교차확인**. 그라운딩 가능하면 단정, 불가하면 **`⚠️확인요망`** 표시(chat-archivist [P-C] 와 동일 — distiller 에만 없던 비대칭 해소).
+- distill 입력 무결성: `DEV.manifest` 의 `partial→done`(또는 `blocked→done`) 전환 수와 HANDOFF §3 루프백 이벤트 수를 교차대조 — 전환은 있는데 §3 이벤트가 적/없으면 **루프백 로그 누락 신호**(자가기록이라 critic 이 자기 누락을 못 잡음). false-done-checklist G.
+
 ## 반환
-호출자(/retro)에게 {lessons 경로, 레일 수정 제안 목록, 승격 후보}를 넘긴다. **레일 변경은 호출자가 사람 승인 후 적용.**
+호출자(/retro)에게 {lessons 경로, 레일 수정 제안 목록, 승격 후보, ⚠️확인요망 항목}를 넘긴다. **레일 변경은 호출자가 사람 승인 후 적용.**
 
 ## 규칙
 - 1프로젝트 1교훈 과잉금지: 가장 임팩트 큰 3개 이내로.

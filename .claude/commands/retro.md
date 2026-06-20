@@ -33,6 +33,7 @@ argument-hint: "[<slug>]  # 생략 시 전체(개인 소스 auto 수집 + 레일
   - **백로그**: 1개 프로젝트·도메인 특화 후보는 `memory/patterns/_candidates.md` 로 보낸다(매 sweep 재분석 X). **매칭 프로젝트가 올 때** 승격.
   - (과거 프로젝트 지식을 레일로 옮기는 경로 — 이전엔 사람이 손으로 하던 단계.)
 "어디서 막혔나 / critic·기획자가 뭘 거부·지적했나 / 게이트에서 뭘 고쳤나 / 어떤 갭·결정이 반복되나" 를 모은다.
+- ★**루프백 로그 무결성 교차검증**(false-done-checklist G): HANDOFF §3 루프백 로그는 세션 자가기록이라 누락 시 학습이 조용히 손실된다. `DEV.manifest` 의 `partial→done`/`blocked→done` 전환 수와 §3 루프백 이벤트 수를 대조 — 전환은 있는데 §3 이벤트가 적/없으면 distill 에 "루프백 기록 누락" 경고를 단다(GATE.md '루프백 횟수'도 같은 세션 자가보고라 독립 검증 아님).
 
 ## 2. distill  (lesson-distiller 스킬)  `[tier: judgment]`
 

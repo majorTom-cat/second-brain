@@ -9,10 +9,10 @@ description: 배포 모듈 내부 절차. deploy_profile(local/intranet)에 따�
 - `SPEC.manifest.deploy_profile`, `DEV.manifest`(build/run/env), requirements(acceptance → smoke).
 
 ## 공통 필수 (두 프로파일)
-- `/api/health` → `200 {status:"ok"}`.
+- `/api/health` → `200 {status:"ok", db:"ok"}` — **DB-aware**: status 키만이 아니라 핵심 의존(DB) 상태 포함. DB 끊기면 비정상 반환해 readiness 가 파드를 트래픽에서 뺀다(status 키만 보면 DB 죽어도 200 → 영구 ready, 이후 DB 요청 전부 500).
 - SIGTERM graceful shutdown: DB 연결 풀 close 후 종료. (agora `instrumentation.ts` 패턴 일반화)
 - 시크릿 외부화: 코드/저장소 금지. local=.env, intranet=CI 변수(Masked).
-- REQ별 smoke: 각 REQ `acceptance` 를 curl/시나리오로 검사.
+- REQ별 smoke: 각 REQ `acceptance` 를 **given/when/then 1:1(의역·약화 금지)** 로 curl/시나리오 검사. **크레덴셜 없는 로컬 기동은 `env:dry-run`+`result:dry-run`(≠pass)** — 라이브 스택(TLS·인증·CORS·시크릿) 미경유. 해당 REQ 유형이면 **빈 DB cold-start·동시 probe(선점성)·멱등 2회 POST(쓰기)·DB 차단 후 health 전환** 포함(아니면 명시 N/A). (false-done-checklist D·E)
 
 ## profile: local  `[tier: bulk]`
 - multi-stage Dockerfile(deps→builder→runner, 슬림 베이스) + `docker-compose.yml`(app + 필요시 db).
@@ -36,6 +36,8 @@ description: 배포 모듈 내부 절차. deploy_profile(local/intranet)에 따�
 ## 운영 갭 (정직하게 표시 — agora 약점 일반화)
 구조화 로깅·자동 백업 CronJob·시크릿 로테이션이 없으면 `DEPLOY.manifest.ops_gaps` 에 명시한다.
 침묵하지 않는다(없는 걸 "다 됐다"로 보이게 하지 않는다).
+- ★**시간축 거짓완료(time-decay) 항목도 ops_gaps 에**(false-done-checklist H): '지금 green' 이 N일 뒤 깨지는 것 — **TLS 인증서 만료**(cert-manager 자동갱신 확인)·**시크릿/토큰 로테이션** 후 401·**디스크/볼륨 가득**·로그·DB 증가로 점진 성능 붕괴·**의존성 CVE**. 단발 smoke 는 못 보니 만료·로테이션·용량 경보가 모니터링에 있나(없으면 갭 명시).
+- ★**스키마/불변식 변경 시 기존 데이터 정합성(backfill)**: 컬럼·불변식 추가가 *신규* 경로만 막고 **기존 row 는 위반 상태로 남을** 수 있다(backfill 누락·부분실패 orphan). 추가형 변경이면 기존 데이터 마이그레이션·정합성 점검 1회를 런북/smoke 에 포함(없으면 ops_gaps).
 
 ## 규칙
 - 사내 인증이 필요하면 agora `docs/07 §8`(실명 이메일+비번 httpOnly 세션) 패턴 참조. **익명·민감 데이터 금지.**

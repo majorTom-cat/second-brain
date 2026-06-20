@@ -45,8 +45,7 @@ description: 개발 모듈 내부 절차. REQ-ID별로 git worktree에서 독립
 - ★**UI REQ(`REQ-SCR-*`·화면을 만드는 REQ)는 테스트 통과만으로 done 금지.** 앱을 띄워(`npm run dev` — 또는 `/verify`·`/run`) **(a) 렌더 화면을 `design-input` 시안과 나란히 대조**('대충 비슷' 아님 — 레이아웃·컴포넌트가 일치) + **(b) 모든 버튼·링크·폼을 클릭**해 내비게이션·액션이 실제 동작하는지 **직접 관찰**한다. 단위테스트는 시각 일치·링크 배선을 검증하지 않으므로, 시안과 다르게 뭉뚱그리거나 버튼에 링크가 없어도 green 일 수 있다(이 갭이 "테스트 done" 거짓완료의 원인). 관찰 못 하면 done 아님.
 
 ### 4) 호출자에게 반환
-각 REQ의 {id, files, tests, 통과여부}를 호출자(/develop)에 넘긴다. 호출자가 adversarial-review로
-6차원 리뷰를 돌리고, 통과 시 DEV.manifest 에 `status: done` + `verification: pass` 를 기록한다.
+각 REQ의 {id, files, tests, **acceptance 절→테스트 매핑**}을 호출자(/develop)에 넘긴다 — 단순 통과여부·개수가 아니라 **acceptance 의 given/when/then 각 절이 어느 테스트/관찰로 덮였는지** 절 단위로 매핑한다(then 이 여럿이면 절마다). 매핑 안 되는 절이 1개라도 있으면 그 REQ는 미완 — acceptance 3절 중 2절만 구현·테스트하고 나머지를 조용히 생략해도 반환 {통과여부}는 'pass'이고 누락 절은 테스트가 없어 critic 이 볼 근거가 없다(intra ④). 호출자가 adversarial-review로 8차원 + false-done 체크리스트 리뷰를 돌리고, 통과 시 DEV.manifest 에 `status: done` + `verification: pass` 를 기록한다.
 
 ## 규칙
 - acceptance 테스트 없이 `done` 금지.

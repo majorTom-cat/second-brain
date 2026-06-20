@@ -14,7 +14,7 @@ argument-hint: "<slug> [rough|full]"
 
 1. **경로 해석**: `rails/project-paths.md` 규약으로 `<slug>` → `$DOCS`/`$META`/`$STATE`/`$CODE` 확정(미등록 slug 는 internal = `projects/<slug>/` 기존 동작). 이하 경로는 이 변수로 쓴다.
 2. `$STATE`(pipeline.yaml)를 읽는다.
-3. 창작 게이트가 `approved` 가 **아니면 거부**한다: "창작 게이트 미승인 — `/creative` 검토 후 `gate: approved` 필요".
+3. 창작 게이트가 `approved` 가 **아니면 거부**한다: "창작 게이트 미승인 — `/creative` 검토 후 `gate: approved` 필요". ★**자가승인 탐지(false-done-checklist G)**: `approved` 라도 (a) `approved_by`(사람 표식)가 없거나 (b) 직전 `$DOCS`/`creative/GATE.md` 의 '⚠️ 열린 결정'이 남아 있는데 `[ ] 열린 결정 검토 완료` 미체크거나 (c) 같은 세션 로그에서 사람 개입 없이 `pending→approved` 가 쓰였으면 — **"사람 검수 흔적 없음, 자가승인 의심 — 사람 승인 필요"로 정지**. *완전 강제는 한 세션 권한 안에선 불가 → 탐지 + critic 차원 8.*
 4. 창작 `SPEC.manifest.yaml`(대조표의 창작 메타 행)을 입력으로 읽는다. **대화 맥락이 아니라 이 파일이 진실의 원천이다.**
 5. **rigor 모드 결정**: 인자에 `rough` 가 있으면 `rough`, 없으면 `full`(기본·안전). `$STATE` 에 `rigor: <mode>` 를 기록한다.
    - `rough` 면 §3 worktree·§4 critic·REQ별 테스트를 **생략**하고 `req-implementer` 의 **rough 절차**(공유 셸+`REQ-SCR` 화면 스캐폴드, 빌드만 게이트, GNB는 `menu_visible` 만)를 따른다. 산출은 **HANDBACK**(§6 분기). 디자이너 반복·기획자 핸드백용. REQ를 `done` 으로 표시하지 않으므로 `/deploy` 는 이 프로젝트를 거부한다(러프 = 배포 대상 아님).
@@ -44,6 +44,11 @@ worktree 격리로 병렬 변경 충돌을 막는다.
 worktree들을 병합하고 전체 빌드/테스트를 돌린다(`npm run build`, `npm test`). 통합 단계에서 깨지면 고친다.
 - ★**진입점 기동 smoke(필수)**: 단위/통합 테스트가 green이어도 **실제 진입점을 직접 기동**해 동작을 확인한다 — 서비스면 `node <entry>`(또는 `docker run`) 후 `curl /api/health` + 기본 라우트, CLI면 실제 인자로 실행. 이유: 단위/통합은 함수를 직접 호출하므로 **기동 경로(진입점 가드·바인드·시그널) 결함을 못 잡는다**(예: Windows ESM main-guard 로 `node index.js` 가 listen 안 함 — 테스트 green인데 실행 깨짐, todo-toy). 기동 smoke 실패면 해당 REQ로 루프백.
 - ★**UI/화면 REQ면 추가로 시안대조+클릭스루(필수)**: `npm run dev` 로 띄워 **각 `REQ-SCR` 화면을 실제로 열어 `design-input` 시안과 대조**(레이아웃·컴포넌트가 '대충 비슷'이 아니라 일치) **+ 모든 버튼·링크·폼을 클릭**해 내비게이션·액션이 동작하는지 확인한다. 이유: 단위/통합 green 은 **시각 일치도, 링크 배선도 검증하지 않는다** — 시안과 다르게 뭉뚱그리거나 버튼에 링크가 없어도 테스트는 통과할 수 있다(거짓완료: "시안대로 개발+테스트 done" 보고했으나 실제론 링크 없고 시안과 다름). 시안 불일치·죽은 버튼이면 해당 REQ로 루프백.
+- ★**통합 후 검증(필수 — worktree 격리 통과 ≠ 통합 앱 동작)** (false-done-checklist D):
+  1. **REQ 구현 생존 대조**: 병합 *전* 각 worktree `git diff` 요약(REQ별 추가/변경 파일) → 병합 *후* `$CODE` HEAD 에 각 REQ 핵심 구현 파일·diff 가 생존했는지 대조. 병합/충돌해소가 한 REQ를 다른 브랜치 버전으로 덮어도 그 테스트가 mock 우회·글로브 미실행이면 전체 green 이 유지된다('병합 green' ≠ '모든 REQ 구현 생존') — 누락 0 확인.
+  2. **cross-REQ 계약 왕복**: provider REQ ↔ consumer REQ 가 있으면 **실제 provider→consumer 왕복 1개 이상** 실행. 타입 밖 공유계약(REST body·DB쿼리/스키마·env 변수명) 불일치는 `npm run build` 통과해도 잠복(각자 worktree 에서 서로의 mock 으로 green). 결과를 GATE.md 에 명시.
+  3. **통합 앱 기준 critic 1회 재실행**: §4 critic 은 통합 *전* per-REQ 시점이라 통합앱은 어떤 게이트도 안 봄 — 병합·통합 후 adversarial-review(특히 false-done-checklist D)를 통합된 앱 기준으로 1회 더 돌린다.
+  4. **inherited/skipped done 재검증**: §1 재실행으로 건너뛴 `status:done` REQ 는 acceptance 를 *현재* 코드에서 1회 재실행(stale-done 방지) 또는 명시 N/A.
 
 ## 6. 계약 작성 + 게이트에서 정지
 
@@ -55,9 +60,9 @@ worktree들을 병합하고 전체 빌드/테스트를 돌린다(`npm run build`
    ```yaml
    stage: develop
    rigor: full
-   gate: pending
+   gate: pending          # ★pending 만 쓴다 — gate:approved 는 사람이 approved_by/approved_at 과 함께(자가승인 금지)
    updated: <오늘 날짜>
    ```
-4. 사용자에게 REQ별 상태 표를 출력하고 **멈춘다**. 검토 후 `gate: approved` 또는 `/develop` 재실행 안내.
+4. 사용자에게 REQ별 상태 표를 출력하고 **멈춘다**. **`gate:approved` 를 스스로 쓰지 않는다**(사람 검수). 검토 후 사람이 승인하거나 `/develop` 재실행 안내.
 
 > 절대 /deploy 를 시작하지 않는다. 모든 P0 REQ가 done 이 아니면 GATE.md 에 명확히 표시한다.

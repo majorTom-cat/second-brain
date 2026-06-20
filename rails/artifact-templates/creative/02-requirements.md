@@ -13,6 +13,7 @@
   - `OPS` 운영(health·graceful shutdown·백업·모니터링) · `SEC` 보안/프라이버시
 - **배포 가능한 장기 실행 서비스**면(`deploy_profile: intranet` 이든 `local`+Docker 든) **OPS REQ를 자동 포함**: `health` 엔드포인트 · `graceful shutdown`(SIGTERM) · `configurable bind`(HOST/PORT). 이유: local+Docker 도 graceful·bind 가 필요(todo-toy 교훈). 한 줄 도구·라이브러리는 제외.
 - **UI/화면 REQ(`REQ-SCR-*`)의 acceptance 는 관찰 가능한 *시각·인터랙션* 결과를 명시**한다: ① `design-input` 시안이 있으면 "화면이 시안과 레이아웃·컴포넌트 일치"(뭉뚱그림 금지) ② "각 버튼·링크 클릭 시 명세된 화면으로 이동/액션 발생"(죽은 링크 금지). 이유: acceptance 가 시각·인터랙션을 안 적으면 테스트·critic 이 검증할 게 없어, 시안과 다르고 버튼이 죽어도 통과한다(거짓완료).
+- **비기능 요구(NFR)도 acceptance 로**(배포 가능한 서비스에서 해당되면): 성능(p95 응답·N+1 쿼리 없음)·동시성/용량(동시 N요청)·리소스(메모리 상한·OOM 없음)·관측성(실패가 로그에 보임)을 *관찰 가능 then* 으로 1개라도 적는다. 이유: acceptance·smoke 가 전부 기능적 then(상태코드·값·렌더)이면 health 200·기능 green 이어도 응답 10초·OOM 재시작 루프면 사용 불가인데 어떤 게이트도 안 본다(false-done-checklist H). 해당 없으면 명시 생략.
 
 ## 요구사항 표
 

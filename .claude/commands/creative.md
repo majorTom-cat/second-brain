@@ -61,9 +61,10 @@ argument-hint: "<아이디어 한 문단>  |  ingest <slug 또는 문서경로>"
    ```yaml
    slug: <slug>
    stage: creative
-   gate: pending
+   gate: pending          # ★산출 세션은 pending 만 쓴다 — gate:approved 를 스스로 쓰지 않는다(자가승인 금지)
    updated: <오늘 날짜>
+   # 승인은 사람이: gate: approved + approved_by: <사람> + approved_at: <날짜> (산출 세션이 못 채우는 사람 표식)
    ```
-4. 사용자에게 요약을 출력하고 **멈춘다**. 검토 후 `gate: approved` 로 바꾸거나 `/creative` 재실행으로 반복하도록 안내.
+4. 사용자에게 요약을 출력하고 **멈춘다**. **`gate:approved` 를 스스로 쓰지 않는다** — 검토는 사람의 몫. 사람이 `approved` + `approved_by`/`approved_at` 로 승인하거나 `/creative` 재실행으로 반복하도록 안내. ([[false-done-checklist]] G — 좁은 파일 값이 사람 검수를 대체하면 거짓완료)
 
 > 절대 /develop 단계를 시작하지 않는다. 게이트 승인은 사람의 몫이다.

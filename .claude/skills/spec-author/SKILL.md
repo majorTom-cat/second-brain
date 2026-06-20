@@ -36,7 +36,7 @@ description: 창작 모듈 내부 절차. 두 입구 — (발산) 아이디어 �
 승자 기준으로 채운다:
 - `01-concept-goals.md` : 개념·목표·성공기준·대표 시나리오
 - `02-requirements.md` : **REQ-ID 표**. 각 P0/P1 REQ에 `acceptance`(given/when/then) 필수.
-  **배포 가능한 장기 실행 서비스**면(`intranet` 이든 `local`+Docker 든) OPS REQ(health·graceful shutdown·configurable bind) 자동 포함(todo-toy 교훈).
+  **배포 가능한 장기 실행 서비스**면(`intranet` 이든 `local`+Docker 든) OPS REQ(health·graceful shutdown·configurable bind) 자동 포함(todo-toy 교훈) + **비기능(NFR) acceptance**(p95 응답·동시 N요청·메모리 상한·관측성)를 해당 시 1개라도(기능 then 만이면 응답 10초·OOM 도 green — false-done-checklist H).
   **UI/화면 REQ(`REQ-SCR-*`)의 acceptance 는 관찰 가능한 시각·인터랙션 결과로 적는다**: "시안(design-input)과 레이아웃 일치" + "각 버튼·링크 클릭 시 명세 화면으로 이동/액션"(죽은 링크 0). 안 적으면 critic·테스트가 검증할 게 없어 거짓완료가 통과한다.
 - `03-architecture.md` : 스택 결정(근거)·컴포넌트·데이터 스케치·배포 타깃
 - `08-roadmap.md` : Phase별 scope + 검증 체크리스트 + 불변원칙

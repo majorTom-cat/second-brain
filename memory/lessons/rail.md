@@ -217,14 +217,15 @@ intra-toy 검증·정리 후 `/retro`. §0 아카이브에서 **새 실제 프�
   - `GATE.template.md`: done 을 **(a)acceptance/(b)critic/(c)관찰 smoke 3컬럼 분리** + critic 발견 **의역금지 전사** + `[ ] 열린 결정 검토 완료` 칸 + dry-run 비율 — *사람이 거짓 요약 위에서 approve* 하는 최종 거짓완료 차단.
   - `adversarial-review` **차원 8(프로세스/레일 자가 무결성)**: 자가승인·soft-pedal·stale-done·distill 그라운딩을 critic 이 레일 자신에 적용.
 
-### ⏳ 제안(미적용 — 사람 게이트, 더 침습적)
-- **[P-U1] `/develop §5` 통합 step 확장**: 병합 후 ①REQ 구현 생존 대조 ②provider→consumer cross-REQ 왕복 ③통합앱 기준 critic 재실행 ④inherited/skipped done 재검증. `req-implementer §4` 반환에 'acceptance 절→테스트 매핑' 강제.
-- **[P-U2] `/deploy §3`+`deploy-runbook` smoke 구성 규칙**: acceptance given/when/then 1:1 매핑(의역금지)·빈 DB cold-start·동시 probe·멱등 2회 POST·DB 차단 후 health 전환을 smoke 의무로.
-- **[P-U3] `lesson-distiller` 에 [P-C] 동등 장치**(결과 단정 금지·`⚠️확인요망`·manifest grep 그라운딩) + `/retro §1` 루프백 로그 교차검증(partial→done 수 vs §3 이벤트 수). chat-archivist 만 P-C 보유한 비대칭 해소.
-- **[P-U4] 게이트 승인 채널 구조 분리**(가장 깊은 뿌리): 산출 세션이 `gate:approved` 를 못 쓰게. 레일이 한 세션 권한 안에서 도니 *완전 강제는 어려움* — 현재는 차원 8 + GATE 체크칸으로 **탐지 수준**. 구조적 분리는 별도 결정.
+### ✅ 추가 적용 (2026-06-20 2차 승인 "P-U1~4 다 적용, H도") — 흐름까지 강화
+- ✅ **[P-U1] `/develop §5` 통합 step 확장**: 병합 후 ①REQ 구현 생존 대조(병합 전 worktree diff vs 후 HEAD) ②provider→consumer cross-REQ 왕복 ③통합앱 기준 critic 재실행 ④inherited/skipped done 재검증. `req-implementer §4` 반환 = 'acceptance 절→테스트 매핑'(개수 아님).
+- ✅ **[P-U2] `/deploy §3`+`deploy-runbook` smoke 구성**: acceptance given/when/then 1:1(의역금지)·로컬=dry-run(≠pass)·빈 DB cold-start·동시 probe·멱등 2회 POST·DB 차단 후 health 전환을 smoke 의무로. health `{status:ok, db:ok}`.
+- ✅ **[P-U3] `lesson-distiller` P-C 동등**(결과 단정 금지·`⚠️확인요망`·manifest grep 그라운딩) + `/retro §1` 루프백 로그 교차검증(partial→done 수 vs §3 이벤트). chat-archivist 만 P-C 보유하던 비대칭 해소.
+- ✅ **[P-U4] 게이트 자가승인 차단(탐지+규약)**: 산출 세션은 `gate:pending` 만 쓰고 `approved` 자가 기재 금지(creative·develop·deploy §정지). 다음 §0 가 `approved_by`(사람 표식)·열린결정 해소·done freshness(SPEC.updated>DEV.done 이면 stale)를 대조해 자가승인 의심 시 정지. ★*완전 강제는 한 세션 권한 안에선 불가 → 탐지 + critic 차원 8*(메타 한계 명시).
+- ✅ **[H 깊은 배선]** 완전성 비평 4범주를 인지(체크리스트 H)뿐 아니라 강제로: 시간축(만료·로테이션·용량·CVE)·정합성(backfill)을 `deploy-runbook` ops_gaps·`RUNBOOK.template` 에 / 비기능(NFR p95·동시·메모리·관측성) acceptance 를 `02-requirements`·`spec-author` 에 / R4a 위임 자가검증을 `routing.md` 에.
 
-### 완전성 비평 (어떤 렌즈도 못 다룬 *범주* — H 에 인지로 seeded, 깊은 처리는 다음 라운드)
-시간축 거짓완료(인증서 만료·토큰 로테이션·디스크/CVE — '게이트 통과 후 N일 뒤 깨짐') · 비기능(성능 p95·N+1·OOM·관측성) · 사후 데이터 정합성(backfill·부분실패 orphan) · R4a 위임 품질/tier 준수 자가검증. **메타 사각: critic·게이트·distill 이 모두 같은 세션 권한 안 → '레일이 자기를 속이는' 범주는 탐지(차원 8)까지만, 구조적 강제는 미해결**(P-U4).
+### ★남은 메타 한계 (정직)
+critic·게이트·distill 이 **모두 같은 세션 권한 안**이라, '레일이 자기를 속이는'(세션이 스스로 approved 기재) 범주는 P-U4 로 **탐지·규약까지** 갔지만 **구조적 완전 강제는 미해결** — 진짜 분리는 사람만 쓰는 승인 채널(별도 토큰/외부 서명)이 필요하고 레일이 한 Claude 세션에서 도는 한 어렵다. verify-by-observation 도 결국 "관찰자가 정직하다"를 전제. 이 전제 자체의 거짓완료가 다음 과제.
 
 8회차 근거: 워크플로 `false-done-gap-sweep`(wf67jpbch) 결과 32 확인갭 + 메인 인라인 8후보 + 레일 전체 정독(creative·deploy·deploy-runbook·spec-author·SPEC/DEPLOY.manifest·GATE.template·todo-toy/intra/bns 교훈).
 
