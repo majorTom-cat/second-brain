@@ -16,9 +16,11 @@
 | 9 | 2026-06-16 21:46 | E--llm-wiki | 1+1은? | [raw/4d41468e-ecf7-4bc8-b8d7-a74d5ed6a209.jsonl](raw/4d41468e-ecf7-4bc8-b8d7-a74d5ed6a209.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 10 | 2026-06-16 21:48 | E--llm-wiki | 1+1은? | [raw/4fdd79a5-a08a-4e19-bd92-9e221dc2c612.jsonl](raw/4fdd79a5-a08a-4e19-bd92-9e221dc2c612.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 11 | 2026-06-18 15:10 | E--llm-wiki | 위캐의 지식에 맨 마지막에 출처가 있고 출처가 sha256:5c268e91ea665bcf8fa546ba510e03e6cecd41f34c7dea2fd7a67fd2… | [raw/3908c05b-cc4b-4ca6-8706-5f93488163e6.jsonl](raw/3908c05b-cc4b-4ca6-8706-5f93488163e6.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 12 | 2026-06-19 00:49 | E--llm-wiki | 안녕, 이제 모바일에서도 잘 보일 수 있도록 반응형으로 해보려 하는데 어떻게 하는게 좋을지 계획 세워봐 | [raw/dd9f45c6-60ea-4c74-bd01-09abc08cf0d1.jsonl](raw/dd9f45c6-60ea-4c74-bd01-09abc08cf0d1.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 13 | 2026-06-19 13:50 | E--llm-wiki | 자동배포할때 컬럼 추가나 DB 변경사항 관련한것도 이제 자동 반영이지? 전엔 서버 들어가서 했었거든 | [raw/36c3dbf1-602c-4754-b273-100b6d7fcd3d.jsonl](raw/36c3dbf1-602c-4754-b273-100b6d7fcd3d.jsonl) | `~/.claude/projects/E--llm-wiki` |
 
 ## 요약 통계
 
-- 총 세션: 11 개
-- 기간: 2026-06-11 14:30 ~ 2026-06-18 15:10
-- 원본 용량: 79.9M
+- 총 세션: 13 개
+- 기간: 2026-06-11 14:30 ~ 2026-06-19 13:50
+- 원본 용량: 87.8M

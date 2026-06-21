@@ -240,3 +240,11 @@ critic·게이트·distill 이 **모두 같은 세션 권한 안**이라, '레�
 - 세션간 행동교훈은 auto-memory `done-means-observed-working`(feedback)에도 기록 — 매 세션 자동 로드.
 
 7회차 근거: 사용자 보고(다른 세션 시안 개발 거짓완료) + 기존 로그 `lessons/todo-toy.md`·`lessons/intra.md`(에이전트 보고/거짓안심/npm test 글로브) + 이번 세션 적용한 5개 레일 파일 diff.
+
+## cross-project 패턴 sweep (2026-06-21, /retro intra → 사용자 "기존것들도 다 배워놓도록")
+agora·llm-wiki·intra 의 `archive/*/knowledge.md`·`ideas.md` 를 가로질러 채굴(llm-wiki 4 새세션 auto-ingest CLEAN·잔여비밀0).
+- **대부분 이미 패턴화돼 dedup**: constraints-as-truth(agora EXCLUDE·intra)·design-ready-skin(agora·intra)·llm-trilemma·llm-provider-routing·git-as-source-of-truth·soft-delete-hide-recover·single-permission-point·intranet-deploy·ingest-convergence — 2+ 프로젝트 반복이 이미 `patterns/` 에 있음(재제안 안 함).
+- **신규 승격 1개** → [`patterns/redesign-greenfield-vs-inplace.md`](../patterns/redesign-greenfield-vs-inplace.md): **전면 리디자인=그린필드, 점진 델타=인플레이스(기존 코드 중력)**. 직접 증거 = **agora v4.1 인플레이스 리디자인이 옛 UI 로 수렴해 빗나가 → `intra` 그린필드로 재시작**(intra 의 존재 이유). "수정이 빠르다" 디폴트를 전면 리디자인엔 적용 금지.
+- **백로그(단일 프로젝트 강한 자산, `_candidates`)**: BYOK 키 저장소(UI등록+DB AES-GCM+자동회전, llm-wiki) · 구독 CLI($0) 백엔드 공급자(codex/claude-cli, llm-wiki — ⚠런타임 CPU(AVX) 의존: Bun=AVX필요 vs Rust=무관) · 한 어댑터 모델세대별 파라미터 A/B 분기 · CR(변경요청) 인테이크 레일(agora).
+- **반복 false-done 교차확인**: "동작 안 함=배포/캐시부터"(llm-wiki 미배포·intra cache-and-config), "같은 라벨 컨트롤 2개/라벨드 컨트롤이 라벨과 다른 동작"(llm-wiki·intra) — 이미 false-done A·D 에 반영됨.
+- **메모**: intra 는 agora 의 그린필드 재시작이므로 `archive/agora/knowledge.md`(캘린더 그리드 월/주, 운영 시크릿 외부화 등 "미해결")가 intra 의 직접 prior-art. llm-wiki 4 새세션(OpenAI 공급자·BYOK 키저장소)은 ingest CLEAN, 필요 시 focused distill.
