@@ -88,3 +88,40 @@
 - flaky 2건(익명답변·사원삭제)=`Promise.all([waitForLoadState,click])`→`waitForURL`. 풀스위트 실패는 타깃 재실행으로 flaky/실버그 판별([[fast-feedback-not-timeouts]]).
 - 메일: sendBroadcast 구현됨(nodemailer, dev=Mailpit 1025/8025). 실 배달엔 운영 SMTP env.
 - 진행중: 전 화면 소스-diff 감사+수정(ultracode 워크플로) + 메일 실송 테스트(yskim).
+
+## ★2026-06-21 (이어받기 세션) — 충실도 마감 + 검증 인프라 + 전이 가능한 교훈
+사용자가 화면을 직접 보며 갭을 연달아 짚음. STRICT 재감사(8영역 병렬) → 배치 수정. **전부 tsc 0 + npm test 39/39 + Playwright 렌더/스샷 검증.** 한 것: 사이드바 동적화(차량 4대 DB+3단 관리자콘솔+홈 다펼침) · 검색 통일(라이브+입력칸끝 X, 게시판·사원관리 공용 `LiveSearch`) · 시드 2페이지(공지15·자유13)+페이지네이션 테스트 견고화 · 환각 '중요 토글' 제거 · 관리자 저장버튼(변경 사항 저장+플로피) · 회의실 일/주 회의제목(.purp) · 메일 시안화+로고 CID · author-bar 부서명 · live 코드 lucide 완전 제거(Tabler) · 사원 권한 select→토글2개 · **활성/노출 토글 켠상태 버그** · 모달 너비. 정본 목록 = `E:\intra\docs\FIDELITY-GAPS.md`(✅완료/⏳다음).
+
+### 전이 가능한 교훈 (★다른 프로젝트에도)
+1. **정본 소스가 진짜 최신인지 먼저 확인.** 감사 대상(`design-input`)이 *복사본*이라 낡았을 수 있다 — 원본(Downloads/handoff)과 **diff로 동일 확인** 후 감사. (이번엔 동일했지만 안 했으면 낡은 걸 봤을 위험.) 관련 [[compare-design-source-not-screenshots]].
+2. **"시안 없는 추가도 갭"(STRICT).** 1차 감사가 시안에 없는 요소(중요 토글·검색해제 등)를 "정당한 union"으로 면죄 → 사용자가 "환각"이라 지적. 충실도 정본이 있으면 *임의 추가도 갭*. 예외는 **확정된 결정**(사번·임시비번·익명성·보안)뿐. "union이라 OK"는 사용자 확인받기 전엔 자기면죄. 관련 [[audit-inherited-work-dont-assume]].
+3. **공유 토글 CSS + 인라인 knob = 이중 손잡이.** 공유 `.tgl .track::after`가 knob을 그리는데 버튼 토글이 인라인 knob까지 그려 **켠 상태에서 손잡이 2개**로 깨짐. → input 없는 토글은 `.track.on` 클래스로(중복 금지). *교훈: 공유 컴포넌트가 pseudo-element로 뭔가 그리면, 같은 걸 인라인으로 또 그리지 마라(중복 렌더 버그).*
+4. **`.env` = 테스트·런타임 결합.** 메일을 Mailpit→Gmail로 바꾸니 Mailpit에서 토큰 읽는 테스트 3건 실패 + `.env`는 기동 시 로드라 **dev 재시작** 필요(HMR 아님). → 임시 override는 쓰고 **복원**, 결합 인지. 시크릿(앱비번)은 .env(gitignore)에만·쓰고 삭제.
+5. **메일 이미지는 CID 내장 또는 공개 URL.** Gmail은 이미지를 *구글 프록시*가 대신 가져와서 `localhost`(개발기)엔 접근 불가 → 로고 깨짐. CID 첨부(`attachments:[{path,cid}]` + `src="cid:..."`)면 어디서든 렌더. *우클릭 새탭은 보이는데 인라인은 깨짐 = 프록시 접근불가 신호.*
+6. **인터랙션 요소는 진짜 작동해야.** 검색 돋보기가 `pointer-events:none`(장식)이라 클릭 불가 → 사용자 "검색 안 됨". 시안이 "입력 전용"이면 **라이브 검색**(디바운스 라우팅)으로, 입력 즉시 동작+X. *장식처럼 보이는 컨트롤도 사용자는 누른다.*
+7. **시드↔테스트 동시 수정**(재확인). 시드 글 추가가 페이지네이션 테스트의 카운트 단언을 깸 → 테스트에 **클린업 + 시드 무관 단언**(견고화)을 함께. [[fast-feedback-not-timeouts]].
+8. **대량 편집 후 "깨짐"은 캐시부터 의심.** 사용자 "상단 아이콘 깨짐"이 코드 아니라 브라우저/빌드 캐시 — `Ctrl+Shift+R`/`rm .next + dev 재시작`이 해법. 코드 디버깅 전에 캐시 배제.
+9. **무거운 변경은 컨텍스트 여유 있을 때.** 세션이 길어진 상태에서 DB 마이그레이션/새 패턴을 무리하면 검증 부실 위험 → 정직히 체크포인트하고 새 세션 권고(깨진 채 안 넘김 [[dont-hand-back-broken-state]]). "green ≠ 동작" [[done-means-observed-working]].
+10. **기능 ≠ 화면만.** 충실도 작업이 많아도 기능(라이브검색 라우팅·동적 사이드바 쿼리·권한 도출 로직·메일 발송)도 병행. 사용자가 "화면만 그리냐" 물으면 = 기능 진척을 *보이게* 보고 안 한 신호.
+
+### 재사용 자산
+- 공용 `LiveSearch`(`src/components/`) — 검색 있는 화면 전부 동일(라이브+X). 새 검색은 이거 재사용.
+- Playwright 검증 스크립트군(`scripts/verify-*.mjs`) — 로그인→화면→단언+스샷. 새 화면 검증 시 복제.
+
+## ★2026-06-21 (이어받기2 세션) — 모달·드래그·인라인이미지·성능·버그 (전이 교훈)
+사용자가 연달아 요청·버그제보(삭제확인 모달 → 차량 마이그/필드 → 드래그 예약 → 데이터정합성·회의실 예약버그·성능·미구현 → 본문 인라인 이미지). **전부 tsc 0 + npm test 45/45 + Playwright 렌더/클릭/드래그/주입 검증.** 커밋 9개(b730a51~dfa0958). 정본 = `E:\intra\docs\FIDELITY-GAPS.md`·`HANDOFF.md §0`.
+
+### 전이 가능한 교훈 (★다른 프로젝트에도 — 결정·계기·트레이드오프)
+1. **확인/삭제(destructive)는 인터랙션 형태도 시안 정본.** 배너·즉시삭제·disabled 로 뭉갠 걸 시안 모달로 복원. **화면마다 모달 스타일이 다름**(dept=중앙 `.confirm`, emp/room/car=`.modal` aside, 게시판=`.notice-confirm`) → 제네릭 하나로 뭉뚱그리지 말고 화면별 줄단위 대조. *행별 'blocked' 판정은 서버가 실제 차단하는 FK 집합과 일치시켜라*(emp 는 reservation·correction·post·comment·comment_like·post_answer 6개 RESTRICT 합산 — 한둘만 세면 모달이 del 띄웠는데 서버가 막는 불일치).
+2. **토스트 URL정리: `router.replace` ≠ `window.history.replaceState`.** 성공 쿼리키(?saved/?deleted)를 지우려 `router.replace` 쓰면 **서버 컴포넌트 재렌더로 prop 이 사라져 토스트가 깜빡이고 즉시 사라짐**(실증). → `window.history.replaceState`(서버 재렌더 없음)로 URL 만 정리 + 문구를 **로컬 state 로 캡처**(prop 변화에 불변). Next.js App Router 일반 함정.
+3. **새 인터랙티브 오버레이는 기존 클릭을 *조용히* 막는다.** 드래그(일간)·클릭(월간) 레이어가 기존 예약 막대(.evt) 클릭을 가로챔 → 기존 요소를 오버레이 위로(`evtStyle` **inline** `zIndex:2`) 또는 셀 핸들러가 `closest("a")` 면 통과. ★**진단법 = `document.elementFromPoint(x,y)`** 로 그 픽셀 최상위 요소 확인. ★**CSS z-index 규칙(`.cal-day .evt{}`)이 dev HMR 에서 안 먹어** inline/JS 로 박아야 했다(스타일이 안 먹으면 HMR 의심 + inline 으로 확정).
+4. **폼 기본 선택은 'busy' 자원을 피하라.** 예약 폼이 *첫 자원*을 기본 선택하는데 시드가 그 자원을 *기본 시간(14:00)* 에 예약 → 열자마자 제출 비활성("이 방은 예약이 안 됨"으로 보임). → **기본 시간대에 빈 자원을 기본 선택**. *데모 데이터 vs 폼 기본값 충돌 = 멀쩡한 기능이 깨져 보인다*(데이터 감사선 "정합"이어도 UX 버그). 단, 기존 e2e 가 '기본=특정자원'에 의존하면(차량) 그쪽은 두고 테스트 보존.
+5. **리치 본문(인라인 이미지)=HTML 저장 → 저장형 XSS 표면.** 평문→HTML 전환 시 **반드시**: ① 검증된 sanitizer(`sanitize-html`) 화이트리스트(손수 금지) ② 이미지 `sharp` 재인코딩(raster→webp, EXIF/메타·스크립트 제거 — 위장 파일은 디코딩 실패로 거부됨) ③ `<img src>` 를 **내부 엔드포인트만** 허용(외부/data/js 제거) ④ **저장·렌더 양쪽** sanitize(방어 심화) ⑤ **주입 테스트**(script/onerror/외부 img)로 검증. 익명 본문은 게이트되지만 이미지 URL 은 추측 가능 → 인라인 이미지 **익명 제외**.
+6. **의존성 없는 새 테이블은 DROP SCHEMA 없이 적용.** 마이그가 FK/의존 없는 신규 테이블만 추가하면 그 SQL 만 직접 실행(멱등) → dev 커넥션 유지(DROP SCHEMA 재시드·재시작 회피). DROP SCHEMA 는 *기존 테이블에 컬럼 추가*(reset.mjs 가 truncate-only 라 못 잡음) 같은 변경에만. **새 테이블은 reset.mjs TRUNCATE 목록에 추가**(리셋 시 정리).
+7. **"느림" 진단: dev 컴파일이 큰 몫 + 매 네비 중복 쿼리.** next dev 는 라우트 첫 방문에 컴파일 → 체감 느림의 큰 부분(prod 빌드면 빠름 — 먼저 이걸 사용자에게 알릴 것). 진짜 비용은 **레이아웃+페이지가 둘 다 `requireUser`** 호출(매 네비 2× 세션조회) → `getCurrentUser` 를 React `cache()` 로 디듀프(요청당 1회), 레이아웃 쿼리 `Promise.all` 병렬. (auth 캐시는 요청 스코프라 안전.)
+8. **테스트 fixture 가 틀리면 멀쩡한 기능이 '버그'로 보인다.** 손상 PNG 업로드 → 415(서버가 *정상적으로* 거부)인데 "기능 버그"로 오인 → 디버깅 낭비. → **유효 fixture(sharp 생성)로 재검증**. *거부가 올바른 동작인지 fixture 문제인지부터 구분*(sharp 가 위장/손상 이미지를 거부하는 건 보안 기능).
+9. **멀티갈래 요청 = 병렬 진단 + 직접 수정 혼합.** 사용자가 데이터정합성·성능·미구현을 한 번에 물음 → Explore 에이전트 3종 병렬(결론만 회수) + 구체 버그(회의실)는 직접 재현·수정. 에이전트는 "데이터 정합" 했지만 *기본값 충돌* UX 버그는 직접 프로브로만 잡힘(에이전트 결론 + 직접 검증 병행).
+
+### 재사용 자산 (추가)
+- `AdminToast`(성공 토스트, history.replaceState 패턴) · `DayDragLayer`(일간 드래그-예약 오버레이) · `MonthCell`(월간 클릭-예약) · `reserve-prefill.ts`(URL→폼 initial) · `sanitize-body.ts`(본문 HTML 정제) · `board-image.ts`(인라인 이미지 sharp 재인코딩 저장).
+- 검증 스크립트: `scripts/verify-{del-modals,board-del,car-admin,drag,inline-image}.mjs` + e2e `tests/{drag-reserve,month-reserve,inline-image}.test.mjs`.
