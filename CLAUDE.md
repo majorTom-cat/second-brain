@@ -24,8 +24,11 @@ Claude의 **행동 규칙**이다.
 4. 한 화면 지적받으면 **형제(목록·작성·상세·게이트) 선제 감사** — 사용자를 영구 버그탐지기로 두지 마라.
 5. **render 검증**(Playwright 로그인→goto→문구·아이콘·요소 단언) 후에만 "완료". `tsc`/테스트 green ≠ 완료.
    빠른 피드백: tsc→영향 파일만→전체는 배경/체크포인트(배경 테스트 중 src/app 편집 금지 — hot-reload가 깸).
+6. **★★러프 ≠ 실시안: 러프 위에 실시안을 *덧입히지(재스킨)* 말고 *재구축*하라.** 러프 프로토타입 → "나중에 진짜 디자인으로" 라고 했는데, 진짜 시안이 오면 **러프 마크업 위에 CSS만 덧입혀**(인플레이스 재스킨) 러프의 *단순화된 구조·로직*이 그대로 남는 게 "계속 다르게 → 전수조사 → 재작업" 루프의 **근본 원인**. (실증: car-trips 가 시안엔 *차량별 세무 운행기록부*인데 *전 차량 평면 목록*으로 남음 — veh-tabs·과세기간·업무사용비율·표 컬럼 누락.) → **실시안 도착 시 각 화면을 시안 소스에서 처음부터 마크업+로직 재구축**, 러프는 폐기 대상으로 격리.
+7. **★★인터랙션·로딩 *체감* UX도 충실도의 일부(빠뜨린 것도 실수).** 정적 시안은 즉시 반응(`:checked`/JS)하는데 서버컴포넌트·서버액션으로 옮기면 즉시성을 잃기 쉽다 → 사용자가 "뻣뻣/버벅"으로 겪음. ① 라우트 그룹마다 **`loading.tsx` 스켈레톤**(없으면 모든 네비가 빈 화면 블록). ② 서버액션 토글/제출은 **`useOptimistic`/`useFormStatus`** 로 즉시 반영(transition CSS 있으면 상태만 즉시 바꿔도 부드럽다). (dev 콜드 컴파일 느림은 본질적 — prod 가 진짜 속도, loading 은 체감 개선.) 정본 [[interaction-loading-ux-completeness]].
+8. **★★done 게이트 = 구조 *전수* diff(기억·반응적 대조 말고 *도구*).** "시안 봤다"는 대화에 나온 부분만 고치는 부분 대조라 갭이 남아 사용자가 매번 잡아야 했다. → **시안 HTML ↔ 실제 렌더를 같은 방식으로 토큰화(표 컬럼·버튼/탭·셀렉트옵션·필드라벨·섹션클래스)해 '시안엔 있는데 구현에 없는 것'을 기계로 뽑는 감사 도구**(intra: `scripts/fidelity-audit.mjs <screen|all>`)를 **화면 done 전 반드시 실행, 누락 0 까지**. 디자이너 샘플값(숫자/이름=td)은 토큰서 자동 제외 — 구조만 본다. **시안 있는 프로젝트면 이 도구는 일회성 아닌 누적 자산**(매 화면·매 변경 재사용 — 프로젝트마다 비슷하면 패턴으로 승격).
 
-> 정본 교훈: `memory/lessons/intra.md` · auto-memory `done-means-observed-working`·`audit-inherited-work-dont-assume`·`icon-fidelity-tabler-not-lucide`·`fast-feedback-not-timeouts`·`fix-the-failure-class-not-the-instance`.
+> 정본 교훈: `memory/lessons/intra.md` · auto-memory `done-means-observed-working`·`audit-inherited-work-dont-assume`·`icon-fidelity-tabler-not-lucide`·`fast-feedback-not-timeouts`·`fix-the-failure-class-not-the-instance`·`rebuild-from-real-design-not-reskin`·`fidelity-audit-by-structural-diff`.
 
 ## 📌 핵심 규칙
 
