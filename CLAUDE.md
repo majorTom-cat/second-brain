@@ -15,6 +15,9 @@ Claude의 **행동 규칙**이다.
 `CLAUDE.md` + `memory/lessons/<proj>.md` 를 Read 로 끌어와라**(자동 로드 안 됨 = 내가 명시적으로).
 
 **화면/스펙 작업 충실도 프로토콜 (필수 — '완료' 보고 전 반드시 실행):**
+
+> **★★하드 트리거 (교훈은 쌓는 게 아니라 적용한다):** "완료/깨끗" 보고 *전*, "이렇게 검증하자" 제안 *전* → `/inspect` 실행 또는 지배 교훈을 *호명*하고 따르는지 확인. 로드돼 있어도 *실행 중 참조 안 하면 무용*(같은 세션에도 어겼다). **이미 부정된 방법 재등장 금지**(고화질 스샷으로 아이콘·문구 잡기·"한 방법 0건=완료"·좌표 등분). 정본 [[apply-lessons-not-just-store-them]].
+
 0. **시스템 먼저 스캔 (화면 만들기 *전*)**: 화면을 가로지르는 **공유 디자인 시스템**(색/카테고리 팔레트 = 시안 CSS `:root` 의 `--cat-N-*` 토큰·디자인토큰 · 공유 위젯 · 여러 화면 공통 데이터 모델)을 *정의하는* 화면(관리자/설정)과 CSS를 **먼저** 읽어 전역 결정을 앞단에서 확정. 화면별 발견만 하면 가로지르는 모델을 뒤늦게 발견해 헛수고. (실증: 부서 색 = 채도 정체색+파스텔 막대 '카테고리' 체계인데, 캘린더를 시드 파스텔로 먼저 만든 뒤 부서관리 swatches 때야 충돌 발견 → 캘린더 6뷰 재작업.) "발견 1패스"는 *화면 단위*가 아니라 *시스템 단위*까지.
 1. 시안(`design-input/.../orbit/<screen>.html`)을 **줄 단위로** 읽고 1:1 — ①순서·배치 ②문구(토씨 그대로, 없는 문구
    만들지 마라) ③아이콘(시안=Tabler `ti-*` ≠ lucide → `@tabler/icons-react` 또는 모양 직접 대조, close-enough 금지) ④색 ⑤인터랙션 형태(모달/페이지/드로어).
@@ -30,7 +33,7 @@ Claude의 **행동 규칙**이다.
 
 9. **★★★capstone — 위 방법들을 *하나씩 재발견* 말고 *검사 묶음으로 한 번에 앞단에서*.** (**검사 묶음 = 서로 다른 결함층을 잡는 독립 검사 여러 종을 한 데 모아 같이 돌리는 것** — 영어 "battery of tests". 한 종만으론 못 잡으니 묶어서.) (실증 2026-06-23: 스샷대조→HTML소스diff→인터랙션시뮬→가로폭전수, *방법 하나당 사용자 버그 한 라운드씩* 깨달으며 11건이 질질 나왔다. 느린 건 방법 실행이 아니라 *어떤 방법이 필요한지의 발견*이었다.) 단일 마법 검사는 없다([[verification-is-layered-zero-isnt-clean]]) — 정답은 그 **검사 묶음**을 *프로젝트 시작부터·화면 1번부터·매 변경마다* 전수로 돌리는 것. UI 충실도 묶음 = ①**소스 diff**(시안 HTML/CSS ↔ impl 토큰화 — 구조 + **아이콘이름(ti-*)·문구토씨·색토큰**) ②반응형 불변식(브레이크포인트 동작) ③**가로넘침 전수**(body.scrollWidth>vw + 클립조상 거른 per-element — overflow 는 ①②를 다 빠져나감) ④인터랙션 시뮬(드래그·토글·모바일solo 좌표→자원) ⑤실패계열 grep(하나 찾으면 같은 CSS/패턴 형제 전수). **병렬로 한 번에 돌려 갭 카탈로그 → 배치수정**([[harvest-gaps-with-parallel-audit]]).
    **★순서·속도(검사 자체가 느리면 안 돌린다):** 싼 *정적* 검사 먼저(브라우저 없이 소스 diff=초), 그다음 *한 세션* 으로 전 라우트 순회하며 페이지당 `page.evaluate` 한 번에 ②③단언(브라우저 재기동·재로그인 반복 금지), 뷰포트는 병렬. **스샷은 *검출 방법*이 아니라 *실패 증거* — 전 화면 fullPage 찍지 말 것(그게 '하루 종일'의 주범), 단언 깨진 화면만 고화질.** 아이콘·문구는 *고화질 스샷이 아니라 소스 diff* 로(화질 올려도 그 사각은 그대로 — [[compare-design-source-not-screenshots]]).
-   **발견비용은 한 번만** — 검사 묶음을 harness(돌아가는 스크립트: intra `responsive-audit.mjs`+`fidelity-audit.mjs`)로 물려주고, *새로 만난 실패모드는 즉시 묶음에 영구 추가*(harness 가 복리로 자라 반응적 라운드→0). 절차 스킬 = `.claude/skills/verify-fidelity`(레일 일반판 + 프로젝트 실행 인스턴스). 보고는 "완료/0건" 대신 **"검사 N종 소진, 안 돌린 방법은 여기"** 로. 도메인이 다르면 묶음 항목도 다르다(API=스키마+계약테스트+퍼즈+부하+보안스캔) — *"검사 묶음을 앞단에 물려 한 번에 돌린다"* 원칙은 동일.
+   **발견비용은 한 번만** — 검사 묶음을 harness(돌아가는 스크립트: intra `responsive-audit.mjs`+`fidelity-audit.mjs`)로 물려주고, *새로 만난 실패모드는 즉시 묶음에 영구 추가*(harness 가 복리로 자라 반응적 라운드→0). 절차 스킬 = `/inspect`(`.claude/skills/inspect` — 레일 일반판 + 프로젝트 실행 인스턴스). 보고는 "완료/0건" 대신 **"검사 N종 소진, 안 돌린 방법은 여기"** 로. 도메인이 다르면 묶음 항목도 다르다(API=스키마+계약테스트+퍼즈+부하+보안스캔) — *"검사 묶음을 앞단에 물려 한 번에 돌린다"* 원칙은 동일.
 
 > 정본 교훈: `memory/lessons/intra.md` · auto-memory `done-means-observed-working`·`audit-inherited-work-dont-assume`·`icon-fidelity-tabler-not-lucide`·`fast-feedback-not-timeouts`·`fix-the-failure-class-not-the-instance`·`rebuild-from-real-design-not-reskin`·`fidelity-audit-by-structural-diff`·`verification-is-layered-zero-isnt-clean`·`run-checks-upfront-not-one-by-one`.
 

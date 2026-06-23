@@ -1,9 +1,9 @@
 ---
-name: verify-fidelity
-description: (레일 일반판) 어떤 프로젝트든 "완료" 보고 전 돌리는 충실도·품질 검사 묶음 절차. 서로 다른 결함을 잡는 독립 검사 여러 종을 앞단에서·한 번에·전수로 — 사용자 버그 하나당 한 라운드씩 재발견하지 않기 위함. 시안 있는 UI 프로젝트가 주 대상, 원칙은 도메인 무관. 실행 인스턴스 예시 = intra `.claude/skills/verify-fidelity` + `scripts/{fidelity,responsive}-audit.mjs`.
+name: inspect
+description: (레일 일반판) 어떤 프로젝트든 "완료" 보고 전 돌리는 충실도·품질 검사 묶음 절차. 서로 다른 결함을 잡는 독립 검사 여러 종을 앞단에서·한 번에·전수로 — 사용자 버그 하나당 한 라운드씩 재발견하지 않기 위함. 시안 있는 UI 프로젝트가 주 대상, 원칙은 도메인 무관. 실행 인스턴스 예시 = intra `.claude/skills/inspect` + `scripts/{fidelity,responsive}-audit.mjs`.
 ---
 
-# verify-fidelity (레일 일반판) — 검사 묶음을 앞단에 한 번에
+# inspect (레일 일반판) — 검사 묶음을 앞단에 한 번에
 
 > **검사 묶음** = 서로 다른 결함을 잡는 *독립 검사 여러 종*을 한 데 모아 같이 돌리는 것(영어 "battery of tests"). 한 종만으론 다 못 잡으니 묶는다.
 
