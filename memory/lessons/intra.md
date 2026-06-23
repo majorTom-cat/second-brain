@@ -125,3 +125,112 @@
 ### 재사용 자산 (추가)
 - `AdminToast`(성공 토스트, history.replaceState 패턴) · `DayDragLayer`(일간 드래그-예약 오버레이) · `MonthCell`(월간 클릭-예약) · `reserve-prefill.ts`(URL→폼 initial) · `sanitize-body.ts`(본문 HTML 정제) · `board-image.ts`(인라인 이미지 sharp 재인코딩 저장).
 - 검증 스크립트: `scripts/verify-{del-modals,board-del,car-admin,drag,inline-image}.mjs` + e2e `tests/{drag-reserve,month-reserve,inline-image}.test.mjs`.
+
+## ★2026-06-22 (배포 LIVE 세션) — 사내 k8s 배포 (전이 교훈)
+intra 를 https://intranet.bns.co.kr 로 실배포(사내 k8s bnspace, agora/llm-wiki 패턴). **배포 중 같은 부류로 4번 시행착오 + port-forward 안내 2번 거꾸로** → 사용자 "배울 거 배워 다음엔 한 번에 하자 했는데 또". 정본 = `E:\intra\docs\DEPLOY.md`·`HANDOFF.md §🚀`. 승격 패턴 = [patterns/bns-nextjs-deploy-starter.md](../patterns/bns-nextjs-deploy-starter.md).
+
+### 전이 가능한 교훈 (★결정·계기·트레이드오프)
+1. **standalone 이미지 함정은 전부 "dev 통과 / 프로덕션 이미지에서만 터짐" → 배포 전 *로컬 이미지 스모크*가 정답.** 4개(① `npm ci` 크로스플랫폼 lock→`install` ② `@/db` import-time throw(DATABASE_URL)→placeholder lazy ③ `sharp` top-level import→지연 import+`serverExternalPackages` ④ 번들 밖 `migrate.mjs` 의 `dotenv` 정적 import→동적+try/catch)가 *전부* `npm run dev`·`npm run build` 로 안 잡히고 **실제 `docker build`+`run` 만 잡는다**. → `scripts/preflight-deploy.sh`(이미지 빌드→throwaway DB→엔트리포인트 migrate→/api/health 200) 배포 전 1회. 정본 [[standalone-image-preflight-smoke-test]]. *트레이드오프: 로컬 Docker 필요(없으면 최소한 CI 실패를 한 번에 다 보게 묶어 매번 1개씩 발견을 피하라).*
+2. **capture≠apply, 또(rail 6회차 재발).** 포트·시크릿·엔트리포인트 패턴이 [[bns-cluster-deploy-notes]] 산문에 있었으나 **이 세션(작업디렉터리=second-brain)에 자동로드 안 돼 잊었고**, 사용자가 "agora/llm-wiki 어떻게 했는지 봐라" 떠밀어서야 맞췄다. **산문 교훈은 예방을 못 한다** → 함정은 *복사용 템플릿 + 실행하는 체크(preflight)* 로 굳혀야 다음이 한 번에. ★*다른 프로젝트 배포 시작 시 그 프로젝트 정본(llm-wiki/agora `docs`)을 먼저 Read* — 메모리 산문 신뢰 말고 실파일 대조.
+3. **사내 k8s Node앱 인프라 패턴**(처음부터 이대로): 인클러스터 DB 포트 프로젝트마다 구분(agora5432·llm-wiki5532·intra5632) · **시크릿=서버 `k create secret` 직접**(CI변수 아님=동료 비노출; 트레이드오프=서버 1회 타이핑 vs CI변수 Maintainer 열람 vs SealedSecret) · **스키마=이미지 *엔트리포인트* 가 파드 기동마다**(CI SA 가 Job 권한 없음→별도 Job 금지, 다중 replica advisory lock) · CI release=`set image` 만, 최초 리소스=운영자 `k apply` 또는 `ci-rbac.yaml` 1회. 정본 [[bns-cluster-deploy-notes]] §6~10.
+4. **DBMS port-forward 는 *서버 tmux* 로 1회 = 사용자 로컬 재부팅과 무관**(Termius 닫아도 서버에서 계속 돔; 재실행은 *서버 재부팅/파드 재시작* 때만). ★llm-wiki 문서에 박혀 있었는데 "재부팅하면 죽으니 재실행"으로 **두 번 거꾸로** 안내 → 사용자 지적(capture≠apply 의 또 다른 실증).
+5. **prod 시드 ≠ dev 데모 시드.** intra `SEED=1` 가 dev 데모(홍길동·테스트 차량/예약)를 운영 DB 에 넣고, 비번세팅(`setpw.ts`)은 *dev 전용*이라 시드 계정이 **로그인 불가**(비번 해시 없음)였다. → prod 부트스트랩(관리자 1명·비번 env/서버 세팅·데모 0)을 dev 시드와 분리. *언제 같게: 파일럿이면 데모 유지도 선택(이번 사용자 선택). 실서비스 전환 시 분리.*
+
+### 메타 (레일 되먹임)
+- 이번 재발(배포마다 N번)의 근본 = ① 산문 교훈은 자동로드·적용이 안 됨 ② 배포 전 *실행 가능한 게이트*(이미지 스모크) 부재. → 승격 [[bns-nextjs-deploy-starter]](복사용 스타터) + [[standalone-image-preflight-smoke-test]](실행 체크). false-done 후보: **"배포=CI 초록"인데 실제 CrashLoop**(이미지 런타임 미검증) → `rails/false-done-checklist.md` 에 "standalone 이미지 미실행 done 금지(이미지 build+run+health 후에만)" 추가.
+
+### 재사용 자산 (배포)
+- `scripts/preflight-deploy.sh`(배포 전 이미지 스모크) · `docker-entrypoint.sh`(migrate→server) · `db/migrate.mjs`(forward-only·advisory lock·dotenv 동적) · `k8s/{app,postgres,configmap,secret.example,ci-rbac}.yaml` · `.gitlab-ci.yml` · `docs/DEPLOY.md`. 다음 사내 앱 = 이걸 복사([[bns-nextjs-deploy-starter]]).
+
+---
+
+## ★2026-06-22 (이어받기 세션) — 디자인 change2(빈·예외 상태)·change3(모바일 반응형)
+사용자가 배포 후 "조금 수정된 디자인"(change2)·"모바일 포함"(change3)을 연달아 줌. **시작 시 양쪽 교훈 전수 로드**(요약만 훑지 말고 — 사용자가 "또 반복" 우려) + **소스-diff 스캔**으로 델타 전수 추출. **전부 tsc 0 · npm test 46/46 · Playwright 렌더(데스크톱+모바일390px) 관찰.** 미커밋.
+
+### 전이 가능한 교훈 (★결정·계기·트레이드오프)
+1. **★빠른 스캔 ≠ 대충 — *방법*이 다르면 빠른 게 정답.** 사용자가 "왜 이리 빨라, 대충 한 거 아냐?"라고 의심(과거 스샷-눈대조 트라우마). 답 = `diff`로 41화면 전수 비교가 빠른 건 **사용자가 시킨 소스-diff 방법** 때문(느린 건 틀린 방법이었음). 신뢰 회복 = *주장*이 아니라 **전수 diff를 까서 증명**(형제 추측 금지 — 캘린더 6개 "같겠지" 대신 6개 다 깠더니 맞았지만 *확인*했다는 게 핵심). [[compare-design-source-not-screenshots]].
+2. **★시스템 정의 화면 먼저(프로토콜 #0).** change2/3 둘 다 *가로지르는 시스템*(`.empty` 공통 컴포넌트·반응형 미디어쿼리)을 정의하는 신규 spec 화면(`spec-empty-states`·`spec-responsive`)이 핵심. 화면별 발견 전에 이걸 정독 → 공유 컴포넌트 1개 만들고 형제 재사용([[spec-screen-build-efficiency]]). 키트=`<EmptyState>`(5변형)·`bns-responsive.css`.
+3. **★★인라인 스타일이 미디어쿼리를 이긴다(반응형 침묵 실패).** 풀페이지 모달(`.scrim:has(>.modal)`)이 폰에서 안 먹음 — Modal.tsx 가 `style={{padding,width,maxWidth…}}` **인라인**을 박아 스타일시트 미디어쿼리가 *조용히* 무력화(인라인 > 시트). 진단=실측 폭 390-56=334(scrim 패딩 잔존). → **모바일 전용 규칙에 `!important`로 인라인 덮음**(또는 인라인→클래스 이관). *컴포넌트가 인라인 스타일이면 반응형 CSS가 안 먹는다고 먼저 의심* — HMR-CSS-안먹음([[interaction-loading-ux-completeness]] 친척)과 한 부류. 정본 [[inline-style-beats-media-query]].
+4. **★프레임워크 버전 API는 *설치된 docs*로 확인(기억 금지).** Next16 `error.tsx`의 retry prop = `reset`이 *아니라* `unstable_retry`(v16.2.0). 기억대로 `reset` 썼으면 "다시 시도" 버튼이 죽음. AGENTS.md("This is NOT the Next.js you know — read node_modules/next/dist/docs")대로 **`node_modules/.../error.md` 읽고** 잡음. [[consult-prior-art-first]] §4(grep 말고 실파일).
+5. **반응형 = CSS(레이아웃) + 소수 동작만 클라(JS).** 시안이 `orbit.css(@media) + responsive.js(드로어/리다이렉트/솔로picker)`로 분리 → **그 분리를 그대로**: 레이아웃·보임숨김·풀페이지는 미디어쿼리, JS 필수 동작(클래스토글·뷰포트판정이동·DOM주입)만 React 클라 컴포넌트. *Next 앱에 raw `<script>` 주입은 hydration/SPA네비에서 취약 → responsive.js를 React로 포팅*(AppShell 드로어·`MobileViewRedirect`·`CalendarSoloPicker`). "작은 화면을 React로 새로 짓는" 게 아니라 같은 페이지+미디어쿼리.
+6. **권한없음 = 화면 vs redirect(시안 정본).** 기존 admin layout 은 비관리자를 조용히 `redirect("/")` 했는데 시안(`.is-denied`)은 "접근 권한이 없습니다 + 홈으로" *화면 표시*를 원함 → requireAdmin→requireUser+denied 화면. *조용한 redirect도 "시안과 다른 인터랙션 형태"라 갭*(B2 모달=배너 갭과 같은 부류).
+7. **배너→토스트는 URL키 기반 e2e면 안전.** 성공 배너를 `.toast`로 바꿔도 e2e가 *배너 텍스트*가 아니라 *`?saved=1` URL*을 단언하면 안 깨짐(확인 후 진행). 공유 토스트는 `AdminToast`(SUCCESS_KEYS 확장)로 예약/반납/취소/수정/종료/익명까지 재사용.
+
+### 신규 기능 요구(텍스트 전달) — 다일·반복 예약
+8. **"기능이 없다"는 사용자 말 = 먼저 감사(있는데 안 보일 수 있다).** 사용자가 "회의실도 from/to 있었으면"이라 했지만 **이미 완전 구현·동작**(폼 From/To+백엔드+종일밴드)이었다 — 못 본 이유 = 주간뷰가 *방별 탭*이라 다른 방 탭을 봄. → 추측("없구나, 만들자") 전 **실제로 해보고 관찰**([[audit-inherited-work-dont-assume]]·[[done-means-observed-working]]). 발견이면 만들 일이 아니라 *발견 가능성(discoverability)* 문제일 수 있다.
+9. **★캘린더-카운트 검증은 TZ 일경계로 flaky → DB로 확정.** 반복/시리즈취소를 `?day=` 막대 수로 세니 UTC날짜문자열↔KST일경계 off-by-one 으로 before/after 가 어긋남. → **DB 직접 쿼리**(`SELECT count(*) WHERE title=...`)로 "0행 남음" 확정(done=관찰의 *정확한* 관찰면). 시간축 얽힌 단언은 화면 카운트 말고 데이터로.
+10. **반복 예약 패턴(재사용).** 빈도(매일/매주/매월)+종료일 → **회차를 개별 row 로 펼쳐 생성**(가상 확장 아님 — 각 회차가 일반 예약이라 캘린더·충돌·개별취소 공짜) + `series_id` 로 묶음. **충돌은 회차별 DB EXCLUDE(23P01) catch→건너뜀**(insertSeries). 시리즈취소=`scope=series` 로 seriesId 일괄삭제. 월말 없는 일자(31일)는 건너뜀. 단일일 시간예약만(종일/멀티데이·수정모드 배타). `crypto.randomUUID()`(앱코드는 OK — 워크플로 스크립트만 random 금지).
+
+### 재사용 자산 (change2/3 + 다일·반복)
+- `lib/recurrence.ts`(회차생성·insertSeries 충돌건너뜀) · 마이그 0016 reservation.series_id · 반복 폼섹션(차량·회의실 ReserveForm) · 상세 "반복 전체 취소" · `scripts/verify-{recurrence,series-cancel,meeting-multiday}.mjs`.
+
+### 재사용 자산 (change2/3)
+- `<EmptyState>`(5변형 빈·예외 상태, 시안 `.empty`) · `(main)/error.tsx`(오류 안전망, Next16 unstable_retry) · `MobileViewRedirect`(폰 주월→일간) · `CalendarSoloPicker`(폰 일간 단일대상, responsive.js setupSolo 포팅) · AppShell 드로어 · `bns-responsive.css`(반응형 정본) · `scripts/verify-{empty-states,responsive}.mjs`(데스크톱 빈상태·모바일390px 드로어/모달/리다이렉트/솔로 검증).
+
+## ★2026-06-22 (라이브 검수 라운드) — 사용자가 브라우저로 직접 보며 잡은 버그들 (전이 교훈)
+사용자가 띄운 헤드풀 모바일 브라우저(S24 360px)로 *직접 클릭*하며 충실도·동작 버그를 연달아 제보. 코드-리딩 감사(에이전트)는 "동작함"이라 했는데 사용자는 "안 됨"을 봄 — [[visual-compare-not-code-reading]] 의 생생한 재실증(코드 존재 ≠ 실제 동작). 전부 tsc0 + npm test 46/46 + Playwright/스샷 관찰로 수정.
+
+### 전이 가능한 교훈 (★결정·계기·트레이드오프)
+1. **★★반복되는 in-place 서버액션은 `redirect`+토스트가 아니라 `revalidatePath`.** 관리자 토글(활성/노출)이 *첫 클릭만* 되고 이후엔 DB는 바뀌나 화면이 stale("켜졌다 다시 꺼짐"). 근본원인 = 성공 토스트의 `window.history.replaceState`(URL 정리용)가 **App Router 를 desync** → 같은 페이지로의 다음 server-action redirect 가 서버 재렌더를 안 함. → 토글류는 redirect/토스트 빼고 **`revalidatePath`로 제자리 재렌더**(토글은 시각상태가 곧 피드백, 토스트 불필요). *one-shot(저장/삭제 후 이동)엔 redirect+토스트 OK, 같은 화면 반복 액션엔 revalidatePath.* 단일클릭 테스트론 안 잡힘 → **연속 N회 테스트로 잡음.** 정본 [[revalidate-not-redirect-for-repeated-actions]].
+2. **★페이지별 import CSS가 globals @import 를 *순서로* 이긴다(반응형 침묵 실패 2).** 모바일 reflow(`.fb-head{display:none}` 등)가 안 먹음 — `bns-board/admin.css` 는 *페이지 컴포넌트에서 import* 라 globals 의 `bns-responsive.css` 보다 **나중 로드**, 동일 특이도(0,1,0)면 나중이 이김. 미디어쿼리는 특이도 안 올림. → 모바일 reflow 선언에 **`!important`**(모바일 전용이라 안전) 또는 특이도 상향. [[inline-style-beats-media-query]] 의 순서판 친척. *CSS가 안 먹으면: 인라인>시안 / HMR / 셀렉터오타 / **로드순서** 4종 의심.*
+3. **★틀린 셀렉터로 reflow = 조용히 무효.** mypage 1열 reflow 를 `.fgrid` 로 했는데 구현은 `.mp-fgrid`/`.fcell` → 아무 효과 없음. *시안 클래스명과 구현 클래스명이 다를 수 있다 — reflow 대상은 구현 DOM 의 실제 클래스로 grep 확인.*
+4. **Tailwind preflight 가 `ul/ol` list-style 을 전역 리셋.** 에디터 '목록'(execCommand insertUnorderedList)은 동작하나 **불릿이 안 보임**(에디터·읽기뷰 둘 다) — 시안 정적HTML은 브라우저 기본 불릿이라 보였던 것. → `.editor/.post-body ul{list-style:disc}` 명시 복원. *Tailwind 쓰는 프로젝트의 리치텍스트/prose 는 list-style 명시 필수.*
+5. **하드코딩된 `.on`(선택표시) = 죽은 인터랙션.** 게시판 유형(기명/익명) 라디오 카드가 서버렌더 시 기명에 `.on` 고정 → 클릭해도 시각 안 바뀜("안 눌린다"). 라디오는 숨겨져 *값은* 바뀌나 사용자는 모름. → 클라이언트 state 로 `.on`+체크마크 갱신(`BoardTypeSelect`). *선택 UI 의 시각상태는 클라 state 로 — 서버렌더 고정값이면 인터랙션 죽음.*
+6. **월간(month) 이벤트 버킷은 *덮는 모든 날*에.** 다일/종일 예약을 `byDay[startDay]` 한 곳에만 넣어 월간에 시작일만 표시(드래그 3일 예약이 1일만 보여 "안 된 것처럼"). → start~end(배타 -1ms) 모든 KST 날에 add. 차량·회의실 월간 동일. *다일 표시는 시작일 버킷이 아니라 span.*
+7. **"기능 없다"는 제보 = 먼저 *해보고 관찰*.** 회의실 멀티데이·월간드래그는 *이미 동작*(예약 생성됨)이고 **표시만** 누락이었다. 사용자 제보를 "미구현"으로 단정 말고 실제 경로를 밟아 *어디서* 끊기는지(생성? 표시? 검증?) 분리. 모바일에서 월간이 일간으로 리다이렉트되는 등 *맥락*도 원인일 수 있음.
+
+### 재사용 자산 (라이브 검수)
+- `BoardTypeSelect`(클라 라디오카드) · 토글 `revalidatePath` 패턴 · `bns-responsive.css` reflow `!important` · 에디터/본문 list-style · 월간 byDay span 로직 · `scripts/verify-{sidebar-toggle,admin-fixes2,recurrence,series-cancel,meeting-multiday}.mjs`.
+
+## ★2026-06-22 (라이브 검수 2라운드) — 캘린더 span·주간드래그·모바일 드로어 스크롤
+사용자 브라우저 직접 검수 계속. 추가 전이 교훈:
+1. **월간 다일 예약 = 주 행 절대배치 *연속막대*(span), per-day 박스 아님.** 시안 `.span-ev`(left=startCol/7, width=span/7 + cont/contr 주경계 직각). 구현: 단일일=셀 버킷, 다일=주별 컬럼범위+레인(가로겹침 greedy)+spacer(단일일 이벤트 아래로 밀기). 1차에 "모든 날 셀에 넣기"로 고쳤다가(분리 박스) 사용자가 "이어져야" 지적 → span 으로 재구현. 차량·회의실 공통.
+2. **모바일 드로어 스크롤 = 사이드바 `overflow-y:auto` + 본문 스크롤 락.** 드로어 열고 스크롤하면 *본문*이 내려갔다 → ① `.app>.sidebar{overflow-y:auto; overscroll-behavior:contain}` ② `body:has(.app.nav-open){overflow:hidden}`. 오프캔버스 드로어는 이 둘 없으면 "사이드바 대신 뒤가 스크롤".
+3. **주간 드래그 = 열이 *날짜*(일간은 열=자원).** DayDragLayer 재사용 불가(열 의미 다름) → `WeekDragLayer`(dates[7]+고정 assetId). 기존 막대(.evt)는 `zIndex:2`(드래그 레이어 z:1 위)라야 클릭 유지. *시안 week 는 `.drag-hint`(장식, pointer-events:none)만 있고 실제 드래그 미구현 — 힌트가 약속한 동작을 우리가 채움.*
+4. **하드코딩 점검: 실데이터 vs 템플릿 프리뷰 구분.** "사내메일이 하드코딩 같다"=실은 `editEmp.email`(실데이터, disabled라 그래 보임). 진짜 하드코딩은 메일 *미리보기* 페이지(템플릿이라 별개). *"하드코딩 같다"는 비활성/프리뷰 착시일 수 있음 — grep 으로 확인.*
+
+## ★2026-06-22 — 익명 콘텐츠 at-rest 암호화 Phase 1(본문+답변)
+사용자 "익명 글/비밀번호가 평문 아니냐, 암호화 설계해라". **조사로 추정 정정**(거짓작업 방지): 사용자 비번·익명 열람비번은 *이미 scrypt 해시*(평문 아님, 해시가 정석). 진짜 갭 = **익명 글 본문이 평문**인데 시안 배너가 "본문은 암호화되어 저장" 약속. → 서버키 AES-256-GCM at-rest 암호화로 구현. 정본 설계·결정 = [[field-encryption-server-key-not-e2e]].
+- **불변식이 키 방식을 강제**: 임원 무비번 열람(REQ-BOARD-001) → 비번파생키·E2E 불가 → 서버 보관키. 비번 게이트는 접근통제로 그대로.
+- 좌표 좁음: 쓰기=`createAnonPost`/`createAnonAnswer`/`editAnonAnswer`, 읽기=`getAnonPostDetail` 유일(목록은 본문 미select, 검색 대상도 아님 → 안 깨짐). grep 으로 *전수* 확인 후 배선.
+- 신규 `src/lib/crypto-field.ts`(encrypt/decrypt/isEncrypted, 봉투 `enc:v1:`, 평문 공존) + 멱등 백필 `db/encrypt-anon-bodies.ts`(`npm run db:encrypt-anon`) + 검증 `scripts/verify-anon-encrypt.ts`. 키=`BODY_ENC_KEY`(.env dev + k8s Secret, **영구성=최대위험** secret.example/DEPLOY 명시).
+- **DB-직접-단언 테스트 1건(interactions 익명답변)을 강화**: 평문 매칭→`enc:` 단언 + 화면 평문 렌더 단언(at-rest+복호화 둘 다). **tsc 0 · npm test 46/46 · 백필 멱등 확인.**
+- **운영 함정 재확인**: `.env`는 기동 시 로드(HMR 아님) → 키 추가 후 **dev 재시작** 필요(안 하면 running 서버가 키 없어 throw). [[cache-and-config-before-code]].
+- 작업: `feature/anon-content-encryption` 브랜치(라이브 main 보호), **미커밋·미푸시**.
+
+### Phase 2 (익명 첨부 + 인라인 이미지) — 완료
+- **첨부(attachment)**: post→board_id 있어 *익명만* 암호화(`saveAttachments(...,encrypt=true)` from createAnonPost, named 평문 유지). 다운로드는 `getAttachmentForDownload`에서 복호화. `size_bytes`=평문 크기 유지.
+- **인라인 이미지(board_image)**: 글 연결이 없음(토큰만). 처음엔 *전부 암호화*로 했다가 사용자가 "익명만" 요청 → **익명만으로 스코프 변경**: 신규=익명 작성화면(AnonWriteForm)·답변(AnswerComposer)이 업로드 시 `fd.append("anon","1")` → 라우트가 그때만 `saveBoardImage(file,true)`. 기존(백필)=익명 본문/답변 HTML의 `/api/board/image/<token>` 역추적해 그 이미지만. `getBoardImageByToken` 은 매직 감지 복호화(기명 평문 통과). 회귀가드=anon-inline-image(DB BNSENC01 단언)·inline-image(DB 평문 단언) — *렌더 통과는 암호화를 증명 못 함*(복호화가 평문도 통과)이라 DB 매직을 직접 단언.
+- 바이너리 봉투(매직 `BNSENC01`|iv|tag|ct) `crypto-field.ts`에 추가(encryptBytes/decryptBytes/isEncryptedBytes), 복호화는 매직 감지(평문/named/레거시 공존). 백필 스크립트를 `db/encrypt-anon-content.ts`(본문+답변+익명첨부+board_image 전부)로 확장·개명(`npm run db:encrypt-anon`). 검증 `scripts/verify-anon-encrypt.ts` 확장.
+- **기존 테스트가 그대로 회귀 검증**(수정 0): named 첨부=DB data 직접검사(평문이라 통과), 익명 첨부=다운로드(복호화) bytes 검사, 인라인이미지=렌더 img 로드. tsc 0. (전이교훈 [[field-encryption-server-key-not-e2e]] Phase2 절: 분기키 없으면 전부 암호화 / size는 평문크기 / 수동 node --test는 --test-concurrency=1 필수.)
+
+### 강화 라운드(사용자: "당연히 해야지" + "다른 기능도 구멍 많을 듯")
+- **복호화 결정을 접두어/매직 sniff → 행별 플래그 컬럼(0017 `*_enc`)으로.** 평문이 우연히 `enc:v1:`/`BNSENC01`로 시작하는 모호함 제거. 읽기=`flag?decrypt:raw`. 마커는 유지(버전/구조). dev엔 0017 직접 `docker exec psql`로 멱등 적용(reset.mjs는 TRUNCATE라 컬럼 안 만듦). 정본 [[field-encryption-server-key-not-e2e]].
+- **종합 테스트 `npm run test:crypto`(31케이스)**: 변조탐지(GCM)·잘못된키·fail-closed·키길이·라운드트립(빈/한글/HTML/100KB/바이너리/1MB)·평문공존·IV무작위·**실데이터 백필**(시드에 없어 미검증이던 ③첨부④이미지)·멱등. 정상경로 e2e가 못 잡던 보안속성·백필경로를 메움.
+- **문서**: `docs/encryption.md`(위협모델·봉투·플래그·키관리·좌표·백필·검증·한계).
+- **플레이키 주의**: 풀스위트에서 예약 VAL-001/RES-006 1건 간헐 실패 → 타깃 재실행 15/15 통과(암호화 무관·콜드스타트/날짜경계 환경 flake). *풀스위트 단발 실패는 타깃 재실행으로 flaky/실버그 판별*([[fast-feedback-not-timeouts]]).
+### 최종 상태 + 커버리지 감사
+- **커밋 4개**(`feature/anon-content-encryption`, 미푸시): 57b372a(본문·답변·첨부·이미지)·4562fc8(인라인 익명한정)·a9d27a9(test:crypto)·bc983d0(플래그컬럼+docs). tsc0·npm test 46/46·test:crypto 31/31. 메인 세션으로 푸시+검증+보강 핸드오프 작성.
+- **커버리지 감사 완료**(읽기전용 3에이전트 병렬): 정본 `E:\intra\docs\test-gaps.md`. **핵심 발견 = 가드 코드는 있는데 '차단돼야 하는 사람을 막는지' 음성 테스트가 거의 없음**(정상경로만). P0 후보: AUTH-1 임시비번 만료 미강제(🐞가능)·INJ-1 actions 비정수 ID 가드 누락(🐞가능, data.ts엔 있음)·PERM 음성 e2e(/admin·createAnonAnswer·예약 소유권)·퇴사 active=false. *에이전트 결론도 오탐 있음(익명첨부 admin차단은 이미 테스트됨) → 실행 확인 후 done.*
+- **★전이 교훈 — 두 Claude 세션이 같은 repo/DB/dev 를 쓰면 격리 아님.** 메인 세션이 intra 테스트 중일 때 내가 `db:reset`(공유 DB 비움)·`npm test` 돌리면 *서로 깸*. "영향 없다"는 *그 순간 내가 아무것도 안 돌릴 때*만 참 — 커밋·코드읽기·문서쓰기는 안전, *테스트 실행·db:reset·src 편집*은 충돌. 동시 작업 시 격리 DB(다른 포트)거나 한쪽이 idle. 정본 [[shared-repo-db-sessions-not-isolated]].
+
+## ★2026-06-23 ③ (익명암호화 배포 후 라이브 사용성 라운드) — ★★sharp 6번 시행착오: 환경 전용 버그 진단 규율
+익명암호화 LIVE 배포(main ff-merge+push, BODY_ENC_KEY 주입=사용자) 뒤, 사용자가 LIVE 를 직접 쓰며 사용성 문제 연달아 제보. UX 5건 + 테스트 4개 + **sharp 이미지 업로드 수정(6번 시행착오)**. 전부 main 배포·검증. 인계정본 = `E:\intra\HANDOFF.md` 이어가기 ③ · 배포정본 = `intra/docs/DEPLOY.md` "sharp 네이티브 모듈" 섹션.
+
+### ★★최대 교훈 — "로컬 docker 빌드 OK · CI/런타임만 실패" = 환경 전용 버그 → 실환경 계측 먼저(추측 금지)
+LIVE 이미지 업로드가 *전부* decode-fail("이미지를 읽을 수 없습니다"). **6번 추정이 다 빗나간 이유 = 실패가 전부 CI/런타임 환경 전용이라 로컬 docker 빌드엔 재현 안 됨.** 빗나간 추정: ①크기 ②HEIC ③sharp `failOn` ④libvips .so 누락 ⑤Docker 캐시 ⑥lockfile 오염. **진짜 원인(pod 계측으로 확정)**: (a) **CPU=`Common KVM processor`(가상, x86-64-v2 미노출) → sharp 0.33+ @img prebuilt 가 v2 요구해 거부**(sharp.cjs `_isUsingX64V2()==false`→바이너리 버림) + (b) **사내망이 node-gyp Node 헤더(`unofficial-builds.nodejs.org`) 차단 → CI 소스빌드도 불가**.
+- **해결 = vendoring**: 로컬 alpine 에서 시스템 libvips 로 소스빌드한 `sharp-linuxmusl-x64.node`(342KB)를 `intra/docker/` 에 커밋 → Dockerfile 이 `npm install`(JS) 후 COPY. **CI 는 복사만 = 빌드·네트워크·v2 전부 무관 → 로컬 검증=CI 결과 보장**(환경차 0). sharp 0.34.3 핀(alpine vips 8.18.2 호환; 0.35.x 는 8.18.3+ 요구).
+- **★전이 규율(다음에 같은 데서 안 막히게)**: ① **"로컬 빌드 통과·실서버만 실패"는 환경 전용**(CPU 기능·네트워크·시스템 lib) → 로컬 무한추측·재배포 말고 **실환경 계측 FIRST**(`k exec ... node -e "require('x')"` 로드에러·`k logs|grep` catch 로그·CI 빌드로그). 5번 추측 < pod exec 1번. ② **환경 의존 단계(네이티브 빌드)를 *제거*해 로컬==CI 로** 만들면 로컬 검증이 신뢰됨(vendoring). ③ **침묵 catch 가 진짜 원인 가림** — 디코드 catch 의 `console.warn(err)` 가 진단 열쇠(없었으면 "decode-fail"만 보고 영영 헤맴). ④ **배포 검증에 *기능*(이미지 업로드)을 넣어라** — health+로그인만 보면 잠복(첫 배포부터 안 됐는데 아무도 안 올려봐서 몰랐다). 정본 [[bns-cluster-deploy-notes]]·[[standalone-image-preflight-smoke-test]].
+
+### 가상화 인프라 = x86-64-v2 마스킹 (다음 사내앱도 동일)
+bns 사내 k8s KVM 게스트 CPU 가 v2 미노출 → **v2-요구 prebuilt 네이티브 모듈(sharp 0.33+ 등)은 이 인프라에서 못 돈다**. 다음 사내앱이 sharp/이미지/네이티브 모듈 쓰면 **같은 함정** → 처음부터 vendoring 또는 시스템-lib 소스빌드. 패턴 [[bns-nextjs-deploy-starter]] 에 박음.
+
+### 그 밖의 라이브 UX 수정(전이 교훈)
+1. **내부이동 `<a href="/...">` = 전체 새로고침** → Next 는 `<Link>`(소프트내비). "팝업 닫으면/탭 바꾸면 새로고침"의 정체(인라인 searchParam 모달·폼취소·탭이 raw `<a>`였음). `/api/*` 다운로드·외부·이메일HTML 은 `<a>` 유지. 한 곳 고치면 형제 전수(grep `<a .*href=`).
+2. **느린 서버액션(메일 전체발송)은 `next/server` `after()` 로 응답 뒤 실행** + `useFormStatus`(PendingSubmit). 동기 await 면 "클릭→무반응→한참뒤". 같은화면 반복은 revalidatePath([[revalidate-not-redirect-for-repeated-actions]]).
+3. **사용자 업로드 이미지 재인코딩은 `failOn:"none"`** — 멀쩡한 PNG/JPG(스크린샷·앱저장: iCCP·sRGB·CRC)도 `failOn:"error"`면 거부. webp 재인코딩이라 관대 수용 안전, 비-이미지는 디코드 실패로 거부.
+4. **테스트 셀렉터가 제품 속성에 강결합되면 변경에 깨짐** — `input[accept="image/jpeg,..."]`(정확문자열)가 HEIC accept 추가로 깨짐 → `accept^="image/jpeg"`. 제품 변경 시 셀렉터도 같이.
+5. **prod 엔 dev 픽스처 없다(재확인)** — `setpw.ts`(dev전용)가 박는 비번이 운영 DB 엔 없음 → hong/lee/park/kim·secret99 전부 DBeaver `UPDATE password_hash`(scrypt `salt:hash`, `node -e` 생성) 수동 세팅.
+
+### 추가 음성 테스트(견고화) — 전체 suite 57/57
+DB-1(부서/회의실명 UNIQUE 23505)·DB-2(부서 삭제가드 FK 23503; emp/veh 은 CORE-002 커버)·LIKE-1(post_like·comment_like UNIQUE 23505) → `db-invariants` 9/9. PERM-3(본인 비활성 토글=disabled+폼부재; 서버 `error=self` 는 심층방어) → `security` 8/8. 잔여 ATT-1·MAIL-1·모바일/PC 전수 재감사 = `intra/docs/test-gaps.md`.
