@@ -22,7 +22,7 @@ description: (레일 일반판) 어떤 프로젝트든 "완료" 보고 전 돌�
 4. **스샷 = 검출 아니라 실패 증거:** 1~3 에서 단언 깨진 화면만 고화질 캡처해 사람 확인. **전 화면 fullPage 금지**(그게 '하루 종일'의 주범).
 
 ## 2. 실패 계열 (하나 찾으면 같은 패턴 grep 으로 형제 전수 — [[fix-the-failure-class-not-the-instance]])
-웹 UI 공통: ① `display:flex` 푸터가 텍스트·인라인배지를 칼럼처럼 깸 → 본문 span 인라인 ② 고정폭 모달/팝업 viewport 캡 없음 → `maxWidth:calc(100vw-…)`/`%vw` ③ `place-items:center` grid scrim 의 `max-width:100%` 는 트랙 기준이라 안 먹음 → vw 기준 ④ `repeat(N,1fr)` 고정 그리드 폰 넘침 → 좁은 폭 reflow ⑤ `flex;white-space:nowrap` 라벨의 긴 텍스트 → wrap ⑥ 단일뷰(1열)인데 좌표→자원 매핑이 전체열 등분 → 보이는 요소 실측 hit-test ⑦ 인라인 style 이 `@media` 를 조용히 이김([[inline-style-beats-media-query]]) ⑧ 형제 네비/탭이 같은 href = 죽은 컨트롤(클릭 무반응) → distinct 목적지 + 상태변화 ⑨ 시안 `.scrim`/`.modal` *바깥* 요소(배경)는 scrim 뒤라 사용자에 안 보임 → 갭 아님.
+웹 UI 공통: ① `display:flex` 푸터가 텍스트·인라인배지를 칼럼처럼 깸 → 본문 span 인라인 ② 고정폭 모달/팝업 viewport 캡 없음 → `maxWidth:calc(100vw-…)`/`%vw` ③ `place-items:center` grid scrim 의 `max-width:100%` 는 트랙 기준이라 안 먹음 → vw 기준 ④ `repeat(N,1fr)` 고정 그리드 폰 넘침 → 좁은 폭 reflow ⑤ `flex;white-space:nowrap` 라벨의 긴 텍스트 → wrap ⑥ 단일뷰(1열)인데 좌표→자원 매핑이 전체열 등분 → 보이는 요소 실측 hit-test ⑦ 인라인 style 이 `@media` 를 조용히 이김([[inline-style-beats-media-query]]) ⑧ 형제 네비/탭이 같은 href = 죽은 컨트롤(클릭 무반응) → distinct 목적지 + 상태변화 ⑨ 시안 `.scrim`/`.modal` *바깥* 요소(배경)는 scrim 뒤라 사용자에 안 보임 → 갭 아님 ⑩ **동적 레이아웃이 데이터 수에 안 맞음**(N자원→N열인데 고정 3열 등) → 데이터 개수 2/4/5로 바꿔 트랙수==자원수 회귀. 흔한 원인: 클라 DOM 조작이 인라인을 ""로 비워 서버의 동적값 소실 → 원본 보존·복원([[dynamic-layout-matches-data-count]]).
 
 ## 3. 보고·성장
 - 통과 = **이 묶음을 소진**(0 위반). "깨끗 증명" 아님 — 보고는 "검사 N종 소진, 안 돌린 방법은 여기"로 정직하게.
