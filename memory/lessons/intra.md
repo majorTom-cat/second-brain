@@ -234,3 +234,10 @@ bns 사내 k8s KVM 게스트 CPU 가 v2 미노출 → **v2-요구 prebuilt 네�
 
 ### 추가 음성 테스트(견고화) — 전체 suite 57/57
 DB-1(부서/회의실명 UNIQUE 23505)·DB-2(부서 삭제가드 FK 23503; emp/veh 은 CORE-002 커버)·LIKE-1(post_like·comment_like UNIQUE 23505) → `db-invariants` 9/9. PERM-3(본인 비활성 토글=disabled+폼부재; 서버 `error=self` 는 심층방어) → `security` 8/8. 잔여 ATT-1·MAIL-1·모바일/PC 전수 재감사 = `intra/docs/test-gaps.md`.
+
+### ★★★메타 성찰 — 시안 갭은 "기본 아닌 상태"에 숨는다 (2026-06-24 라이브 검수 2~3차)
+사용자가 시안과 다른 점을 *계속* 직접 찾아줬다: 사원등록 **사번 required**(시안엔 사번 필드 자체가 없음)·로그아웃 문구·**죽은 사이드바 링크**(차량/회의실 전환 무반응)·**일간 3열 고정**(자원 4대 줄바꿈)·**월간 깨짐**(예약 많은 주만 키 큼)·**"+N건 더" 무동작**. 매번 "또 놓쳤네 → 검출기 추가"의 반응적 루프.
+- **공통 패턴**: 찾은 갭 *전부* **디폴트 렌더가 아닌 상태**에 숨어 있었다 — 모달 열림(사번 폼)·인터랙션(죽은 링크·드래그·+N더)·데이터 개수(4대)·뷰포트(로그아웃)·잠금(BF-1). 감사를 *화면당 디폴트 1상태*에만 돌려 나머지 상태차원이 통째로 사각. **"감사 돌림(디폴트)=봤다"가 근본 착각.**
+- **고침(상태차원 매트릭스)**: 화면 done 전 ①뷰포트 ②모달/오버레이 열림(`?create`/`?edit`/state — 폼 필드·required·문구) ③호버/포커스/인터랙션 ④데이터 개수 0·1·N ⑤상태 플래그(빈/에러/토스트/잠금/종료) ⑥역할 ⑦chrome — *각 칸을 호명·렌더·diff*. 감사 SCREEN 매핑에 상태변형 등록 → harness 가 매트릭스를 돈다. **사용자가 갭을 찾는 사건 = 내 프로세스 실패(상태차원 한 칸 안 봄)** → 0으로 몬다.
+- 정본 auto-memory: `fidelity-gaps-hide-in-non-default-states`(통합 메타)·`audit-form-modals-and-required-fields`·`dynamic-layout-matches-data-count`·`dead-controls-distinct-destination`. `/inspect` ③·⑩·⑪ + intra `CLAUDE.md` 충실도 프로토콜에 반영.
+- **BF-1 곁가지 교훈**: "테스트 실패=내 회귀"로 단정 말고 *직접 관찰*로 기능 정상 확인 후 원인 분리(5회→잠금 동작은 정상; dev 37h+대량편집 degraded 가 트리거 → 재시작이 근본, 테스트는 rapid클릭 타이밍 레이스 견고화). [[cache-and-config-before-code]]·[[done-means-observed-working]].
