@@ -241,3 +241,12 @@ DB-1(부서/회의실명 UNIQUE 23505)·DB-2(부서 삭제가드 FK 23503; emp/v
 - **고침(상태차원 매트릭스)**: 화면 done 전 ①뷰포트 ②모달/오버레이 열림(`?create`/`?edit`/state — 폼 필드·required·문구) ③호버/포커스/인터랙션 ④데이터 개수 0·1·N ⑤상태 플래그(빈/에러/토스트/잠금/종료) ⑥역할 ⑦chrome — *각 칸을 호명·렌더·diff*. 감사 SCREEN 매핑에 상태변형 등록 → harness 가 매트릭스를 돈다. **사용자가 갭을 찾는 사건 = 내 프로세스 실패(상태차원 한 칸 안 봄)** → 0으로 몬다.
 - 정본 auto-memory: `fidelity-gaps-hide-in-non-default-states`(통합 메타)·`audit-form-modals-and-required-fields`·`dynamic-layout-matches-data-count`·`dead-controls-distinct-destination`. `/inspect` ③·⑩·⑪ + intra `CLAUDE.md` 충실도 프로토콜에 반영.
 - **BF-1 곁가지 교훈**: "테스트 실패=내 회귀"로 단정 말고 *직접 관찰*로 기능 정상 확인 후 원인 분리(5회→잠금 동작은 정상; dev 37h+대량편집 degraded 가 트리거 → 재시작이 근본, 테스트는 rapid클릭 타이밍 레이스 견고화). [[cache-and-config-before-code]]·[[done-means-observed-working]].
+
+### 세션 ⑦ — 토스트 충실도 마무리 + 검사 묶음 확장(정적 텍스트 카탈로그·VRT·CI 게이트) (2026-06-25)
+A(토스트, 시안 그대로): 삭제 토스트 이름+"영구"(4 delete 액션이 삭제 전 name 조회→`?deleted=<이름>`)·회사정보 취소(`CompanyCancelButton` reset+`bns:toast`)·**로고 즉시저장→미리보기-후-저장**(`updateCompany`가 `logoAction` new/reset로 적용). 3건 브라우저 관찰검증. LIVE 배포(CI 재시도 1회=npm install ETIMEDOUT 네트워크, 코드 무관).
+B(검사 묶음 확장 — 근본 사각 "동적·조건부·속성 텍스트는 렌더-DOM diff를 빠져나감"):
+- **정적 텍스트 카탈로그** `text-fidelity.mjs`(toast-fidelity 일반화): placeholder + confirm/empty/error **헤딩** 축. 수확 → 게시판 검색 문구·예시 토씨 수정 + **★다이얼로그 축이 게시판 *무확인 삭제* 구조 갭을 잡음**(차량/회의실/부서/사원엔 확인모달 있는데 게시판만 즉시삭제 → `BoardDeleteButton`+`getBoardPostCounts` 보강). 정적 카탈로그 **경계**: 변수/맵 공급값은 단일행 일반리터럴 보조스캔으로, **JSX 보간 본문은 범위 밖**(렌더-상태로).
+- **VRT 동작-후 상태**(`vrt.mjs`): 게시판삭제 모달·취소 토스트. **함정 다 밟음** → 풀페이지(element-clip 배경비침)·환경간 폰트AA(threshold 0.2+실패 백분율>0.5%)·눈검토(전환중/clip 반투명 베이스라인 2번 걸러냄)·동적값 mask. 정본 [[vrt-baseline-discipline]].
+- **CI 필수 게이트**: `.gitlab-ci.yml` text-fidelity job(`--ci` 미승인 갭=빌드 차단). design-input 이 gitignore → **커밋 스냅샷**(`scripts/.fidelity/*.json`)으로 비교(순수 node).
+- **환경 우선 진단**: 장기가동 dev sharp `decode-fail`(네이티브 노화)로 인라인이미지 e2e timeout=코드회귀 아님, *재시작이 근본*(별도 프로세스 sharp는 정상=노화 확정).
+게이트: tsc 0 · npm test **58/58**(fresh dev) · inspect 7단계 전부 통과 · preflight PASS. 미푸시 0(A·B·tooling 전부 푸시·배포). 정본 패턴 [[inspect-battery]](5·6층 추가)·false-done(VRT 베이스라인 진정성·정적카탈로그 거짓안심).
