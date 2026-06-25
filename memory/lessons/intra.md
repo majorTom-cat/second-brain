@@ -250,3 +250,12 @@ B(검사 묶음 확장 — 근본 사각 "동적·조건부·속성 텍스트는
 - **CI 필수 게이트**: `.gitlab-ci.yml` text-fidelity job(`--ci` 미승인 갭=빌드 차단). design-input 이 gitignore → **커밋 스냅샷**(`scripts/.fidelity/*.json`)으로 비교(순수 node).
 - **환경 우선 진단**: 장기가동 dev sharp `decode-fail`(네이티브 노화)로 인라인이미지 e2e timeout=코드회귀 아님, *재시작이 근본*(별도 프로세스 sharp는 정상=노화 확정).
 게이트: tsc 0 · npm test **58/58**(fresh dev) · inspect 7단계 전부 통과 · preflight PASS. 미푸시 0(A·B·tooling 전부 푸시·배포). 정본 패턴 [[inspect-battery]](5·6층 추가)·false-done(VRT 베이스라인 진정성·정적카탈로그 거짓안심).
+
+### ★2026-06-25 후속(메일 To 버그) — "배포 완료" 기록 ≠ LIVE 실제 + 사용자 운영증거 > 내 소스추론 (★★★내가 또 어김)
+사용자가 **오늘 17시 받은 운영 메일**의 받는사람(To)이 `no-reply@bns.co.kr` 라고 제보. 코드(`sendBroadcast`)는 *개별발송 To=본인*으로 고쳐져 있고(⑦에서 수정, bcc 0개, dev Mailpit 검증) HANDOFF에 **"LIVE 배포 완료"** 라고 적혀 있어서, 나는 **"소스는 고쳐졌으니 그건 옛날 메일"** 이라고 사용자 증거를 *반박*했다. **틀렸다.** 실제로는 **⑦의 LIVE 배포가 안 먹어서**(CI 배포 실패/미완 추정) 그 수정이 며칠간 main에만 있고 *LIVE엔 옛 이미지*가 돌고 있었다. 오늘 내가 (무관한) ReturnForm 수정을 push 하면서 *우연히* 그 밀린 메일수정까지 배포돼 비로소 고쳐졌고, 사용자가 새로 보낸 전체메일에서 To=본인 확인.
+- **★교훈1 — "배포했다"는 기록·dev검증 ≠ LIVE에서 동작.** ⑦이 dev Mailpit만 보고 "LIVE 배포 완료"라 적었으나 실제 미배포. **외부효과(메일·웹훅 등)는 화면에 안 보여 배포검증에서 통째로 누락**된다 → *배포 후 LIVE에서 실발송 1건으로 관찰*해야 끝([[done-means-observed-working]]·[[standalone-image-preflight-smoke-test]]·[[bns-cluster-deploy-notes]] "배포이미지≠소스" 의 메일판). false-done: "코드 고침+커밋+'배포완료 기록' = 됨"은 거짓.
+- **★교훈2 — 사용자의 실제 운영 관찰(받은 메일)은 내 소스 추론보다 우선.** 사용자가 "지금도 이렇다"는 *증거*를 주면 "옛것/캐시"로 단정하지 말고 **LIVE 실제 상태를 먼저 확인**. 내가 소스 신뢰로 사용자 증거를 반박한 게 이번 실패의 핵심. ([[visual-compare-not-code-reading]]의 메일판 — 코드존재≠실동작.)
+- **★교훈3 — 배포가 실제 먹었는지는 LIVE의 *보이는 마커*로 read-only 확인 가능.** 이번에 메일은 화면에 안 보이지만, *같은 이미지에 포함된* ReturnForm 안내("반납 누적 거리를 입력하세요.")가 LIVE에 떠 있는지로 "오늘 배포 반영됨"을 확정했다(여러 `.v-note` 중 검증노트를 정확히 골라야 — 첫 매치는 조기반납 배너였음). 외부효과 기능 배포 검증의 우회 마커.
+- **곁가지(메일 From)**: 나는 From=no-reply 만들기(Path A/B)에 매달렸는데, 사용자가 보여준 실제 From은 이미 `"BNS 인트라넷" <bnshiftad@gmail.com>`(Gmail이 주소는 덮어쓰되 표시이름은 보존) — **이미 충분히 괜찮았고 진짜 문제는 To였다.** 엉뚱한 데 집중. no-reply *주소*는 회사 메일서버(Path A) 받아야만 가능, 안 급함.
+- **운영/툴 메모(교훈 아님)**: 세션 시작에 사용자가 Claude Code(VSCode) 업데이트 → **auto 모드 분류기가 "운영 대량메일"을 자동 차단**(allow 규칙 `Bash(node *)` 있어도 안 뚫림 = 분류기는 별도 계층). **사용자의 *구체적·명시적* 지시가 soft-deny를 풀어** 통과(스카우트/모호한 지시는 막힘). 이전 세션들이 됐던 건 업데이트 전이라.
+- **익명글→임원 알림**: 사용자가 "구현됐지?" → **확인 결과 미구현**(createAnonPost 메일 0). 단정 말고 grep으로 확인 후 "없다" 정직 보고 + 설계만(`intra/docs/anon-exec-notify-design.md`, 프라이버시 불변식=본문 미포함). 정본 auto-memory [[verify-on-live-not-claimed-deploy]].
