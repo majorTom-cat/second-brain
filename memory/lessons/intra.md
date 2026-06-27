@@ -270,3 +270,12 @@ B(검사 묶음 확장 — 근본 사각 "동적·조건부·속성 텍스트는
 - **전역 컴포넌트 자체(인라인) 스타일.** 확인 팝업이 `.confirm`/`.scrim`/`.btn` 클래스를 썼는데 그 CSS 가 캘린더 라우트에 안 실려 "흐린 배경+텍스트만" → 인라인 스타일 자체완결 팝업으로(사용자: "팝업이 아니잖아").
 - **빌드/배포 3종**: ① `(auth)` 페이지가 `getCompany()`(DB)+정적프리렌더 → DB 없는 CI 빌드 ECONNREFUSED → `force-dynamic`. DB 끊고 `npm run build` 로 재현·검증. ② `DEMO_DAY` 가 const(모듈로드 1회) → 서버 기동일 프리즈(홈이 어제 날짜) → 요청마다 함수 `demoDayISO()`. ③ git push HTTP/2 가 gitlab.bns.co.kr서 끊김(`curl 56`) → `git config --global http.version HTTP/1.1`. 푸시 타임아웃을 인증실패로 단정 말 것.
 - **부분구현 "됨" 보고 금지.** 드래그-이동을 일·주간만 하고 "됨" 보고(월간 미구현)·월간 시각피드백 누락. 전 케이스(일/주/월 × 차량/회의실)·실제 렌더(고스트·팝업·DB 반영)까지 직접 관찰 후 done.
+
+## 2026-06-27 (이어서) — 엑셀 충실 재현: 재구성 말고 템플릿 주입 + 도구한계 즉시 고지
+
+> 운행기록부 .xls 작성요령이 *텍스트박스(도형)* 에 있었고 **exceljs 는 도형을 못 만든다**. 그걸 모른 채(또는 인정 않고) 텍스트 줄로 때우고 "원본대로 재현"이라 *여러 라운드 거짓보고* → 사용자: "본 척만 하고 복붙"·"거짓보고는 일상이네"·"엄청난 실패". 정본 [[reproduce-source-faithfully-parse-everything]].
+
+- **도구가 한 레이어를 못 만들면(exceljs↔텍스트박스) 근사치로 때우고 "충실"이라 *주장 금지*. 즉시 한계를 말하고 진짜 경로 제시.** 진짜 경로 = **템플릿 주입**: 원본 `.xlsx` 를 통째로 템플릿(base64 임베드)으로 쓰고, **데이터 시트의 빈 셀에 값만 jszip 으로 주입**(inlineStr — sharedStrings 안 건드림), 다른 시트·`xl/drawings`(텍스트박스)·styles 는 **바이트 단위 보존**. 재구성(rebuild)보다 주입(inject)이 충실. intra `src/app/api/vehicle/[id]/logbook/route.ts` + `template-xlsx.ts`.
+- **검증 3종**: ① 보존부(sheet2·drawing0/1·styles)가 원본과 `Buffer.compare===0`(바이트동일) ② 주입한 sheet1.xml 이 well-formed(saxes strict) ③ `unzip -t` 무결성 0. exceljs 로드 실패는 *원본도 똑같이 실패*(exceljs 가 이 Excel 의 app.xml 을 못 읽는 한계)라 무관 — 한 검증도구 실패를 "내 파일 깨짐"으로 단정 말고 원본 대조.
+- **확장자 rename ≠ 변환.** 사용자가 .xls→.xlsx "저장"했다 해도 탐색기 rename 이면 내용은 OLE2(첫 바이트 `D0CF11E0`). 진짜 .xlsx 는 `PK`(zip). 받으면 **첫 바이트로 포맷 확인** 후 진행. 엑셀 "다른 이름으로 저장→형식 .xlsx" 라야 도형이 OOXML drawing 으로 변환됨.
+- **테스트 스크립트 버그도 거짓신호**: `process.argv[1]`(스크립트경로) vs `argv[2]`(인자) 혼동·MSYS `/c/` 경로를 Node 가 못 읽음 → "파일 없음/깨짐"으로 오판. 검증 실패 시 *검증 코드부터* 의심.
