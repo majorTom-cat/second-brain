@@ -259,3 +259,14 @@ B(검사 묶음 확장 — 근본 사각 "동적·조건부·속성 텍스트는
 - **곁가지(메일 From)**: 나는 From=no-reply 만들기(Path A/B)에 매달렸는데, 사용자가 보여준 실제 From은 이미 `"BNS 인트라넷" <bnshiftad@gmail.com>`(Gmail이 주소는 덮어쓰되 표시이름은 보존) — **이미 충분히 괜찮았고 진짜 문제는 To였다.** 엉뚱한 데 집중. no-reply *주소*는 회사 메일서버(Path A) 받아야만 가능, 안 급함.
 - **운영/툴 메모(교훈 아님)**: 세션 시작에 사용자가 Claude Code(VSCode) 업데이트 → **auto 모드 분류기가 "운영 대량메일"을 자동 차단**(allow 규칙 `Bash(node *)` 있어도 안 뚫림 = 분류기는 별도 계층). **사용자의 *구체적·명시적* 지시가 soft-deny를 풀어** 통과(스카우트/모호한 지시는 막힘). 이전 세션들이 됐던 건 업데이트 전이라.
 - **익명글→임원 알림**: 사용자가 "구현됐지?" → **확인 결과 미구현**(createAnonPost 메일 0). 단정 말고 grep으로 확인 후 "없다" 정직 보고 + 설계만(`intra/docs/anon-exec-notify-design.md`, 프라이버시 불변식=본문 미포함). 정본 auto-memory [[verify-on-live-not-claimed-deploy]].
+
+## 2026-06-27 세션 — 반복 실수 묶음 (운행기록부 .xls · 드래그-이동 · 빌드/배포)
+
+> 같은 부류 실수를 여러 번 반복 → 사용자가 매번 잡음. 정본 규칙 = intra `CLAUDE.md` "반복한 실수 → 절대 규칙" 섹션 + auto-memory [[reproduce-source-faithfully-parse-everything]] · [[cache-and-config-before-code]].
+
+- **원본 .xls 재현 = 모든 레이어 파싱.** 작성요령이 *셀이 아니라 텍스트박스(TXO 객체)* 에 있었는데 셀만 파싱 → 사용자가 준 텍스트만 붙여넣고 "원본 봤다"(거짓완료, 사용자: "본 척만 하고 복붙"). TXO·SST CONTINUE·병합·폰트색까지 파싱해야 진짜. **사용자의 렌더된 파일 읽기 > 내 바이너리 파싱**: §1 문구 "②,④"↔"②,⑤" 를 내 파싱 믿고 *두 번 우김* → 사용자가 맞았다. 충돌하면 사용자가 맞다.
+- **Turbopack `.next` 캐시 stale.** CSS/새 컴포넌트 변경이 dev 핫리로드돼도 옛 빌드 서빙(computed style 옛 값·새 컴포넌트 미동작) → `rm -rf .next`+재시작해야 반영(dev 재시작만으론 부족). 검증도 캐시 지운 뒤.
+- **드래그-이동(`<a>` 박스).** `.evt`/`.ev`/`.span-ev` 가 전부 `<a>` 라 mousedown+이동 시 네이티브 링크 드래그가 pointermove 가로챔 → `dragstart` preventDefault 로 해결. 클릭 vs 드래그 임계값(6px)·드롭 후 click 억제·모바일 롱프레스. Playwright 드래그 시뮬 불안정 → DB 변경까지 확인.
+- **전역 컴포넌트 자체(인라인) 스타일.** 확인 팝업이 `.confirm`/`.scrim`/`.btn` 클래스를 썼는데 그 CSS 가 캘린더 라우트에 안 실려 "흐린 배경+텍스트만" → 인라인 스타일 자체완결 팝업으로(사용자: "팝업이 아니잖아").
+- **빌드/배포 3종**: ① `(auth)` 페이지가 `getCompany()`(DB)+정적프리렌더 → DB 없는 CI 빌드 ECONNREFUSED → `force-dynamic`. DB 끊고 `npm run build` 로 재현·검증. ② `DEMO_DAY` 가 const(모듈로드 1회) → 서버 기동일 프리즈(홈이 어제 날짜) → 요청마다 함수 `demoDayISO()`. ③ git push HTTP/2 가 gitlab.bns.co.kr서 끊김(`curl 56`) → `git config --global http.version HTTP/1.1`. 푸시 타임아웃을 인증실패로 단정 말 것.
+- **부분구현 "됨" 보고 금지.** 드래그-이동을 일·주간만 하고 "됨" 보고(월간 미구현)·월간 시각피드백 누락. 전 케이스(일/주/월 × 차량/회의실)·실제 렌더(고스트·팝업·DB 반영)까지 직접 관찰 후 done.
