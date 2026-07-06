@@ -23,6 +23,11 @@ intra:
   layout: external
   root: E:\intra            # agora 동일계열 사내 인트라넷(차량·회의실·익명게시판). agora 인플레이스 리디자인의 그린필드 재시작.
   deploy_profile: intranet
+
+chaebo:
+  layout: external
+  root: E:\chaebo           # 음원 분리 악기연습 도구(개인). /creative 는 internal 로 완료 후 2026-07-06 이관 — 정본 = E:\chaebo\{docs,.rail}\. second-brain 쪽 projects/chaebo 는 이력 보존용.
+  deploy_profile: local
   # 주의: 아직 레일 명령(/creative 등)을 돌리지 않았다 — 등록만 된 상태. 첫 실행 시 <root>/.rail/ 가 생성된다.
   # 기존 산출물(docs/screens.md·HANDBACK.md)은 ad-hoc 로 만든 것. P2(수렴 모드) 착수 시 정식 인입 예정.
 
