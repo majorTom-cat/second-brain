@@ -4,7 +4,7 @@
 
 ## 카테고리별 교훈 포인터
 
-- **창작(spec)**: 수렴(ingest) 모드(문서→REQ표 / 변경인입 CR) → [patterns/ingest-convergence.md](patterns/ingest-convergence.md), [lessons/rail.md](lessons/rail.md)
+- **창작(spec)**: 수렴(ingest) 모드(문서→REQ표 / 변경인입 CR) → [patterns/ingest-convergence.md](patterns/ingest-convergence.md), [lessons/rail.md](lessons/rail.md) · **시안 하드규칙**(벤치마크 먼저·도메인 표준=실제 렌더러·위임 주입) → [lessons/chaebo.md](lessons/chaebo.md)
 - **개발(dev)**: rough/full 2단계 rigor · **진입점 기동 smoke 강제**(단위/통합 green ≠ 실행됨; Windows main-guard) · **UI REQ 는 시안대조+클릭스루 관찰 없이 done 금지**(green ≠ 시각 일치·링크 배선) → [patterns/verify-by-observation.md](patterns/verify-by-observation.md), [lessons/rail.md](lessons/rail.md), [lessons/todo-toy.md](lessons/todo-toy.md)
 - **배포(deploy/ops)**: 외부 repo 산출 타깃(레지스트리+경로해석) · **배포가능 서비스 OPS REQ(health·graceful·bind) 선반영** → [patterns/external-project-layout.md](patterns/external-project-layout.md), [lessons/todo-toy.md](lessons/todo-toy.md)
 - **tier/비용**: R4a 활성 — `[tier: bulk]`→**Sonnet** 서브에이전트 위임 / `[tier: judgment]`→메인(Opus). 계약 `rails/routing.md`·`model-tiers.yaml`(다이얼 haiku/sonnet/opus). R4b(로컬 qwen/Gemini 진짜 $0)는 옵션 → [lessons/rail.md](lessons/rail.md), [lessons/todo-toy.md](lessons/todo-toy.md)

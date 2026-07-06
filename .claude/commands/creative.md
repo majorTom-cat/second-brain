@@ -38,6 +38,14 @@ argument-hint: "<아이디어 한 문단>  |  ingest <slug 또는 문서경로>"
 - **발산 모드**: 서로 다른 아키텍처 방향 **N=3안 병렬 제안**`[tier: bulk]` → 목표/제약 기준 **심사·병합**`[tier: judgment]` → 승자 기준 합성. (기존)
 - **수렴 모드(ingest)**: 발산 대신 **기존 문서를 읽어 정규화**. `greenfield-ingest` = 문서→번호docs+REQ표(화면 1개=`REQ-SCR`, `menu_visible` 포함); `change-ingest` = 변경문서→`CR-NNN`+REQ 크로스워크+불변식 상속. 참고: `memory/patterns/ingest-convergence.md`(설계 거리로 수정 vs 그린필드 판정).
 
+
+## 2.5 시안(design-input) 제작 시 — 하드 규칙 (chaebo 교훈, 2026-07-06)
+
+프로젝트가 UI 를 갖고 시안을 만들기로 했다면:
+1. **제작 전 실제 제품 UI 벤치마크 필수** — 스펙 문서만 보고 그리지 않는다(chaebo 시안 v1 반려: "기존 제품 참고했어?").
+2. **도메인 표준 산출물(악보·지도·차트·수식 등)은 손그림 근사 금지** — 제품이 쓸 실제 렌더러/라이브러리를 시안에 내장(chaebo: 손그림 악보 2회 반려 → alphaTab 내장으로 해소 + 라이브러리 검증 선행 효과). 정본 [[use-real-renderer-not-imitation]].
+3. **시안 QA = "렌더 됨·에러 0"이 아니라 도메인 표준/실제 제품과 나란히 대조.**
+4. **위임 제작 시 주입 세트 필수**(rails/routing.md §주입 세트) — 사용자 특성(쉬운 말)·도메인 표준·라이선스 경계.
 ## 3. 기계가독 계약 작성  `[tier: judgment]`
 
 `$META/SPEC.manifest.yaml` 을 번호 문서와 **일치**하게 채운다. 모든 P0/P1 REQ는 비어있지 않은

@@ -98,3 +98,7 @@ docs/design-token-map.md
 - **매핑시트를 나중에 만들면 시안 도착 후 혼란**: 러프 시작 시점에 빈 시트를 만들어두는 것이 핵심.
 
 관련: [[ingest-convergence]], lessons.
+
+- **(2026-07-06 보강) 도메인 표준 영역은 실제 렌더러로**: 시안 단계라도 악보·차트 등 표기 표준이 있는 영역은
+  손그림 근사 대신 제품이 쓸 렌더러(예: alphaTab)를 내장해 그린다 — 시안 반려 루프 차단 + 라이브러리 선행 검증.
+  [[use-real-renderer-not-imitation]] (chaebo)
