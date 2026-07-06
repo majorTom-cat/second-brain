@@ -7,12 +7,12 @@
 | 원본 repo | `E:\second-brain` (읽기 전용 참조) |
 | 민감도 | company-internal |
 | 자동 푸시 | 아니오(수동 검토 후) |
-| 세션 수 | 6 개 |
+| 세션 수 | 35 개 |
 | 채팅 원본 | 평문 raw(로컬 전용 — .gitignore) |
-| 원본 용량 | 14.4M |
-| 사내정보 | 224건 (STRONG) ([SENSITIVE.md](chats/SENSITIVE.md)) |
-| 마지막 인제스트 | 2026-06-18 16:48 |
-| distill 후 새 세션 | 1 개 — knowledge.md 재정리 권장 |
+| 원본 용량 | 193.8M |
+| 사내정보 | 7731건 (STRONG) ([SENSITIVE.md](chats/SENSITIVE.md)) |
+| 마지막 인제스트 | 2026-07-06 10:57 |
+| distill 후 새 세션 | 31 개 — knowledge.md 재정리 권장 |
 
 ## 이 폴더 안내
 

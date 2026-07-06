@@ -18,9 +18,24 @@
 | 11 | 2026-06-18 15:10 | E--llm-wiki | 위캐의 지식에 맨 마지막에 출처가 있고 출처가 sha256:5c268e91ea665bcf8fa546ba510e03e6cecd41f34c7dea2fd7a67fd2… | [raw/3908c05b-cc4b-4ca6-8706-5f93488163e6.jsonl](raw/3908c05b-cc4b-4ca6-8706-5f93488163e6.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 12 | 2026-06-19 00:49 | E--llm-wiki | 안녕, 이제 모바일에서도 잘 보일 수 있도록 반응형으로 해보려 하는데 어떻게 하는게 좋을지 계획 세워봐 | [raw/dd9f45c6-60ea-4c74-bd01-09abc08cf0d1.jsonl](raw/dd9f45c6-60ea-4c74-bd01-09abc08cf0d1.jsonl) | `~/.claude/projects/E--llm-wiki` |
 | 13 | 2026-06-19 13:50 | E--llm-wiki | 자동배포할때 컬럼 추가나 DB 변경사항 관련한것도 이제 자동 반영이지? 전엔 서버 들어가서 했었거든 | [raw/36c3dbf1-602c-4754-b273-100b6d7fcd3d.jsonl](raw/36c3dbf1-602c-4754-b273-100b6d7fcd3d.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 14 | 2026-06-22 15:54 | E--llm-wiki | 안녕, 내가 인텔리제이 터미널에서 claude cli 로 하고 있는데, 인텔리제이가 너무 무거운거 같아. 다른 방법 없을까? | [raw/f304a824-78e7-442b-8e47-a71b7c3a6519.jsonl](raw/f304a824-78e7-442b-8e47-a71b7c3a6519.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 15 | 2026-06-22 16:06 | E--llm-wiki | 안녕, vscode 에서 claude cli를 쓰고있어. 인텔리제이보다 더 가볍길 바라고 있어. | [raw/3d1cfdc0-c946-4495-82b6-8f680180c218.jsonl](raw/3d1cfdc0-c946-4495-82b6-8f680180c218.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 16 | 2026-06-23 13:35 | E--llm-wiki | 배포 서버에 k -n <네임스페이스> get pods 하니까 ollama 가 있는데 ollama 안쓰는거 아니었어? | [raw/63adb216-c638-49f2-8d99-951813241c4d.jsonl](raw/63adb216-c638-49f2-8d99-951813241c4d.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 17 | 2026-06-25 16:48 | E--llm-wiki | 이어서 해줘 | [raw/489b702f-2a93-4d30-a2d5-2057fa4b51ef.jsonl](raw/489b702f-2a93-4d30-a2d5-2057fa4b51ef.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 18 | 2026-06-25 18:43 | E--llm-wiki | 이어서 해줘 | [raw/f345ee29-011c-4b2e-b010-aec115ffa84f.jsonl](raw/f345ee29-011c-4b2e-b010-aec115ffa84f.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 19 | 2026-06-25 18:47 | E--llm-wiki | vscode 업데이트 했어. 이어서 가보자 | [raw/c844d570-ce7d-4d93-acce-b9a2ca0cc56a.jsonl](raw/c844d570-ce7d-4d93-acce-b9a2ca0cc56a.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 20 | 2026-06-26 00:04 | E--llm-wiki | 컴퓨터가 갑자기 꺼졌는데 어디까지 했지? 대화내용 기억해? | [raw/eb3d6cb2-8b8f-42af-9978-2ccacfa0ed86.jsonl](raw/eb3d6cb2-8b8f-42af-9978-2ccacfa0ed86.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 21 | 2026-06-26 17:37 | E--llm-wiki | 컴퓨터가 갑자기 꺼졌어. 어디까지 했는지 기억나? | [raw/a9fd268a-dbe9-478a-82dd-db25b8781f89.jsonl](raw/a9fd268a-dbe9-478a-82dd-db25b8781f89.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 22 | 2026-06-27 17:57 | E--llm-wiki | 이전 세션이 고장나서 답변에 계속 court <invoke> 같은 명령어만 쓰고 있어. 넌 그런 실수 하지 말고, 이게 마지막 답변이니까 파악해봐 인수인계를 H… | [raw/7477654d-f2f5-4b5d-a15c-f09e8b41283f.jsonl](raw/7477654d-f2f5-4b5d-a15c-f09e8b41283f.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 23 | 2026-06-28 18:01 | E--llm-wiki | 터미널이 갑자기 꺼졌는데 어디까지 했는지 기억나? | [raw/231009ef-7355-4aaf-8859-f2a4a72d23e7.jsonl](raw/231009ef-7355-4aaf-8859-f2a4a72d23e7.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 24 | 2026-06-28 18:39 | E--llm-wiki | 회사 사람들에게 이 앱을 설명 및 시연을 해야하는데 어떤 앱인지 알기 쉽게 설명해줘야해. 어떤 기술과 어떤 방식으로 구현된건지.. 경영진도 있고 개발자도 있어 | [raw/dc31a8f3-ab7f-47f4-b3bf-0df0f77201eb.jsonl](raw/dc31a8f3-ab7f-47f4-b3bf-0df0f77201eb.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 25 | 2026-06-28 20:11 | E--llm-wiki | 안녕, 이 세션에서는 메인에 푸시할 용도는 아직 아니지만, 미 개발 사항들 파악해서 다른 브랜치에 개발해놓으려고해. | [raw/6b03d3cf-704b-46f4-952d-418e6244ad85.jsonl](raw/6b03d3cf-704b-46f4-952d-418e6244ad85.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 26 | 2026-06-28 20:48 | E--llm-wiki | 컴퓨터가 갑자기 꺼졌어. 어디까지 기억해? | [raw/9128815e-a8a3-4e28-97cb-0f637374db2b.jsonl](raw/9128815e-a8a3-4e28-97cb-0f637374db2b.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 27 | 2026-06-29 14:50 | E--llm-wiki | AI 팩토리 라는게 있던데 뭐야? 이 프로젝트랑 비슷한건가? 검색해서 자세히 찾아보고 분석해줘 | [raw/22d8e414-1540-483e-a8de-c489189bc789.jsonl](raw/22d8e414-1540-483e-a8de-c489189bc789.jsonl) | `~/.claude/projects/E--llm-wiki` |
+| 28 | 2026-06-29 17:48 | E--llm-wiki | 컴퓨터가 갑자기 꺼졌는데, 어디까지 했지? | [raw/2b8a2e6c-ef52-4aee-b970-de20aeee47c3.jsonl](raw/2b8a2e6c-ef52-4aee-b970-de20aeee47c3.jsonl) | `~/.claude/projects/E--llm-wiki` |
 
 ## 요약 통계
 
-- 총 세션: 13 개
-- 기간: 2026-06-11 14:30 ~ 2026-06-19 13:50
-- 원본 용량: 87.8M
+- 총 세션: 28 개
+- 기간: 2026-06-11 14:30 ~ 2026-06-29 17:48
+- 원본 용량: 138.8M

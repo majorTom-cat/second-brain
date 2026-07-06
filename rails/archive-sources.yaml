@@ -38,6 +38,13 @@ llm-wiki:
   # 사용자가 검토하고 '그대로 둠'(평문 유지)을 선택 → allow_internal 로 자동격리 해제. (신규 프로젝트는 기본 격리됨)
   allow_internal: true
 
+intra:
+  repo: E:\intra
+  sessions:
+    - e--intra         # 1 (대부분의 intra 작업은 E--second-brain cwd 에서 진행됨 — 거기 섞여 있음)
+  sensitivity: company-internal   # 실배포 사내 인트라넷(<사내도메인>)
+  auto_push: false                # 회사 데이터 — 자동 푸시 금지, 수동 검토 후에만
+
 second-brain:
   repo: E:\second-brain
   sessions:
