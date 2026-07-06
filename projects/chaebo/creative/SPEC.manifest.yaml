@@ -1,0 +1,75 @@
+# SPEC.manifest.yaml — 창작→개발 기계가독 계약. 번호 문서(00~09)와 일치. 2026-07-06.
+
+project: chaebo
+one_liner: >
+  유튜브 링크나 음악 파일을 넣으면 악기별로 소리를 분리해, 원하는 악기만 골라 듣고(솔로/뮤트)
+  피치 유지 배속으로 돌려 들으며 귀 채보(악기 카피) 연습을 하는 개인용 로컬 도구.
+
+stack:                      # 03-architecture 와 일치
+  language: py              # Python 3.11+ (분리 엔진이 torch — 언어 수 1 통일)
+  framework: fastapi        # + Uvicorn, Jinja2 + 바닐라 JS(번들러 없음)
+  db: sqlite                # 곡 메타·잡·연습상태. 오디오 실체는 파일시스템
+  auth: none                # 127.0.0.1 바인딩이 경계 (REQ-SEC-001)
+  separation: zfturbo-msst  # MIT. BS/Mel-RoFormer 체크포인트. Demucs 채택 금지(아카이브된 죽은 라인)
+  playback: html-audio-per-stem   # preservesPitch. SyncPlayer 인터페이스로 교체 가능(후일 Web Audio 승격)
+
+deploy_profile: local       # python run.py + 브라우저. Docker 선택(torch 무게로 venv 우선)
+
+spikes:                     # Phase 0 — 개발 착수 전 (02-requirements 하단)
+  - id: SP-1
+    what: 주 PC(CPU)에서 MSST+RoFormer 설치·4분 곡 실측(시간·메모리) + guitar 분리(5스템) 체크포인트 가용 확인 — 전 프로젝트 최대 리스크
+    gate: 실패 시 개발 착수 금지, 게이트 복귀
+  - id: SP-2
+    what: 채택 체크포인트별 라이선스 확인 → docs/model-licenses.md
+  - id: SP-3
+    what: 스템 5개 <audio> 동기 드리프트 실측(50ms 임계 달성 가능성)
+
+requirements:
+  - { id: REQ-ING-001,  summary: 유튜브 링크로 곡 추가,        acceptance: "given 서버 실행 when 유효한 YouTube URL 제출 then 오디오 저장+라이브러리에 새 곡 표시", priority: P0, depends_on: [] }
+  - { id: REQ-ING-002,  summary: 로컬 파일로 곡 추가,          acceptance: "given 서버 실행 when mp3/wav/flac/m4a 업로드 then 라이브러리에 새 곡 표시", priority: P0, depends_on: [] }
+  - { id: REQ-ING-003,  summary: 잘못된/한도 초과 입력 거부,   acceptance: "given 서버 실행 when 무효 URL·미지원 확장자·크기/길이 한도 초과(기본 200MB/20분, 설정 가능)·다운로드 불가 영상(연령제한 등) then 각각 한국어 사유 표시+잡 미생성 또는 실패 사유와 종료", priority: P1, depends_on: [REQ-ING-001, REQ-ING-002] }
+  - { id: REQ-SEP-001,  summary: 5스템 분리,                   acceptance: "given 추가된 곡 when 분리 완료 then vocals/drums/bass/guitar/other 파일 생성+status=ready (guitar 는 SP-1 체크포인트 가용성에 따라 4스템으로 조정 가능 — 조정 시 02·manifest 동시 갱신)", priority: P0, depends_on: [REQ-ING-001] }
+  - { id: REQ-SEP-002,  summary: GPU 자동감지+CPU 폴백,        acceptance: "given GPU 없는 PC when 분리 then 에러 없이 CPU 완료+'CPU 모드' 표시; given GPU PC then GPU 사용 표시", priority: P0, depends_on: [REQ-SEP-001] }
+  - { id: REQ-SEP-003,  summary: 건반/신스 품질 정직 고지,     acceptance: "given other 스템 when 연습 화면 then '분리 품질 낮을 수 있음' 안내 상시 표시", priority: P1, depends_on: [REQ-SEP-001] }
+  - { id: REQ-SEP-004,  summary: 분리 모델 선택,               acceptance: "given 설정 when 품질/속도 모델 선택 후 재분리 then 선택 체크포인트로 분리", priority: P2, depends_on: [REQ-SEP-001] }
+  - { id: REQ-SEP-005,  summary: CPU 처리시간 상한(NFR),       acceptance: "given GPU 없는 주 PC·4분 곡 when CPU 분리 then 30분 이내(SP-1 실측으로 임계 보정)", priority: P1, depends_on: [REQ-SEP-002] }
+  - { id: REQ-PLAY-001, summary: 스템 솔로/뮤트,               acceptance: "given ready 곡 연습 화면 when 솔로/뮤트 클릭 then 해당 스템만 들림/빠짐+재생 위치 유지", priority: P0, depends_on: [REQ-SEP-001] }
+  - { id: REQ-PLAY-002, summary: 피치 유지 배속,               acceptance: "given 재생 중 when 0.5x~1.5x 조절 then 전 스템 동일 배속·음정 불변", priority: P0, depends_on: [REQ-PLAY-001] }
+  - { id: REQ-PLAY-003, summary: 멀티트랙 동기(NFR),           acceptance: "given 재생 중 when 배속변경·seek·일시정지/재생 각 5회 then 스템 간 currentTime 편차 50ms 이내(자동 측정)", priority: P0, depends_on: [REQ-PLAY-001] }
+  - { id: REQ-PLAY-004, summary: A-B 구간반복,                 acceptance: "given 재생 화면 when A·B 지정 then 전 스템 그 구간 반복+경계 멈춤 없음", priority: P1, depends_on: [REQ-PLAY-003] }
+  - { id: REQ-PLAY-005, summary: 스템별 볼륨,                  acceptance: "given 연습 화면 when 볼륨 슬라이더 조절 then 그 스템 음량만 즉시 변화", priority: P1, depends_on: [REQ-PLAY-001] }
+  - { id: REQ-PLAY-006, summary: 극단 배속 품질 경고,          acceptance: "given 배속 컨트롤 when 0.6x 미만 선택 then 음질 저하 안내 표시", priority: P2, depends_on: [REQ-PLAY-002] }
+  - { id: REQ-PLAY-007, summary: 파형 표시,                    acceptance: "given ready 곡 when 연습 화면 진입 then peak 데이터로 파형 렌더+클릭 seek", priority: P2, depends_on: [REQ-PLAY-001] }
+  - { id: REQ-PLAY-008, summary: 키보드 단축키,                acceptance: "given 연습 화면 when 스페이스바 then 재생/일시정지 토글", priority: P2, depends_on: [REQ-PLAY-001] }
+  - { id: REQ-LIB-001,  summary: 분리 결과 재사용,             acceptance: "given 분리 완료 곡 when 서버 재시작 후 곡 클릭 then 재분리 없이 3초 내 연습 화면", priority: P0, depends_on: [REQ-SEP-001] }
+  - { id: REQ-LIB-002,  summary: 곡 삭제,                      acceptance: "given 라이브러리 when 삭제 확인 then DB+원본+스템 파일 함께 삭제", priority: P1, depends_on: [REQ-LIB-001] }
+  - { id: REQ-LIB-003,  summary: 연습 상태 저장,               acceptance: "given 연습 중 상태 변경 when 이탈 후 재진입 then 위치·루프·볼륨·배속 복원", priority: P1, depends_on: [REQ-PLAY-001] }
+  - { id: REQ-LIB-004,  summary: 검색,                         acceptance: "given 곡 여러 개 when 제목 검색 then 일치 곡만 표시", priority: P2, depends_on: [REQ-LIB-001] }
+  - { id: REQ-OPS-001,  summary: 비동기 진행률,                acceptance: "given 분리 중 when 라이브러리 표시 then 진행률 갱신+다른 조작 가능(UI 블로킹 없음)", priority: P0, depends_on: [REQ-SEP-001] }
+  - { id: REQ-OPS-002,  summary: health 엔드포인트,            acceptance: "given 앱 실행 when GET /api/health then 200 + {status:ok}", priority: P0, depends_on: [] }
+  - { id: REQ-OPS-003,  summary: 실패 표시+재시도,             acceptance: "given 다운로드/분리 실패 when 라이브러리 then 에러 상태·이유 표시+재시도 버튼 동작", priority: P1, depends_on: [REQ-OPS-001] }
+  - { id: REQ-OPS-004,  summary: graceful shutdown+bind 설정,  acceptance: "given 분리 중 when SIGTERM then 잡 상태 저장(고아 잡 없음)+정상 종료; given HOST/PORT 환경변수 when 기동 then 해당 주소 바인딩(기본 127.0.0.1)", priority: P1, depends_on: [] }
+  - { id: REQ-OPS-005,  summary: 더블클릭 실행(G4 배선),       acceptance: "given Windows 탐색기 when run.bat 더블클릭 then venv 활성화·서버 기동·브라우저 자동 오픈(터미널 명령 직접 입력 없음)", priority: P1, depends_on: [REQ-OPS-002] }
+  - { id: REQ-SEC-001,  summary: 로컬 전용 바인딩,             acceptance: "given 기본 설정 when 타 기기 접속 시도 then 접속 불가(127.0.0.1)", priority: P1, depends_on: [] }
+  - { id: REQ-SEC-002,  summary: 개인용 고지,                  acceptance: "given 유튜브 입력 UI when 렌더 then '개인 연습용—공유·재배포 금지' 상시 표시", priority: P1, depends_on: [REQ-ING-001] }
+  - { id: REQ-CHORD-001, summary: 코드 감지(장/단조),          acceptance: "given ready 곡 when 코드 감지 then 시간축 트라이어드 목록+'7th·텐션 미지원' 고지", priority: P2, depends_on: [REQ-SEP-001] }
+
+roadmap_phases:             # 08-roadmap 와 일치
+  - phase: 0                # 스파이크 (REQ 아님)
+    reqs: []
+    spikes: [SP-1, SP-2, SP-3]
+  - phase: 1                # MVP — P0 전부
+    reqs: [REQ-ING-001, REQ-ING-002, REQ-SEP-001, REQ-SEP-002, REQ-PLAY-001, REQ-PLAY-002, REQ-PLAY-003, REQ-LIB-001, REQ-OPS-001, REQ-OPS-002]
+  - phase: 2                # 연습 심화 — P1
+    reqs: [REQ-ING-003, REQ-SEP-003, REQ-SEP-005, REQ-PLAY-004, REQ-PLAY-005, REQ-LIB-002, REQ-LIB-003, REQ-OPS-003, REQ-OPS-004, REQ-OPS-005, REQ-SEC-001, REQ-SEC-002]
+  - phase: 3                # 선택 확장 — P2 (+pywebview 데스크톱 포장 별도 트랙)
+    reqs: [REQ-SEP-004, REQ-PLAY-006, REQ-PLAY-007, REQ-PLAY-008, REQ-LIB-004, REQ-CHORD-001]
+
+invariants:                 # 08/09 와 일치
+  - "시크릿은 코드에 없다(이 프로젝트는 외부 API 키 자체가 없어야 정상)"
+  - "모든 P0 REQ는 acceptance에 매핑된 통과 테스트가 있다"
+  - "/api/health 유지 · 기본 바인딩 127.0.0.1"
+  - "Demucs를 새 의존성으로 추가하지 않는다(죽은 라인)"
+  - "다운로드 원본·스템은 로컬에만(클라우드 업로드·공유 기능 금지)"
+  - "건반/신스 품질 한계 고지를 제거하지 않는다"
+  - "SyncPlayer 인터페이스 우회 재생 코드 금지(엔진 교체 가능성 보존)"

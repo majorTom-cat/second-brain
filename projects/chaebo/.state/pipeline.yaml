@@ -1,0 +1,4 @@
+slug: chaebo
+stage: creative
+gate: pending          # 승인은 사람이: gate: approved + approved_by: <사람> + approved_at: <날짜>
+updated: 2026-07-06
