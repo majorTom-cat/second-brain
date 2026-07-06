@@ -104,6 +104,17 @@ function loadInternalPatterns() {
 }
 const INTERNAL_PATTERNS = loadInternalPatterns();
 
+// [P-T1 2026-07-06] 커밋되는 산출물(INDEX 세션 제목 등)에 사내 마커가 평문으로 실리는 재유출 방지.
+// 마스킹은 raw 사본(redactFile=비밀)만 다뤘고 *세션 제목*은 사용자가 친 프롬프트 원문이라 도메인·네임스페이스가
+// 그대로 노출됐다(수동 정제는 재생성 때마다 되살아남 — 실증 2회). 라벨은 일반화, 원본 raw 정책은 불변.
+function sanitizeInternal(txt) {
+  let out = String(txt || '');
+  for (const { label, re } of INTERNAL_PATTERNS) {
+    out = out.replace(re, label === LABEL_IP ? '<사설IP>' : '<사내마커>');
+  }
+  return out;
+}
+
 async function parseTranscript(file) {
   const rl = readline.createInterface({ input: fs.createReadStream(file), crlfDelay: Infinity });
   let first = null, last = null, summary = null, topic = null, lineNo = 0;
@@ -172,7 +183,7 @@ async function ingestProject(project, cfg) {
       fs.copyFileSync(src, dest);
       redactedTotal += redactFile(dest);
       const info = await parseTranscript(dest);
-      rows.push({ sid, folder, ctx, date: info.first, mtime: srcMtime, topic: trunc(info.summary || info.topic || '(주제 추출 실패)', 90) });
+      rows.push({ sid, folder, ctx, date: info.first, mtime: srcMtime, topic: trunc(sanitizeInternal(info.summary || info.topic || '(주제 추출 실패)'), 90) });
       for (const h of info.hits) allHits.push({ ...h, file: f });
       for (const [k, v] of Object.entries(info.internal || {})) internalTotals[k] = (internalTotals[k] || 0) + v;
     }

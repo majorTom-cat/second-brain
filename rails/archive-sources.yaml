@@ -52,3 +52,9 @@ second-brain:
   # 이 repo 대화엔 agora 내부 주소(사내 도메인 등) 언급이 섞여 있어 company-internal 로 분류 → 평문 raw 는 gitignore
   sensitivity: company-internal
   auto_push: false
+
+chaebo:
+  repo: E:\chaebo
+  sessions: E--chaebo
+  sensitivity: personal   # 개인 음악 연습 도구(비상업) — 사내 데이터 무관
+  auto_push: true

@@ -18,7 +18,7 @@
 | 11 | 2026-06-20 01:59 | E--second-brain | 지금 다른세션에서 디자인 시안 받아서 개발하고 테스트 까지 다 했다는데 내가 화면 들어가서 보니 버튼 링크도 안걸려있고 시안과 다르게 뭉뚱그려 개발되어 있는데 … | [raw/a170222b-cb15-4825-8e47-9318d94c4734.jsonl](raw/a170222b-cb15-4825-8e47-9318d94c4734.jsonl) | `~/.claude/projects/E--second-brain` |
 | 12 | 2026-06-21 09:23 | E--second-brain | 여기서 intra 작업 이어서 할건데 인수인계 받고, 그 전에 그 동안의 실패와 실수, 교훈, 얻은 지식들을 다 모아서 더 나아질 수 있게 하자. intra 뿐… | [raw/1cfb41fb-1f12-4d51-9f25-00efeaf098ff.jsonl](raw/1cfb41fb-1f12-4d51-9f25-00efeaf098ff.jsonl) | `~/.claude/projects/E--second-brain` |
 | 13 | 2026-06-21 13:35 | E--second-brain | 안녕, 이전 세션에서 이렇게 끝냈어. 확인하고 이어가줘. 이어받기 세팅 (완료) - 교훈: memory/lessons/intra.md(전이 교훈 10개) + 자… | [raw/2ad1ecdf-5e64-41c6-96bb-3f219cab5d10.jsonl](raw/2ad1ecdf-5e64-41c6-96bb-3f219cab5d10.jsonl) | `~/.claude/projects/E--second-brain` |
-| 14 | 2026-06-21 15:30 | E--second-brain | agora 프로젝트의 url을 바꾸고싶어. 지금 <사내도메인> 에 떠있는데, agora 지식도 참고해서 intranet2 로 바꾸자 | [raw/80a53347-27b1-43a1-8fd5-281334483d3b.jsonl](raw/80a53347-27b1-43a1-8fd5-281334483d3b.jsonl) | `~/.claude/projects/E--second-brain` |
+| 14 | 2026-06-21 15:30 | E--second-brain | agora 프로젝트의 url을 바꾸고싶어. 지금 intranet.<사내마커> 에 떠있는데, agora 지식도 참고해서 intranet2 로 바꾸자 | [raw/80a53347-27b1-43a1-8fd5-281334483d3b.jsonl](raw/80a53347-27b1-43a1-8fd5-281334483d3b.jsonl) | `~/.claude/projects/E--second-brain` |
 | 15 | 2026-06-22 11:04 | E--second-brain | ## Context Usage **Model:** claude-opus-4-8[1m] **Tokens:** 34.1k / 1m (3%) ### Estimated… | [raw/203ae97c-d9fb-4ec4-b5e2-11ee51c4af74.jsonl](raw/203ae97c-d9fb-4ec4-b5e2-11ee51c4af74.jsonl) | `~/.claude/projects/E--second-brain` |
 | 16 | 2026-06-22 11:24 | E--second-brain | ## Context Usage **Model:** claude-opus-4-8[1m] **Tokens:** 34.1k / 1m (3%) ### Estimated… | [raw/028e02c3-cf02-4be1-b014-2ff0d20b4688.jsonl](raw/028e02c3-cf02-4be1-b014-2ff0d20b4688.jsonl) | `~/.claude/projects/E--second-brain` |
 | 17 | 2026-06-22 17:30 | E--second-brain | 안녕, 여기서 intra 프로젝트 이어서 하려는데 준비해봐. 이전의 세션들은 second brain 문서 일부만 읽거나 intra 문서 일부만 읽어서 계속 같은… | [raw/8a6388c4-134b-43d6-bd35-8f66df85e563.jsonl](raw/8a6388c4-134b-43d6-bd35-8f66df85e563.jsonl) | `~/.claude/projects/E--second-brain` |
@@ -45,4 +45,4 @@
 
 - 총 세션: 35 개
 - 기간: 2026-06-13 01:38 ~ 2026-07-06 10:20
-- 원본 용량: 193.8M
+- 원본 용량: 200.0M
